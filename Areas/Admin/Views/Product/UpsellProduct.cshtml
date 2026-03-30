@@ -1,0 +1,543 @@
+﻿@model Boulevard.Models.Product
+@{
+    ViewBag.Title = "Details";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+
+    string PageTitle = "", ButtonTitle = "";
+    if (Model.ProductKey != Guid.Empty)
+    {
+        PageTitle = "Edit";
+        ButtonTitle = "Reset";
+    }
+    else
+    {
+        PageTitle = "Add";
+        ButtonTitle = "Save";
+    }
+}
+<style>
+    *,
+    *::after,
+    *::before {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    :root {
+        --active-color: hsl(204 100 53);
+        --bg-color: #e1e3e5;
+        --icon-default: hsl(203 5 75);
+        --icon-accent: hsl(203 15 98);
+        --navigation-color: hsl(203 5 25 / 0.3);
+    }
+
+    body {
+        min-block-size: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background-color: var(--bg-color);
+    }
+
+    .image-slider {
+        display: flex;
+        flex-flow: column;
+        /*width: clamp(360px, 96vw, 830px);*/
+        width: 100%;
+        aspect-ratio: 16 / 9;
+        min-height: 300px;
+        overflow: hidden;
+        border-radius: 8px;
+        container-type: inline-size;
+        contain: content;
+        background-color: #0006;
+        box-shadow: rgba(0, 0, 0, 0.2) 0px 1px 2px, rgba(0, 0, 0, 0.3) 0px 2px 4px, rgba(0, 0, 0, 0.25) 0px 4px 8px, rgba(0, 0, 0, 0.2) 0px 8px 16px, rgba(0, 0, 0, 0.15) 0px 16px 32px;
+    }
+
+    .slider__content {
+        flex-grow: 1;
+        display: flex;
+        justify-content: space-between;
+    }
+
+    .slider-control--button {
+        border: 0;
+        background: 0;
+        outline: 0;
+        cursor: pointer;
+        place-content: center;
+        padding-inline: 3vw;
+        z-index: 1;
+        display: grid;
+    }
+
+    .icon {
+        height: 2rem;
+        width: 2rem;
+        fill: var(--icon-default);
+        border-radius: 50%;
+    }
+
+    .slider-control--button:where(:hover) {
+        background-image: linear-gradient(to var(--position), #0000 0%, #0002, 80%, #0006 100%);
+        .icon
+
+    {
+        fill: var(--icon-accent);
+        background: #0001;
+    }
+
+    }
+
+    .slider-control--button:active {
+        outline: 0.2em solid hsl(204 100 53);
+        outline-offset: -0.5em;
+    }
+
+    .prev-button {
+        --position: left;
+    }
+
+    .next-button {
+        --position: right;
+    }
+
+    .image-display {
+        position: fixed;
+        inset: 0;
+    }
+
+    .slider-navigation {
+        z-index: 10;
+        display: grid;
+        grid-auto-flow: column;
+        grid-template-columns: repeat(6, 1fr);
+        grid-auto-columns: 100%;
+        gap: 1.25rem;
+        padding: 1rem;
+        place-content: center;
+        background-color: var(--navigation-color);
+        backdrop-filter: blur(6px);
+    }
+
+    .nav-button {
+        display: grid;
+        width: 100%;
+        height: 100%;
+        border-radius: 0.5em;
+        overflow: hidden;
+        align-items: center;
+        justify-content: center;
+        border: 0;
+        aspect-ratio: 16 / 9;
+        transition: filter 150ms linear, scale 266ms ease;
+    }
+
+    .thumbnail {
+        display: block;
+        max-width: 100%;
+        width: 100%;
+        object-fit: cover;
+        height: 100%;
+    }
+
+    .nav-button[aria-selected="true"] {
+        scale: 1.1;
+    }
+
+    .nav-button[aria-selected="true"],
+    .nav-button:focus-visible {
+        outline: 0.2em solid var(--active-color);
+        outline-offset: 0.2em;
+    }
+
+    .nav-button[aria-selected="false"] {
+        filter: opacity(0.7);
+    }
+
+        .nav-button[aria-selected="false"]:where(:hover, :focus-visible) {
+            filter: opacity(1);
+        }
+
+    @@container (max-width: 660px) {
+        .nav-button:not(:has(img)) {
+            background-color: rgb(241, 235, 232);
+        }
+
+        .slider-navigation {
+            display: flex;
+            justify-content: center;
+            padding-block: 1.5em;
+        }
+
+        .nav-button {
+            inline-size: 0.625rem;
+            aspect-ratio: 1;
+            border-radius: 50%;
+        }
+
+            .nav-button > .thumbnail {
+                display: none;
+            }
+
+            .nav-button[aria-selected="true"] {
+                background-color: black;
+                scale: 1.5;
+            }
+    }
+</style>
+
+
+<input type="hidden" name="ProductId" class="form-control" value="@Model.ProductId">
+<input type="hidden" name="ProductKey" class="form-control" value="@Model.ProductKey">
+<input type="hidden" name="CreateBy" class="form-control" value="@Model.CreateBy">
+<input type="hidden" name="CreateDate" class="form-control" value="@Model.CreateDate">
+<input type="hidden" name="CreateDate" class="form-control" value="@Model.CreateDate">
+<input type="hidden" name="SelectedCategoryId" id="SelectedCategoryId" class="form-control" value="@Model.SelectedCategoryId">
+
+<div class="page-wrapper">
+    <div class="container-fluid">
+        <div class="row page-titles">
+            <div class="col-md-5 col-12 align-self-center">
+                <h3 class="text-themecolor mb-0">@Model.FeatureCategory.Name Upsell</h3>
+            </div>
+            <div class="col-md-7 col-12 align-self-center d-none d-md-block">
+                <ol class="breadcrumb mb-0 p-0 bg-transparent float-right">
+                </ol>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-body">
+
+                <div class="row align-items-center mb-3">
+                    <div class="col-md-5 col-12 align-self-center">
+                        <h3>@Model.FeatureCategory.Name @ViewBag.Title</h3>
+                    </div>
+                </div>
+                <hr>
+                <div class="card-body">
+                    <div class="row ">
+                        <div class="container-fluid p-0">
+                            <!-- Related Product  description  -->
+                            <div class="related-product row g-4">
+                                @*<img src="https://images.rawpixel.com/image_800/cHJpdmF0ZS9sci9pbWFnZXMvd2Vic2l0ZS8yMDIyLTExL3JtMzYyLTAxYS1tb2NrdXAuanBn.jpg"
+                    alt=""
+                    class="img-fluid col-12 col-md-6 col-lg-3 d-block " />*@
+                                <div class="col-12 col-md-6 col-lg-6">
+                                    <div class="image-slider">
+                                        <section class="slider__content">
+                                            <button type="button" class="slider-control--button prev-button">
+                                                <svg width="16" height="16" fill="currentColor" class="icon arrow-left-circle" viewBox="0 0 16 16">
+                                                    <path fill-rule="evenodd"
+                                                          d="M1 8a7 7 0 1 0 14 0A7 7 0 0 0 1 8m15 0A8 8 0 1 1 0 8a8 8 0 0 1 16 0m-4.5-.5a.5.5 0 0 1 0 1H5.707l2.147 2.146a.5.5 0 0 1-.708.708l-3-3a.5.5 0 0 1 0-.708l3-3a.5.5 0 1 1 .708.708L5.707 7.5z" />
+                                                </svg>
+                                            </button>
+                                            <main class="image-display"></main>
+                                            <button type="button" class="slider-control--button next-button">
+                                                <svg width="16" height="16" fill="currentColor" class="icon arrow-right-circle" viewBox="0 0 16 16">
+                                                    <path fill-rule="evenodd"
+                                                          d="M1 8a7 7 0 1 0 14 0A7 7 0 0 0 1 8m15 0A8 8 0 1 1 0 8a8 8 0 0 1 16 0M4.5 7.5a.5.5 0 0 0 0 1h5.793l-2.147 2.146a.5.5 0 0 0 .708.708l3-3a.5.5 0 0 0 0-.708l-3-3a.5.5 0 1 0-.708.708L10.293 7.5z" />
+                                                </svg>
+                                            </button>
+                                        </section>
+                                        <nav class="slider-navigation">
+                                            @for (int i = 0; i < Model.Images.Count; i++)
+                                            {
+                                                if (i == 0)
+                                                {
+                                                    <button class="nav-button" aria-selected="true">
+                                                        <img class="thumbnail" src="@Model.Images[i].Image" alt="Thumbnail 1" />
+                                                    </button>
+                                                }
+                                                else
+                                                {
+                                                    <button class="nav-button" aria-selected="false">
+                                                        <img class="thumbnail" src="@Model.Images[i].Image" alt="Thumbnail 2" />
+                                                    </button>
+                                                }
+                                            }
+
+                                        </nav>
+                                    </div>
+                                </div>
+                                <div class="col-12 col-md-6 col-lg-6">
+                                    <h2>Product Name : @Model.ProductName </h2>
+                                    <p class="description">
+                                        Description: <span>
+                                            @Html.Raw(Model.ProductDescription)
+                                        </span>
+                                    </p>
+                                    <p>Brand : <span>@Model.Brands.Title</span></p>
+
+                                    <p>Price : <span>@Model.ProductPrice</span></p>
+                                    <p>Feature Category : <span>@Model.FeatureCategory.Name</span></p>
+                                    <p>
+                                        Category  :
+                                        @foreach (var node in Model.ProductCategories)
+                                        {
+                                            <button class="btn tags-btn"># @node.CategoryName</button>
+                                        }
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <br />
+                    <hr />
+                    <br />
+                    <div class="row page-titles">
+                        <div class="col-md-5 col-12 align-self-center">
+                            <label style="font-size:30px">
+                                <strong>@Model.FeatureCategory.Name List</strong>
+                            </label>
+                        </div>
+                        <div class="form-group col-md-7 col-12 text-right align-self-center d-none d-md-block">
+                            <a class="btn btn-warning btn-xl waves-effect waves-light" onclick="PostUpsell('@Model.ProductKey')">
+                                <i class="fa fa-arrow-up"></i> <strong>Upsell</strong>  
+                            </a>
+                            @*<a href="@Url.RouteUrl("Admin_ProductList")" class="btn btn-dark btn-xl waves-effect waves-light">
+                                <i class="fa fa-crosshairs"></i> <strong>Crosssell</strong>  
+                            </a>*@
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="table-responsive">
+
+                            <table id="zero_config" class="table table-striped table-bordered" cellspacing="0" width="100%">
+                                <thead>
+                                    <tr>
+                                        @*<th>SL.NO</th>*@
+                                        <th>
+                                            <input type="checkbox" id="check-all" class="check-All">
+                                            @*<label for="check-all">All</label>*@
+                                        </th>
+                                        <th>Product</th>
+                                        <th style="text-align:center">Brand</th>
+                                        <th style="text-align:center">Description</th>
+                                        <th style="text-align:center">Price</th>
+                                        <th style="text-align:center">Delivery Info</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @{
+                                        int serialNo = 1;
+                                    }
+                                    @foreach (var node in Model.ProductList)
+                                    {
+                                        <tr>
+                                            <td>
+                                                @*<input hidden name="BookingRequestId" value="@invoice.InvoiceId" />*@
+                                                @if (node.IsUpsellProduct == true)
+                                                {
+                                                    <input type="checkbox" class="chkCheckBoxId select-@node.ProductId" id="select-@node.ProductId" checked value=@node.ProductId>
+                                                    @*<label for="select-@node.ProductId"></label>*@
+                                                }
+                                                else
+                                                {
+                                                    <input type="checkbox" class="chkCheckBoxId select-@node.ProductId" id="select-@node.ProductId" value=@node.ProductId>
+                                                }
+                                            </td>
+                                            <td>@node.ProductName</td>
+
+                                            <td style="text-align:center">
+                                                @node.Brands.Title
+                                            </td>
+                                            <td style="text-align:center">@Html.Raw(node.ProductDescription)</td>
+                                            <td style="text-align:center"><strong>@node.ProductPrice</strong></td>
+                                            <td style="text-align:center">@Html.Raw(node.DeliveryInfo)</td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<script src="~/assets/libs/jquery/dist/jquery.min.js"></script>
+<script src="~/assets/libs/jquery-steps/build/jquery.steps.min.js"></script>
+<script src="~/assets/libs/jquery-validation/dist/jquery.validate.min.js"></script>
+<script>
+    $(document).ready(function () {
+        $('.check-All').on('change', function () {
+            var checkedAll = $('.chkCheckBoxId');
+            if (this.checked) {
+                checkedAll.each(function (i, item) {
+                    $('.select-' + item.value).prop('checked', true);
+                });
+            }
+            else {
+                checkedAll.each(function (i, item) {
+                    $('.select-' + item.value).prop('checked', false);
+                });
+            }
+        });
+
+
+    });
+
+     //var selectedTab = 1;
+    function PostUpsell(key) {
+     var checks = $('.chkCheckBoxId:checked');
+     var checkedAll = $('.chkCheckBoxId');
+     var invoiceIds = [];
+     checks.each(function (i, item) {
+         invoiceIds.push(item.value);
+     });
+     //const swalWithBootstrapButtons = Swal.mixin({
+     //    customClass: {
+     //        confirmButton: 'btn btn-success',
+     //        cancelButton: 'mr-2 btn btn-danger'
+     //    },
+     //    buttonsStyling: false,
+     //    animation: false,
+     //    allowOutsideClick: false
+     //})
+     if (invoiceIds.length == 0) {
+         swalWithBootstrapButtons.fire({
+             title: 'Select Table Row',
+             text: "Please select at least one item!",
+             type: 'warning',
+             showCancelButton: false,
+             confirmButtonText: 'OK',
+             reverseButtons: true
+         }).then((result) => {
+             return;
+         })
+         return;
+     }
+     else {
+         $.ajax({
+             type: "post",
+             url: "@Url.Action("PostUpsell", "Product")", 
+             data: { productIds: invoiceIds, Key: key },
+             cache: false,
+             success: function (response) {
+                 if (response.success) {
+                     //$('#status').val(selectedTab);
+                     //ApplyFilters();
+                     location.reload();
+                 }
+             },
+             error: function (xhr) {
+
+             }
+         });
+     }
+ }
+</script>
+<script>
+    class Slider {
+        constructor(slider) {
+            this.slider = slider;
+            this.display = slider.querySelector(".image-display");
+            this.navButtons = Array.from(slider.querySelectorAll(".nav-button"));
+            this.prevButton = slider.querySelector(".prev-button");
+            this.nextButton = slider.querySelector(".next-button");
+            this.sliderNavigation = slider.querySelector(".slider-navigation");
+            this.currentSlideIndex = 0;
+            this.preloadedImages = {};
+
+            this.initialize();
+        }
+
+        initialize() {
+            this.setupSlider();
+            this.preloadImages();
+            this.eventListeners();
+        }
+
+        setupSlider() {
+            this.showSlide(this.currentSlideIndex);
+        }
+
+        showSlide(index) {
+            this.currentSlideIndex = index;
+            const navButtonImg = this.navButtons[
+                this.currentSlideIndex
+            ].querySelector("img");
+            if (navButtonImg) {
+                const imgClone = navButtonImg.cloneNode();
+                this.display.replaceChildren(imgClone);
+            }
+            this.updateNavButtons();
+        }
+
+        updateNavButtons() {
+            this.navButtons.forEach((button, buttonIndex) => {
+                const isSelected = buttonIndex === this.currentSlideIndex;
+                button.setAttribute("aria-selected", isSelected);
+                if (isSelected) button.focus();
+            });
+        }
+
+        preloadImages() {
+            this.navButtons.forEach((button) => {
+                const imgElement = button.querySelector("img");
+                if (imgElement) {
+                    const imgSrc = imgElement.src;
+                    if (!this.preloadedImages[imgSrc]) {
+                        this.preloadedImages[imgSrc] = new Image();
+                        this.preloadedImages[imgSrc].src = imgSrc;
+                    }
+                }
+            });
+        }
+
+        eventListeners() {
+            document.addEventListener("keydown", (event) => {
+                this.handleAction(event.key);
+            });
+
+            this.sliderNavigation.addEventListener("click", (event) => {
+                const targetButton = event.target.closest(".nav-button");
+                const index = targetButton
+                    ? this.navButtons.indexOf(targetButton)
+                    : -1;
+                if (index !== -1) {
+                    this.showSlide(index);
+                }
+            });
+
+            this.prevButton.addEventListener("click", () =>
+                this.handleAction("prev")
+            );
+            this.nextButton.addEventListener("click", () =>
+                this.handleAction("next")
+            );
+        }
+
+        handleAction(action) {
+            if (action === "Home") {
+                this.currentSlideIndex = 0;
+            } else if (action === "End") {
+                this.currentSlideIndex = this.navButtons.length - 1;
+            } else if (action === "ArrowRight" || action === "next") {
+                this.currentSlideIndex =
+                    (this.currentSlideIndex + 1) % this.navButtons.length;
+            } else if (action === "ArrowLeft" || action === "prev") {
+                this.currentSlideIndex =
+                    (this.currentSlideIndex - 1 + this.navButtons.length) %
+                    this.navButtons.length;
+            }
+
+            this.showSlide(this.currentSlideIndex);
+        }
+    }
+
+    const ImageSlider = new Slider(document.querySelector(".image-slider"));
+
+</script>
+
+
+
+
+

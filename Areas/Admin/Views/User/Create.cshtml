@@ -1,0 +1,118 @@
+﻿@model Boulevard.Models.User
+@{
+    ViewBag.Title = "Create";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+    string activeChk = "";
+    string PageTitle = "", ButtonTitle = "";
+    if (Model.UserKey != Guid.Empty)
+    {
+        PageTitle = "Edit";
+        ButtonTitle = "Reset";
+    }
+    else
+    {
+        PageTitle = "Add";
+        ButtonTitle = "Save";
+    }
+}
+
+@using (Html.BeginForm("Create", "User", FormMethod.Post, new { enctype = "multipart/form-data", @id = "myForm" }))
+{
+    <div class="page-wrapper">
+        <div class="container-fluid">
+            <div class="row page-titles">
+                <div class="col-md-5 col-12 align-self-center">
+                    <h3 class="text-themecolor mb-0">User</h3>
+                </div>
+                <div class="col-md-7 col-12 align-self-center d-none d-md-block">
+                    <ol class="breadcrumb mb-0 p-0 bg-transparent float-right">
+                    </ol>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-body">
+                    <div class="row align-items-center mb-3">
+                        <div class="col-md-5 col-12 align-self-center">
+                            <h3>@PageTitle</h3>
+                        </div>
+                        <div class="col-md-7 col-12 align-self-center d-none d-md-block">
+                            <ol class="breadcrumb mb-0 p-0 bg-transparent float-right">
+                                <li class="breadcrumb-item active"><a href="@Url.RouteUrl("Admin_UserList")">User</a></li>
+                                <li class="breadcrumb-item active">Create Or Edit</li>
+                            </ol>
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="card-body">
+                        <div class="row">
+                            <input type="hidden" name="UserId" class="form-control" value="@Model.UserId">
+                            <input type="hidden" name="UserKey" class="form-control" value="@Model.UserKey">
+                            <input type="hidden" name="Image" class="form-control" value="@Model.Image">
+                            <input type="hidden" name="CreateBy" class="form-control" value="@Model.CreateBy">
+                            <input type="hidden" name="CreateDate" class="form-control" value="@Model.CreateDate">
+                            <div class="col-lg-4 col-md-6 col-sm-12">
+                                <div class="form-group">
+                                    <label>Name</label>
+                                    @Html.TextBoxFor(m => m.Name, new { @class = "form-control", required = "required" })
+                                </div>
+                            </div>
+                            <div class="col-lg-4 col-md-6 col-sm-12">
+                                <div class="form-group">
+                                    <label>Role</label>
+                                    @Html.DropDownList("RoleId", (IEnumerable<SelectListItem>)ViewBag.roles, "Choose Role", new { @class = "form-control", required = "required" })
+                                </div>
+                            </div>
+                            <div class="col-lg-4 col-md-6 col-sm-12">
+                                <div class="form-group">
+                                    <label>Email</label>
+                                    @Html.TextBoxFor(m => m.Email, new { @class = "form-control", type = "email", required = "required" })
+                                </div>
+                            </div>
+                            <div class="col-lg-4 col-md-6 col-sm-12">
+                                <div class="form-group">
+                                    <label>Phone No</label>
+                                    @Html.TextBoxFor(m => m.PhoneNumber, new { @class = "form-control", required = "required" })
+                                </div>
+                            </div>
+
+                            <div class="col-lg-4 col-md-6 col-sm-12">
+                                <div class="form-group">
+                                    <label>UserName</label>
+                                    @Html.TextBoxFor(m => m.UserName, new { @class = "form-control", required = "required" })
+                                </div>
+                            </div>
+                            @if (Model.UserKey == Guid.Empty)
+                            {
+                                <div class="col-lg-4 col-md-6 col-sm-12">
+                                    <div class="form-group">
+                                        <label>Password</label>
+                                        @Html.TextBoxFor(m => m.Password, new { @class = "form-control", type = "password", required = "required", minlength="6" })
+                                    </div>
+                                </div>
+                            }
+                            <div class="col-12 col-md-6 col-lg-6">
+                                <div>
+                                    <label>Image</label>
+                                    <input type="file" name="image" accept="image/png, image/jpeg" class="form-control dropify" data-default-file="../../@Model.Image" />
+                                </div>
+                            </div>
+
+
+                        </div>
+                        <div class="card-body">
+                            <div class="form-group mb-0 text-right">
+                                <button type="submit" class="btn btn-warning waves-effect waves-light" id="submit-btn">@ButtonTitle</button>
+                                <a href="@Url.RouteUrl("Admin_UserList")" class="btn btn-dark waves-effect waves-light">
+                                    Close
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+}
+
+

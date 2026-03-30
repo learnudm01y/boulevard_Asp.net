@@ -1,0 +1,176 @@
+﻿
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+<script type="text/javascript" src="http://code.jquery.com/jquery-1.7.1.min.js"></script>
+<!-- Container fluid  -->
+<!-- ============================================================== -->
+<div class="page-wrapper">
+    <div class="container-fluid">
+        <!-- ============================================================== -->
+        <!-- Bread crumb and right sidebar toggle -->
+        <!-- ============================================================== -->
+        <div class="row page-titles">
+            <div class="col-md-5 col-12 align-self-center">
+                <h3 class="text-themecolor mb-0">Medical Service</h3>
+            </div>
+            <div class="col-md-7 col-12 align-self-center d-none d-md-block">
+                <ol class="breadcrumb mb-0 p-0 bg-transparent float-right">
+                    <li class="breadcrumb-item active"><a href="@Url.RouteUrl("Admin_dashboard")">Home</a></li>
+                    <li class="breadcrumb-item active">Medical Service</li>
+                </ol>
+            </div>
+        </div>
+        <!-- ============================================================== -->
+        <!-- End Bread crumb and right sidebar toggle -->
+        <!-- ============================================================== -->
+        <!--order list-->
+        <div class="card">
+            <div class="card-body">
+
+                <div class="row align-items-center mb-3">
+                    <div class="col-sm-8">
+                        <h4 class="card-title">Medical Service</h4>
+                    </div>
+                </div>
+
+                <div class="table-responsive">
+
+                    <table id="zero_config" class="table table-striped table-bordered" cellspacing="0" width="100%">
+                        <thead>
+                            <tr>
+                                <th>Booking Id</th>
+                                <th>Medical Service Name</th>
+                                <th>Medical Image</th>
+                                <th>Member Name</th>
+                                <th>Email</th>
+                                <th>Phone No</th>
+                                <th>Extra Charge</th>
+                                <th>Total Price</th>
+                                <th>Booking Date</th>
+                                <th>Booking Time</th>
+                                <th>Booking Status</th>
+                                <th>Option</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+
+                            <tr>
+                                <td>1125142</td>
+                                <td>Pulse Dignostic Center</td>
+                                <td><img src="~/Areas/Admin/Content/assets/images/Productservice/preventive.jpg" style="max-width:50px;max-height:50px;"></td>
+                                <td>Nafiz Chowdhury</td>
+                                <td>nafiz.chow019@gmail.com</td>
+                                <td>55625659852</td>
+                                <td>00 AED</td>
+                                <td>700 AED</td>
+                                <td>@DateTime.Now.ToString("dd/MM/yyyy")</td>
+                                <td>@DateTime.Now.ToShortTimeString()</td>
+                                <td>Active</td>
+
+                                <td>
+                                    <a href="@Url.RouteUrl("Admin_Order_MedicalDetails")" class="btn btn-success btn-xl">
+                                        <i class="fa fa-eye"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>1165142</td>
+                                <td>CT medical Center</td>
+                                <td><img src="~/Areas/Admin/Content/assets/images/Productservice/hispanic-doctor-with-digital-tablet-talking-to-patient-905560662-6f257aea7e264258b9a13e46b9b7239c.jpg" style="max-width:50px;max-height:50px;"></td>
+                                <td>Nafiz Chowdhury</td>
+                                <td>nafiz.chow019@gmail.com</td>
+                                <td>55625659852</td>
+                                <td>00 AED</td>
+                                <td>1200 AED</td>
+                                <td>@DateTime.Now.ToString("dd/MM/yyyy")</td>
+                                <td>@DateTime.Now.ToShortTimeString()</td>
+                                <td>Active</td>
+
+                                <td>
+                                    <a href="@Url.RouteUrl("Admin_Order_MedicalDetails")" class="btn btn-success btn-xl">
+                                        <i class="fa fa-eye"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>112343142</td>
+                                <td>United Diagnostic Center</td>
+                                <td><img src="~/Areas/Admin/Content/assets/images/Productservice/preventive.jpg" style="max-width:50px;max-height:50px;"></td>
+                                <td>Nafiz Chowdhury</td>
+                                <td>nafiz.chow019@gmail.com</td>
+                                <td>55625659852</td>
+                                <td>00 AED</td>
+                                <td>900 AED</td>
+                                <td>@DateTime.Now.ToString("dd/MM/yyyy")</td>
+                                <td>@DateTime.Now.ToShortTimeString()</td>
+                                <td>Active</td>
+
+                                <td>
+                                    <a href="@Url.RouteUrl("Admin_Order_MedicalDetails")" class="btn btn-success btn-xl">
+                                        <i class="fa fa-eye"></i>
+                                    </a>
+                                </td>
+                            </tr>
+
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <!-- ============================================================== -->
+    </div>
+</div>
+<!-- ============================================================== -->
+<!-- End Container fluid  -->
+
+<script type="text/javascript">
+
+    function Delete(id) {
+        const swalWithBootstrapButtons = Swal.mixin({
+            customClass: {
+                confirmButton: 'btn btn-success',
+                cancelButton: 'mr-2 btn btn-danger'
+            },
+            buttonsStyling: false,
+            animation: false,
+            allowOutsideClick: false
+        })
+
+        swalWithBootstrapButtons.fire({
+            title: 'Are you sure?',
+            text: "You won't be able to revert this!",
+            type: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Yes, delete it!',
+            cancelButtonText: 'No, cancel!',
+            reverseButtons: true
+        }).then((result) => {
+            if (result.value) {
+                swalWithBootstrapButtons.fire(
+                    'Deleted!',
+                    'Your file has been deleted.',
+                    'success',
+
+                ).then((sucess) => {
+                    // Fire Delete Method
+                    $.ajax({
+                        url: "@Url.Action("Delete", "City")/" + id,
+                        type: "GET",
+                        success: function (response) {
+                            location.reload();
+                        },
+                        error: function (jqXHR, textStatus, errorThrown) {
+                            console.log(textStatus, errorThrown);
+                        }
+                    });
+                })
+
+            }
+        })
+    }
+
+</script>
+
+

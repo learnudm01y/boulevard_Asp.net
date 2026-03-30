@@ -1,0 +1,164 @@
+﻿@model Boulevard.Models.FeatureCategory
+@{
+    ViewBag.Title = "Create";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+    string activeChk = "";
+    string PageTitle = "", ButtonTitle = "";
+    if (Model.FeatureCategoryKey != Guid.Empty)
+    {
+        PageTitle = "Edit";
+        ButtonTitle = "Reset";
+    }
+    else
+    {
+        PageTitle = "Add";
+        ButtonTitle = "Save";
+    }
+}
+
+
+
+@using (Html.BeginForm("Create", "FeatureCategory", FormMethod.Post, new { enctype = "multipart/form-data", @id = "myForm" }))
+{
+
+
+<div class="page-wrapper">
+    <div class="container-fluid">
+        <div class="row page-titles">
+            <div class="col-md-5 col-12 align-self-center">
+                <h3 class="text-themecolor mb-0">Feature Category</h3>
+            </div>
+            <div class="col-md-7 col-12 align-self-center d-none d-md-block">
+                <ol class="breadcrumb mb-0 p-0 bg-transparent float-right">
+                </ol>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-body">
+
+                <div class="row align-items-center mb-3">
+                    <div class="col-md-5 col-12 align-self-center">
+                        <h3>@PageTitle</h3>
+                    </div>
+                    <div class="col-md-7 col-12 align-self-center d-none d-md-block">
+                        <ol class="breadcrumb mb-0 p-0 bg-transparent float-right">
+                            <li class="breadcrumb-item active"><a href="@Url.RouteUrl("Admin_FeatureCategoryList")">Feature Category</a></li>
+                            <li class="breadcrumb-item active">Create Or Edit</li>
+                        </ol>
+                    </div>
+
+                </div>
+                <hr>
+
+                <div class="card-body">
+                    <div class="row">
+                        <input type="hidden" name="FeatureCategoryId" class="form-control" value="@Model.FeatureCategoryId">
+                        <input type="hidden" name="FeatureCategoryKey" class="form-control" value="@Model.FeatureCategoryKey">
+                        <input type="hidden" name="Image" class="form-control" value="@Model.Image">
+                        <div class="col-lg-4 col-md-6 col-sm-12">
+                            <div class="form-group">
+                                <label>Name</label>
+                                @Html.TextBoxFor(m => m.Name, new { @class = "form-control", required = "required" })
+                            </div>
+                        </div>
+
+                        <div class="col-lg-4 col-md-6 col-sm-12">
+                            <div class="form-group">
+                                <label>Name (Arabic)</label>
+                                @Html.TextBoxFor(m => m.NameAr, new { @class = "form-control", required = "required", dir = "rtl" })
+                            </div>
+                        </div>
+                        <div class="col-lg-4 col-md-6 col-sm-12">
+                            <div class="form-group">
+                                <label>Feature Type</label>
+                                @*@Html.DropDownList("FeatureType", (IEnumerable<SelectListItem>)ViewBag.featureType, "Choose Type", new { @class = "form-control", required = "required" })*@
+                                <select name="FeatureType" id="FeatureType" Value="@Model.FeatureType" class="form-control">
+                                    @if (Model.FeatureCategoryKey != Guid.Empty)
+                                    {
+                                        if (Model.FeatureType == "Service")
+                                        {
+                                            <option value="Service" selected>Service</option>
+                                            <option value="Product">Product</option>
+
+                                        }
+                                        else
+                                        {
+                                            <option value="Service">Service</option>
+                                            <option value="Product" selected>Product</option>
+                                        }
+                                    }
+                                    else
+                                    {
+                                        <option value="Service">Service</option>
+                                        <option value="Product">Product</option>
+
+                                    }
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row mt-3">
+                        <div class="col-md-4">
+                            <label>Delivery Charge (AED)</label>
+                            @Html.TextBoxFor(m => m.DeliveryCharge, new { @class = "form-control", type = "number", step = "0.01" })
+                        </div>
+
+                        <div class="col-md-4">
+                            <label>Service Fee (AED)</label>
+                            @Html.TextBoxFor(m => m.ServiceFee, new { @class = "form-control", type = "number", step = "0.01" })
+                        </div>
+                    </div>
+
+                    <div class="row mt-3">
+                        <div class="col-md-4">
+                            <label>Status</label>
+                            <div class="form-check">
+                                @Html.CheckBoxFor(m => m.IsActive, new { @class = "form-check-input" })
+                                <label class="form-check-label">Active</label>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <label>Approval</label>
+                            <div class="form-check">
+                                @Html.CheckBoxFor(m => m.IsWaitForApproval, new { @class = "form-check-input" })
+                                <label class="form-check-label">Wait For Approval</label>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <label>Quotation</label>
+                            <div class="form-check">
+                                @Html.CheckBoxFor(m => m.IsQuoteEnable, new { @class = "form-check-input" })
+                                <label class="form-check-label">Enable Quote</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-lg-4 col-md-6 col-sm-12">
+                            <div class="form-group">
+                                <label>Image</label>
+                                <input type="file" name="Image" accept="image/png, image/jpeg" class="form-control dropify" data-default-file="../../@Model.Image">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="form-group mb-0 text-right">
+
+                            <button type="submit" class="btn btn-warning waves-effect waves-light" id="submit-btn">@ButtonTitle</button>
+                            <a href="@Url.RouteUrl("Admin_FeatureCategoryList")" class="btn btn-dark waves-effect waves-light">
+                                Close
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+}
+
+

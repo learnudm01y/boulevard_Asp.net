@@ -1,0 +1,146 @@
+﻿@model Boulevard.Models.MemberShipDiscountCategory
+@{
+    ViewBag.Title = "Create Or Update";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+
+@using (Html.BeginForm("CreateAndUpdate", "MemberShipDiscountCategory", FormMethod.Post, new { enctype = "multipart/form-data", @id = "myForm" }))
+{
+
+
+    <!-- Container fluid  -->
+    <!-- ============================================================== -->
+    <div class="page-wrapper">
+        <div class="container-fluid">
+            <!-- ============================================================== -->
+            <!-- Bread crumb and right sidebar toggle -->
+            <!-- ============================================================== -->
+
+            <div class="row page-titles">
+                <div class="col-md-5 col-12 align-self-center">
+                    <h3 class="text-themecolor mb-0">Add MemberShip Discount Category</h3>
+                </div>
+                <div class="col-md-7 col-12 align-self-center d-none d-md-block">
+                    <ol class="breadcrumb mb-0 p-0 bg-transparent float-right">
+                        <li class="breadcrumb-item active"><a href="@Url.RouteUrl("Admin_MemberShipDiscountCategory_List")">MemberShip Discount Category</a></li>
+                        <li class="breadcrumb-item active">Add MemberShip Discount Category</li>
+                    </ol>
+                </div>
+            </div>
+            <!-- ============================================================== -->
+            <!-- End Bread crumb and right sidebar toggle -->
+            <!-- ============================================================== -->
+            <!--order list-->
+            <form>
+                <div class="card">
+                    <div class="card-header">
+                        <!--<h4 class="">General</h4>-->
+                        Country Information
+                    </div>
+                    <div class="card-body">
+                        <h3 style="color:red; text-align:center">@TempData["Message"]</h3>
+                        <div class="row">
+                            <input type="hidden" name="MemberShipDiscountCategoryId" class="form-control" value="@Model.MemberShipDiscountCategoryId">
+
+                            <div class="col-12 col-md-6 col-lg-6">
+                                <div>
+                                    <label>MemberShip</label>
+                                    @Html.DropDownList("MemberShipId", (IEnumerable<SelectListItem>)ViewBag.Membership, "Choose Membership", new { @class = "form-control", required = "required" })
+                                </div>
+                            </div>
+
+                            <div class="col-12 col-md-6 col-lg-6">
+                                <div>
+                                    <label>Feature Category</label>
+                                    @Html.DropDownList("FeatureCategoryId", (IEnumerable<SelectListItem>)ViewBag.featureCategory, "Choose Feature Category", new { @class = "form-control", required = "required" })
+                                </div>
+                            </div>
+
+                            <div class="col-lg-6 col-md-6 col-sm-12">
+                                <div class="form-group">
+                                    <label>Discount Type</label>
+                                    <select class="form-control custom-select select-2" name="MemberShipDiscountType" id="MemberShipDiscountType" required>
+                                        @*<option value="">Select Discount Type</option>*@
+                                        @if (Model.MemberShipDiscountType != null)
+                                        {
+                                            if (Model.MemberShipDiscountType == "Percentage")
+                                            {
+                                                <option selected value="Percentage">Percentage</option>
+                                                <option value="Amount">Amount</option>
+                                            }
+                                            else
+                                            {
+                                                <option value="Percentage">Percentage</option>
+                                                <option selected value="Amount">Amount</option>
+                                            }
+                                        }
+                                        else
+                                        {
+                                            <option value="Percentage">Percentage</option>
+                                            <option value="Amount">Amount</option>
+                                        }
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="col-lg-6 col-md-6 col-sm-12">
+                                <div class="form-group">
+                                    <label>Discount Type (Arabic)</label>
+                                    <select class="form-control custom-select select-2" name="MemberShipDiscountTypeAr" id="MemberShipDiscountTypeAr" required>
+                                        @*<option value="">Select Discount Type</option>*@
+                                        @if (Model.MemberShipDiscountTypeAr != null)
+                                        {
+                                            if (Model.MemberShipDiscountTypeAr == "نسبة مئوية")
+                                            {
+                                                <option selected value="نسبة مئوية">نسبة مئوية</option>
+                                                <option value="كمية">كمية</option>
+                                            }
+                                            else
+                                            {
+                                                <option value="نسبة مئوية">نسبة مئوية</option>
+                                                <option selected value="كمية">كمية</option>
+                                            }
+                                        }
+                                        else
+                                        {
+                                            <option value="نسبة مئوية">نسبة مئوية</option>
+                                            <option value="كمية">كمية</option>
+                                        }
+                                    </select>
+                                </div>
+                            </div>
+
+
+                            <div class="col-lg-6 col-md-6 col-sm-12">
+                                <div class="form-group">
+                                    <label>Discount Amount</label>
+                                    @Html.TextBoxFor(m => m.MemberShipDiscountAmount, new { @class = "form-control", required = "required", @type = "number" })
+                                </div>
+                            </div>
+
+                        </div>
+                        <div class="card-body">
+                            <div class="form-group mb-0 text-right">
+                                @if (Model.MemberShipDiscountCategoryId > 0)
+                                {
+                                    <button type="submit" class="btn btn-warning waves-effect waves-light" id="submit-btn">Reset</button>
+                                }
+                                else
+                                {
+                                    <button type="submit" class="btn btn-success waves-effect waves-light" id="submit-btn">Save</button>
+                                }
+                                <a href="@Url.RouteUrl("Admin_MemberShipDiscountCategory_List")" class="btn btn-dark waves-effect waves-light">
+                                    Close
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+            <!-- ============================================================== -->
+        </div>
+    </div>
+    <!-- ============================================================== -->
+    <!-- End Container fluid  -->
+}
+

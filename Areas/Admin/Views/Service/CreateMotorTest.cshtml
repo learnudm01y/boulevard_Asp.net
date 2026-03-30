@@ -1,0 +1,246 @@
+﻿@model Boulevard.Models.Service
+@{
+    ViewBag.Title = "Create";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+    string activeChk = "";
+    string PageTitle = "", ButtonTitle = "";
+    if (Model.ServiceId != 0)
+    {
+        PageTitle = "Edit";
+        ButtonTitle = "Reset";
+    }
+    else
+    {
+        PageTitle = "Add";
+        ButtonTitle = "Save";
+    }
+}
+
+
+
+@using (Html.BeginForm("Create", "Service", FormMethod.Post, new { enctype = "multipart/form-data", @id = "myForm" }))
+{
+
+
+    <div class="page-wrapper">
+        <div class="container-fluid">
+            <div class="row page-titles">
+                <div class="col-md-5 col-12 align-self-center">
+                    <h3 class="text-themecolor mb-0">Motor Service</h3>
+                </div>
+                <div class="col-md-7 col-12 align-self-center d-none d-md-block">
+                    <ol class="breadcrumb mb-0 p-0 bg-transparent float-right">
+                    </ol>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-body">
+
+                    <div class="row align-items-center mb-3">
+                        <div class="col-md-5 col-12 align-self-center">
+                            <h3>@PageTitle</h3>
+                        </div>
+                        <div class="col-md-7 col-12 align-self-center d-none d-md-block">
+                            <ol class="breadcrumb mb-0 p-0 bg-transparent float-right">
+                                <li class="breadcrumb-item active"><a href="@Url.RouteUrl("Admin_ServiceList")">Service</a></li>
+                                <li class="breadcrumb-item active">Create Or Edit</li>
+                            </ol>
+                        </div>
+
+                    </div>
+                    <hr>
+
+                    <div class="card-body">
+                        <div class="row">
+                            <input type="hidden" name="ServiceId" class="form-control" value="@Model.ServiceId">
+                            <input type="hidden" name="ServiceKey" class="form-control" value="@Model.ServiceKey">
+                            <input type="hidden" name="CreateBy" class="form-control" value="@Model.CreateBy">
+                            <input type="hidden" name="CreateDate" class="form-control" value="@Model.CreateDate">
+                            <div class="col-lg-4 col-md-6 col-sm-12">
+                                <div class="form-group">
+                                    <label>Name</label>
+                                    @Html.TextBoxFor(m => m.Name, new { @class = "form-control", required = "required" })
+                                </div>
+                            </div>
+                            <div class="col-lg-4 col-md-6 col-sm-12">
+                                <div class="form-group">
+                                    <label>Service Hour</label>
+                                    @Html.TextBoxFor(m => m.ServiceHour, new { @class = "form-control", type = "number", required = "required" })
+                                </div>
+                            </div>
+                            <div class="col-lg-4 col-md-6 col-sm-12">
+                                <div class="form-group">
+                                    <label>Opening Time</label>
+                                    @Html.TextBoxFor(m => m.CheckInTime, new { @class = "form-control", type = "time", required = "required" })
+
+                                </div>
+                            </div>
+                            <div class="col-lg-4 col-md-6 col-sm-12">
+                                <div class="form-group">
+                                    <label>Closing Time</label>
+                                    @Html.TextBoxFor(m => m.CheckOutTime, new { @class = "form-control", type = "time", required = "required" })
+
+
+                                </div>
+                            </div>
+                            <div class="col-lg-4 col-md-6 col-sm-12">
+
+                                <div class="form-group">
+                                    <label>Service Languages</label>
+
+                                    @Html.TextBoxFor(m => m.SpokenLanguages, new { @class = "form-control", required = "required" })
+
+
+                                </div>
+
+                            </div>
+                            <div class="col-lg-4 col-md-6 col-sm-12">
+                                <div class="form-group">
+                                    <label>Ratings</label>
+                                    @Html.TextBoxFor(m => m.Ratings, new { @class = "form-control", @type = "number", @min = 1, @max = 5, required = "required", @Value = 5 })
+
+                                </div>
+                            </div>
+                            <div class="col-lg-4 col-md-6 col-sm-12">
+                                <div class="form-group">
+                                    <label>Country</label>
+                                    @Html.DropDownList("CountryId", (IEnumerable<SelectListItem>)ViewBag.countries, "Select Country", new { @class = "form-control", required = "required", id = "CountryId" })
+
+                                </div>
+                            </div>
+                            <div class="col-lg-4 col-md-6 col-sm-12">
+                                <div class="form-group">
+                                    <label>City</label>
+                                    <select name="CityId" class="form-control" id="CityId"></select>
+                                </div>
+                            </div>
+                            <div class="col-lg-4 col-md-6 col-sm-12">
+                                <div class="form-group">
+                                    <label>Latitute</label>
+                                    @Html.TextBoxFor(m => m.Latitute, new { @class = "form-control" })
+                                </div>
+                            </div>
+                            <div class="col-lg-4 col-md-6 col-sm-12">
+                                <div class="form-group">
+                                    <label>Logitute</label>
+                                    @Html.TextBoxFor(m => m.Logitute, new { @class = "form-control" })
+                                </div>
+                            </div>
+                            <div class="col-lg-4 col-md-6 col-sm-12">
+                                <div class="form-group">
+                                    <label>Address</label>
+                                    @Html.TextAreaFor(m => m.Address, new { @class = "form-control", required = "required" })
+                                </div>
+                            </div>
+                            <div class="col-lg-4 col-md-6 col-sm-12">
+                                <div class="form-group">
+                                    <label>Description</label>
+                                    @Html.TextAreaFor(m => m.Description, new { @class = "form-control", required = "required" })
+                                </div>
+                            </div>
+                            <div class="col-lg-4 col-md-6 col-sm-12">
+                                <div class="form-group">
+                                    <label>About Us</label>
+                                    @Html.TextAreaFor(m => m.AboutUs, new { @class = "form-control", required = "required" })
+                                </div>
+                            </div>
+                            <div class="col-lg-4 col-md-6 col-sm-12">
+                                <div>
+                                    <label>Image</label>
+                                    <input type="file" name="Images" accept="image/png, image/jpeg" class="form-control dropify" multiple />
+                                </div>
+                            </div>
+
+                        </div>
+                        <div class="row">
+                            @foreach (var image in Model.ServiceImages)
+                            {
+                                <div class="col-12 col-md-6 col-lg-6">
+                                    <div class="image-holder rounded-lg overflow-hidden" style="cursor: pointer; padding-top:25px">
+                                        <img src="@image.Image" class="img-fluid" style="height: 150px;">
+                                        <a onclick="DeleteImage('@image.ServiceImageId')" class="remove-image"><i class="mdi mdi-close" style="color:red"></i> </a>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                        <div class="card-body">
+                            <div class="form-group mb-0 text-right">
+
+                                <a href="@Url.RouteUrl("Admin_ServiceListMotorTest")" class="btn btn-warning waves-effect waves-light">@ButtonTitle</a>
+                                <a href="@Url.RouteUrl("Admin_ServiceListMotorTest")" class="btn btn-dark waves-effect waves-light">
+                                    Close
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+}
+<script src="~/assets/libs/jquery/dist/jquery.min.js"></script>
+<script src="~/assets/libs/jquery-steps/build/jquery.steps.min.js"></script>
+<script src="~/assets/libs/jquery-validation/dist/jquery.validate.min.js"></script>
+
+<script>
+    $(function () {
+        if (@Model.CountryId!= 0)
+        {
+            LoadCity(@Model.CountryId);
+        }
+   });
+   $(document).on('change', '#CountryId', function () {
+
+       var id = this.value;
+       LoadCity(id);
+   });
+
+
+
+    function DeleteImage(id) {
+    Swal.fire({
+      title: "Are you sure?",
+      text: "You won't be able to revert this!",
+        icon: "question",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, delete it!"
+      }).then((result) => {
+          if (result.isConfirmed) {
+             $.ajax({
+                 url: "@Url.Action("DeleteImage", "Service")",
+                 data: { ImageId: id },
+                 type: "GET",
+                 success: function (response) {
+                     location.reload();
+                 },
+                 error: function (jqXHR, textStatus, errorThrown) {
+                     console.log(textStatus, errorThrown);
+                 }
+             });
+          }
+    });
+}
+    function LoadCity(countryId) {
+      $('#CityId').html("<option value='0'>Select</option>");
+        $.ajax({
+            url: "@Url.Action("GetCityByCountryId", "Service")?id=" + countryId,
+            type: "GET",
+            success: function (data) {
+                var item = "";
+                $.each(data, function (id, e) {
+                    item += "<option value='" + e.CityId + "'>" + e.CityName + "</option>";
+                });
+                $('#CityId').html(item);
+                 if (@Model.CityId != 0) {
+                     $('#CityId').val(@Model.CityId);
+ }
+            }
+        });
+  }
+
+
+</script>

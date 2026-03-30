@@ -1,0 +1,272 @@
+﻿@model Boulevard.Models.ServiceType
+@{
+    ViewBag.Title = "Create";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+    string activeChk = "";
+    string PageTitle = "", ButtonTitle = "";
+    string buttonColor = "";
+    if (Model.ServiceId != 0)
+    {
+        PageTitle = "Edit";
+        ButtonTitle = "Reset";
+        buttonColor = "warning";
+    }
+    else
+    {
+        PageTitle = "Add";
+        ButtonTitle = "Save";
+        buttonColor = "success";
+    }
+}
+
+
+
+@using (Html.BeginForm("Create", "ServiceType", FormMethod.Post, new { enctype = "multipart/form-data", @id = "myForm" }))
+{
+
+
+    <div class="page-wrapper">
+        <div class="container-fluid">
+            <div class="row page-titles">
+                <div class="col-md-5 col-12 align-self-center">
+                    @if (ViewBag.FeatureCategoryKey != null)
+                    {
+                        if (ViewBag.FeatureCategoryKey == "6440039B-6E5A-4E65-A0E4-F38B69C46C8C" || ViewBag.FeatureCategoryKey == "6440039b-6e5a-4e65-a0e4-f38b69c46c8c")
+                        {
+                            <h3 class="text-themecolor mb-0">Room Service Type Info</h3>
+                        }
+                        else
+                        {
+                            <h3 class="text-themecolor mb-0">@ViewBag.FCatagoryName Service Type Info</h3>
+                        }
+                    }
+                    else
+                    {
+                        <h3 class="text-themecolor mb-0">Service Type Info</h3>
+                    }
+                </div>
+                <div class="col-md-7 col-12 align-self-center d-none d-md-block">
+                    <ol class="breadcrumb mb-0 p-0 bg-transparent float-right">
+                    </ol>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-body">
+
+                    <div class="row align-items-center mb-3">
+                        <div class="col-md-5 col-12 align-self-center">
+                            @if (ViewBag.FeatureCategoryKey == "6440039B-6E5A-4E65-A0E4-F38B69C46C8C" || ViewBag.FeatureCategoryKey == "6440039b-6e5a-4e65-a0e4-f38b69c46c8c")
+                            {
+                                <h3>Rooms @PageTitle</h3>
+                            }
+                            else
+                            {
+                                <h3>@ViewBag.FCatagoryName @PageTitle</h3>
+                            }
+                        </div>
+                        <div class="col-md-7 col-12 align-self-center d-none d-md-block">
+                            <ol class="breadcrumb mb-0 p-0 bg-transparent float-right">
+                                @if (ViewBag.FeatureCategoryKey != null)
+                                {
+                                    if (ViewBag.FeatureCategoryKey == "6440039B-6E5A-4E65-A0E4-F38B69C46C8C" || ViewBag.FeatureCategoryKey == "6440039b-6e5a-4e65-a0e4-f38b69c46c8c")
+                                    {
+                                        <li class="breadcrumb-item active"><a href="@Url.RouteUrl("Admin_ServiceTypeList", new { fCatagoryKey = ViewBag.FeatureCategoryKey })">Room Service Type</a></li>
+                                        <li class="breadcrumb-item active">@PageTitle Room</li>
+                                    }
+                                    else
+                                    {
+                                        <li class="breadcrumb-item active"><a href="@Url.RouteUrl("Admin_ServiceTypeList", new { fCatagoryKey = ViewBag.FeatureCategoryKey })">@ViewBag.FCatagoryName Service Type</a></li>
+                                        <li class="breadcrumb-item active">@PageTitle @ViewBag.FCatagoryName</li>
+                                    }
+                                }
+                                else
+                                {
+                                    <li class="breadcrumb-item active"><a href="@Url.RouteUrl("Admin_ServiceTypeList")">Brand</a></li>
+                                    <li class="breadcrumb-item active">@PageTitle @ViewBag.FCatagoryName</li>
+                                }
+                            </ol>
+                        </div>
+
+                    </div>
+                    <hr>
+
+                    <div class="card-body">
+                        <div class="row">
+                            <input type="hidden" name="ServiceTypeId" class="form-control" value="@Model.ServiceTypeId">
+                            <input type="hidden" name="ServiceTypeKey" class="form-control" value="@Model.ServiceTypeKey">
+                            <input type="hidden" name="Image" class="form-control" value="@Model.Image">
+                            <input type="hidden" name="CreateBy" class="form-control" value="@Model.CreateBy">
+                            <input type="hidden" name="CreateDate" class="form-control" value="@Model.CreateDate">
+                            <input type="hidden" name="FeatureCategoryKey" class="form-control" value="@ViewBag.FeatureCategoryKey">
+
+                            <div class="col-lg-4 col-md-6 col-sm-12">
+                                <div class="form-group">
+                                    <label>Name</label>
+                                    @Html.TextBoxFor(m => m.ServiceTypeName, new { @class = "form-control", required = "required" })
+                                </div>
+                            </div>
+
+                            <div class="col-lg-4 col-md-6 col-sm-12">
+                                <div class="form-group">
+                                    <label>Name (Arabic)</label>
+                                    @Html.TextBoxFor(m => m.ServiceTypeNameAr, new { @class = "form-control", required = "required", dir = "rtl" })
+                                </div>
+                            </div>
+
+                            <div class="col-lg-4 col-md-6 col-sm-12">
+                                <div class="form-group">
+                                    <label>Service</label>
+                                    @Html.DropDownList("ServiceId", (IEnumerable<SelectListItem>)ViewBag.service, "Choose Service", new { @class = "form-control", required = "required" })
+                                </div>
+                            </div>
+                            @if (ViewBag.FeatureCategoryKey != "f4309df5-9121-41ad-831a-994c46b62766")
+                            {
+                                <div class="col-lg-4 col-md-6 col-sm-12">
+                                    <div class="form-group">
+                                        <label>Catagory</label>
+                                        @Html.DropDownList("CategoryId", (IEnumerable<SelectListItem>)ViewBag.Catagory, "Choose Category", new { @class = "form-control", required = "required" })
+                                    </div>
+                                </div>
+                            }
+                            @*<div class="col-md-4 col-sm-4">
+                                    <div class="form-group">
+                                        <label>Catagory</label>
+                                        @Html.DropDownListFor(model => model.CategoryId, (List<SelectListItem>)ViewBag.Catagory, new { @class = "form-control select-2" })
+                                    </div>
+                                </div>*@
+                            @if (ViewBag.FeatureCategoryKey == "2CDCEBCF-BA2C-4C2C-9C53-F32C06233FFD" || ViewBag.FeatureCategoryKey == "2cdcebcf-ba2c-4c2c-9c53-f32c06233ffd")
+                            {
+                                <div class="col-lg-4 col-md-6 col-sm-12">
+                                    <div class="form-group">
+                                        <label>Persone Quantity</label>
+                                        @Html.TextBoxFor(m => m.PersoneQuantity, new { @class = "form-control", required = "required" })
+                                    </div>
+                                </div>
+
+                                <div class="col-lg-4 col-md-6 col-sm-12">
+                                    <div class="form-group">
+                                        <label>Adult Quantity</label>
+                                        @Html.TextBoxFor(m => m.AdultQuantity, new { @class = "form-control", required = "required" })
+                                    </div>
+                                </div>
+
+                                <div class="col-lg-4 col-md-6 col-sm-12">
+                                    <div class="form-group">
+                                        <label>Children Quantity</label>
+                                        @Html.TextBoxFor(m => m.ChildrenQuantity, new { @class = "form-control", required = "required" })
+                                    </div>
+                                </div>
+                            }
+                            else
+                            {
+                                <div class="col-lg-4 col-md-6 col-sm-12">
+                                    <div class="form-group">
+                                        <label>Rooms Quantity</label>
+                                        @Html.TextBoxFor(m => m.PersoneQuantity, new { @class = "form-control", required = "required" })
+                                    </div>
+                                </div>
+                            }
+                            <div class="col-lg-4 col-md-6 col-sm-12">
+                                <div class="form-group">
+                                    <label>Size</label>
+                                    @Html.TextBoxFor(m => m.Size, new { @class = "form-control" })
+                                </div>
+                            </div>
+                            <div class="col-lg-4 col-md-6 col-sm-12">
+                                <div class="form-group">
+                                    <label>Size (Arabic)</label>
+                                    @Html.TextBoxFor(m => m.SizeAr, new { @class = "form-control", dir = "rtl" })
+                                </div>
+                            </div>
+                            <div class="col-lg-4 col-md-6 col-sm-12">
+                                <div class="form-group">
+                                    <label>Service Hour</label>
+                                    @Html.TextBoxFor(m => m.ServiceHour, new { @class = "form-control", type = "number", required = "required" })
+                                </div>
+                            </div>
+
+                            <div class="col-lg-4 col-md-6 col-sm-12">
+                                <div class="form-group">
+                                    <label>Service minute</label>
+                                    @Html.TextBoxFor(m => m.ServiceMin, new { @class = "form-control", type = "number", required = "required" })
+                                </div>
+                            </div>
+                            <div class="col-lg-4 col-md-6 col-sm-12">
+                                <div class="form-group">
+                                    <label>Price</label>
+                                    @Html.TextBoxFor(m => m.Price, new { @class = "form-control", type = "number", required = "required" })
+                                </div>
+                            </div>
+                            <div class="col-md-4 col-sm-4">
+                                <div class="form-group">
+                                    <label>Status</label>
+                                    <select class="form-control custom-select select-2" name="Status" id="Status" required>
+                                        <option value="">Select</option>
+                                        @if (Model.Status != null)
+                                        {
+                                            if (Model.Status == "Active")
+                                            {
+                                                <option selected value="Active">Active</option>
+                                                <option value="InActive">InActive</option>
+                                            }
+                                            else
+                                            {
+                                                <option value="Active">Active</option>
+                                                <option selected value="InActive">InActive</option>
+                                            }
+                                        }
+                                        else
+                                        {
+                                            <option value="Active">Active</option>
+                                            <option value="InActive">InActive</option>
+                                        }
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="col-lg-4 col-md-6 col-sm-12">
+                                <div>
+                                    <label>Description</label>
+                                    @Html.TextAreaFor(m => m.Description, new { @class = "form-control", required = "required" })
+                                </div>
+                            </div>
+                            <div class="col-lg-4 col-md-6 col-sm-12">
+                                <div>
+                                    <label>Description (Arabic)</label>
+                                    @Html.TextAreaFor(m => m.DescriptionAr, new { @class = "form-control", required = "required", dir = "rtl" })
+                                </div>
+                            </div>
+                            <div class="col-lg-4 col-md-6 col-sm-12">
+                                <div>
+                                    <label>Image</label>
+                                    <input type="file" name="Image" accept="image/png, image/jpeg" class="form-control dropify" data-default-file="../../@Model.Image" />
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <div class="card-body">
+                            <div class="form-group mb-0 text-right">
+
+                                <button type="submit" class="btn btn-@buttonColor waves-effect waves-light" id="submit-btn">@ButtonTitle</button>
+                                @if (ViewBag.FeatureCategoryKey != null)
+                                {
+                                    <a href="@Url.RouteUrl("Admin_ServiceTypeList", new {fCatagoryKey = ViewBag.FeatureCategoryKey})" class="btn btn-dark waves-effect waves-light">
+                                        Close
+                                    </a>
+                                }
+                                else
+                                {
+                                    <a href="@Url.RouteUrl("Admin_ServiceTypeList")" class="btn btn-dark waves-effect waves-light">
+                                        Close
+                                    </a>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}

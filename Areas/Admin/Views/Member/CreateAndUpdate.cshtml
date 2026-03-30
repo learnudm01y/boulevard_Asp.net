@@ -1,0 +1,143 @@
+﻿@model Boulevard.Models.Member
+@{
+    ViewBag.Title = "Create Or Update";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+
+@using (Html.BeginForm("CreateAndUpdate", "Member", FormMethod.Post, new { enctype = "multipart/form-data", @id = "myForm" }))
+{
+
+
+    <!-- Container fluid  -->
+    <!-- ============================================================== -->
+    <div class="page-wrapper">
+        <div class="container-fluid">
+            <!-- ============================================================== -->
+            <!-- Bread crumb and right sidebar toggle -->
+            <!-- ============================================================== -->
+
+            <div class="row page-titles">
+                <div class="col-md-5 col-12 align-self-center">
+                    <h3 class="text-themecolor mb-0">Create Member</h3>
+                </div>
+                <div class="col-md-7 col-12 align-self-center d-none d-md-block">
+                    <ol class="breadcrumb mb-0 p-0 bg-transparent float-right">
+                        <li class="breadcrumb-item active"><a href="@Url.RouteUrl("Admin_Member")">Member</a></li>
+                        <li class="breadcrumb-item active">Create Member</li>
+                    </ol>
+                </div>
+            </div>
+            <!-- ============================================================== -->
+            <!-- End Bread crumb and right sidebar toggle -->
+            <!-- ============================================================== -->
+            <!--order list-->
+            <form>
+                <div class="card">
+                    <div class="card-header">
+                        <!--<h4 class="">General</h4>-->
+                        Member Information
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <input type="hidden" name="MemberId" class="form-control" value="@Model.MemberId">
+                            <input type="hidden" name="CreateDate" class="form-control" value="@Model.CreateDate">
+                            <input type="hidden" name="CreateBy" class="form-control" value="@Model.CreateBy">
+                            <input type="hidden" name="MemberKey" class="form-control" value="@Model.MemberKey">
+
+
+                            <div class="col-md-4 col-sm-4">
+                                <div class="form-group">
+                                    <label>Member Name</label>
+                                    <input type="text" name="Name" required class="form-control" value="@Model.Name">
+                                </div>
+                            </div>
+
+                            <div class="col-md-4 col-sm-4">
+                                <div class="form-group">
+                                    <label>Member Email</label>
+                                    <input type="text" name="Email" required class="form-control" value="@Model.Email">
+                                </div>
+                            </div>
+
+                            <div class="col-md-4 col-sm-4">
+                                <div class="form-group">
+                                    <label>Phone Number</label>
+                                    <input type="text" name="PhoneNumber" required class="form-control" value="@Model.PhoneNumber">
+                                </div>
+                            </div>
+
+                            <div class="col-md-4 col-sm-4">
+                                <div class="form-group">
+                                    <label>Phone Code</label>
+                                    <input type="text" name="PhoneCode" required class="form-control" value="@Model.PhoneCode">
+                                </div>
+                            </div>
+
+                            <div class="col-md-4 col-sm-4">
+                                <div class="form-group">
+                                    <label>Password</label>
+                                    <input type="password" name="Password" required class="form-control" value="@Model.Password">
+                                </div>
+                            </div>
+
+                            <div class="col-md-4 col-sm-4">
+                                <div class="form-group">
+                                    <label>Address</label>
+                                    <input type="text" name="Address" required class="form-control" value="@Model.Address">
+                                </div>
+                            </div>
+
+                            <div class="col-md-4 col-sm-4">
+                                <div class="form-group">
+                                    <label>Image</label>
+                                    <input type="file" name="Image" class="form-control dropify" data-default-file="../../@Model.Image">
+                                </div>
+                            </div>
+
+                            <div class="col-md-4 col-sm-4">
+                                <div class="form-group">
+                                    <label>Status</label>
+                                    <div class="switch">
+                                        <label>
+                                            InActive
+                                            @if (Model.Status == "Active")
+                                            {
+                                                <input type="checkbox" checked="checked" name="Status" value="Active"><span class="lever"></span>
+                                            }
+                                            else
+                                            {
+                                                <input type="checkbox" name="Status" value="Active"><span class="lever"></span>
+                                            }
+                                            <input name="Status" type="hidden" value="Deleted" />
+                                            Active
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                        <div class="card-body">
+                            <div class="form-group mb-0 text-right">
+                                @if (Model.MemberId > 0)
+                                {
+                                    <button type="submit" class="btn btn-warning waves-effect waves-light" id="submit-btn">Reset</button>
+                                }
+                                else
+                                {
+                                    <button type="submit" class="btn btn-success waves-effect waves-light" id="submit-btn">Save</button>
+                                }
+                                <a href="@Url.RouteUrl("Admin_Member")" class="btn btn-dark waves-effect waves-light">
+                                    Close
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+            <!-- ============================================================== -->
+        </div>
+    </div>
+    <!-- ============================================================== -->
+    <!-- End Container fluid  -->
+}
+

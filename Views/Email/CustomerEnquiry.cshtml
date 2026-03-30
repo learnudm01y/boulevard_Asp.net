@@ -1,0 +1,114 @@
+﻿@model Boulevard.Models.CustomerEnquery
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>New Customer Enquiry</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <style type="text/css">
+        @@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;400;500;600;700;800&display=swap');
+
+        table, td, div, p, h1, h2, h3, h4 {
+            font-family: 'Poppins', sans-serif;
+        }
+    </style>
+</head>
+
+<body>
+    <table role="presentation" style="width:100%;border-collapse:collapse;background:#f5f5f5;">
+        <tr>
+            <td align="center">
+                <table role="presentation"
+                       style="width:650px;border-collapse:collapse;background:#ffffff;">
+
+                    <!-- Header -->
+                    <tr>
+                        <td style="padding:30px;text-align:center;">
+                            <p style="font-size:24px;font-weight:600;color:#080040;margin:0;">
+                                New Customer Enquiry
+                            </p>
+                            <p style="font-size:12px;color:#838383;margin-top:8px;">
+                                A new enquiry has been submitted
+                            </p>
+                        </td>
+                    </tr>
+
+                    <!-- Details -->
+                    <tr>
+                        <td style="padding:20px 30px;">
+                            <table style="width:100%;border-collapse:collapse;">
+                                <tr>
+                                    <td style="padding:8px 0;"><strong>Name:</strong></td>
+                                    <td>@Model.Name</td>
+                                </tr>
+                                <tr>
+                                    <td style="padding:8px 0;"><strong>Email:</strong></td>
+                                    <td>@Model.Email</td>
+                                </tr>
+                                <tr>
+                                    <td style="padding:8px 0;"><strong>Phone:</strong></td>
+                                    <td>@Model.PhoneCode @Model.Phonenumber</td>
+                                </tr>
+                                <tr>
+                                    <td style="padding:8px 0;"><strong>Feature Category:</strong></td>
+                                    <td>@Model.FeatureCategoryName</td>
+                                </tr>
+                                <tr>
+                                    <td style="padding:8px 0;"><strong>Status:</strong></td>
+                                    <td>@Model.Status</td>
+                                </tr>
+                                <tr>
+                                    <td style="padding:8px 0;"><strong>Date:</strong></td>
+                                    <td>@Model.UpdatedAt.ToString("dd MMM yyyy hh:mm tt")</td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+
+                    <!-- Message -->
+                    <tr>
+                        <td style="padding:10px 30px;">
+                            <p style="font-size:16px;font-weight:500;color:#302D86;margin-bottom:10px;">
+                                Message
+                            </p>
+                            <div style="background:#faf8f8;border:1px solid #eee;padding:15px;font-size:14px;line-height:22px;">
+                                @Model.Message
+                            </div>
+                        </td>
+                    </tr>
+
+                    <!-- User Info -->
+                    <tr>
+                        <td style="padding:20px 30px;">
+                            <p style="font-size:16px;font-weight:500;color:#302D86;margin-bottom:10px;">
+                                User Details
+                            </p>
+
+                            <p style="margin:4px 0;"><strong>User Name:</strong> @Model.UserName</p>
+                           
+                        </td>
+                    </tr>
+
+                    <!-- Footer -->
+                    <tr>
+                        <td align="center" style="padding:20px;">
+                            <p style="font-size:12px;margin:4px 0;">
+                                © @DateTime.Now.Year Boulevard
+                            </p>
+                            <p style="font-size:12px;margin:0;">
+                                All rights reserved
+                            </p>
+                        </td>
+                    </tr>
+
+                </table>
+            </td>
+        </tr>
+    </table>
+</body>
+</html>

@@ -1,0 +1,179 @@
+﻿@model Boulevard.Models.UserReport
+@{
+    ViewBag.Title = "User Report Details";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+
+<script type="text/javascript" src="http://code.jquery.com/jquery-1.7.1.min.js"></script>
+<!-- Container fluid  -->
+<!-- ============================================================== -->
+<div class="page-wrapper">
+    <div class="container-fluid">
+        <!-- ============================================================== -->
+        <!-- Bread crumb and right sidebar toggle -->
+        <!-- ============================================================== -->
+        <div class="row page-titles">
+            <div class="col-md-5 col-12 align-self-center">
+                <h3 class="text-themecolor mb-0">User Report</h3>
+            </div>
+            <div class="col-md-7 col-12 align-self-center d-none d-md-block">
+                <ol class="breadcrumb mb-0 p-0 bg-transparent float-right">
+                    <li class="breadcrumb-item active"><a href="@Url.RouteUrl("Admin_dashboard")">Home</a></li>
+                    <li class="breadcrumb-item active">User Report</li>
+                </ol>
+            </div>
+        </div>
+        <!-- ============================================================== -->
+        <!-- End Bread crumb and right sidebar toggle -->
+        <!-- ============================================================== -->
+        <!--order list-->
+        <div class="card">
+            <div class="card-body">
+
+                <div class="row align-items-center mb-3">
+                    <div class="col-sm-8">
+                        <h4 class="card-title">User Report Details</h4>
+                    </div>
+                </div>
+                <div class="card-body">
+
+                    <div class="row" style="font-size:20px; color:black">
+                        @*<input type="hidden" name="MemberId" class="form-control" value="@Model.MemberId">*@
+
+                        <div class="row col-12 table-bordered">
+                            <div class="col-md-4 col-sm-4">Report Created Member Name</div>
+                            <div class="col-md-1 col-sm-1">:</div>
+                            <div class="col-md-7 col-sm-7">@Model.Member.Name </div>
+                        </div>
+                        <div class="row col-12 table-bordered">
+                            <div class="col-md-4 col-sm-4">Email</div>
+                            <div class="col-md-1 col-sm-1">:</div>
+                            <div class="col-md-7 col-sm-7">@Model.Member.Email </div>
+                        </div>
+                        <div class="row col-12 table-bordered">
+                            <div class="col-md-4 col-sm-4">Title</div>
+                            <div class="col-md-1 col-sm-1">:</div>
+                            <div class="col-md-7 col-sm-7">@Model.Title</div>
+                        </div>
+                        <div class="row col-12 table-bordered">
+                            <div class="col-md-4 col-sm-4">Description</div>
+                            <div class="col-md-1 col-sm-1">:</div>
+                            <div class="col-md-7 col-sm-7">@Html.Raw(Model.Comments)</div>
+                        </div>
+
+                        <div class="row col-12 table-bordered">
+                            <div class="col-md-4 col-sm-4">Reported Date</div>
+                            <div class="col-md-1 col-sm-1">:</div>
+                            <div class="col-md-7 col-sm-7">@Model.LastUpdate.ToString("dd/MM/yyyy")</div>
+                        </div>
+                    </div>
+
+                    <br />
+                    <hr />
+                    <br />
+
+                    <div class="row">
+                        @if (Model.IsGiveResponse == true)
+                        {
+                            <div class="col-12">
+                                <div class="form-group">
+                                    <label><strong style="font-size:25px">Response</strong></label>
+                                    <textarea type="text" name="responce" id="responce" placeholder="Give Response" rows="5" class="form-control" value="@Model.Response">@Model.Response</textarea>
+                                </div>
+                            </div>
+                            <div class="col-12 text-right">
+                                <a class="btn btn-warning min-150" onclick="PostResponse('@Model.UserReportId')">Edit</a>
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="col-12">
+                                <div class="form-group">
+                                    <label><strong style="font-size:25px">Response</strong></label>
+                                    <textarea type="text" name="responce" id="responce" placeholder="Give Response" rows="5" class="form-control"></textarea>
+                                </div>
+                            </div>
+                            <div class="col-12 text-right">
+                                <a class="btn btn-success min-150" onclick="PostResponse('@Model.UserReportId')">Save</a>
+                            </div>
+                        }
+                    </div>
+                </div>
+
+            </div>
+        </div>
+        <!-- ============================================================== -->
+    </div>
+</div>
+<!-- ============================================================== -->
+<!-- End Container fluid  -->
+
+<script>
+    // function PostResponse(key) {
+
+    //     $.ajax({
+    //         type: "post",
+    //         url: "@Url.Action("PostResponse", "Utilities")",
+    //         data: { userReportId: key, responce: $("#responce").val() },
+    //         cache: false,
+    //         success: function (response) {
+    //             if (response.success) {
+    //                 //$('#status').val(selectedTab);
+    //                 //ApplyFilters();
+    //                 location.reload();
+    //             }
+    //         },
+    //         error: function (xhr) {
+
+    //         }
+    //     });
+
+    // }
+
+    function PostResponse(key) {
+        const swalWithBootstrapButtons = Swal.mixin({
+            customClass: {
+                confirmButton: 'btn btn-success',
+                cancelButton: 'mr-2 btn btn-danger'
+            },
+            buttonsStyling: false,
+            animation: false,
+            allowOutsideClick: false
+        })
+
+        swalWithBootstrapButtons.fire({
+            title: 'Are you sure?',
+            // text: "You won't be able to revert this!",
+            type: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Yes, save it!',
+            cancelButtonText: 'No, cancel!',
+            reverseButtons: true
+        }).then((result) => {
+            if (result.value) {
+                swalWithBootstrapButtons.fire(
+                    'Saved!',
+                    // 'Your file has been deleted.',
+                    'success',
+
+                ).then((sucess) => {
+                    // Fire Delete Method
+                    $.ajax({
+                        type: "post",
+                        url: "@Url.Action("PostResponse", "UserReport")",
+                        data: { userReportId: key, responce: $("#responce").val() },
+                        cache: false,
+                        success: function (response) {
+                            location.reload();
+                        },
+                        error: function (jqXHR, textStatus, errorThrown) {
+                            console.log(textStatus, errorThrown);
+                        }
+                    });
+                })
+
+            }
+        })
+    }
+
+</script>

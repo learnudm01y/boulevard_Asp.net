@@ -1,0 +1,109 @@
+﻿@model Boulevard.Models.ServiceType
+@{
+    ViewBag.Title = "Create";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+    string activeChk = "";
+    string PageTitle = "", ButtonTitle = "";
+    if (Model.ServiceId != 0)
+    {
+        PageTitle = "Edit";
+        ButtonTitle = "Reset";
+    }
+    else
+    {
+        PageTitle = "Add";
+        ButtonTitle = "Save";
+    }
+}
+
+
+
+@using (Html.BeginForm("Create", "ServiceType", FormMethod.Post, new { enctype = "multipart/form-data", @id = "myForm" }))
+{
+
+
+    <div class="page-wrapper">
+        <div class="container-fluid">
+            <div class="row page-titles">
+                <div class="col-md-5 col-12 align-self-center">
+                    <h3 class="text-themecolor mb-0">Service Type</h3>
+                </div>
+                <div class="col-md-7 col-12 align-self-center d-none d-md-block">
+                    <ol class="breadcrumb mb-0 p-0 bg-transparent float-right">
+                    </ol>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-body">
+
+                    <div class="row align-items-center mb-3">
+                        <div class="col-md-5 col-12 align-self-center">
+                            <h3>@PageTitle</h3>
+                        </div>
+                        <div class="col-md-7 col-12 align-self-center d-none d-md-block">
+                            <ol class="breadcrumb mb-0 p-0 bg-transparent float-right">
+                                <li class="breadcrumb-item active"><a href="@Url.RouteUrl("Admin_SalonServiceTypeIndex")">Service</a></li>
+                                <li class="breadcrumb-item active">Create Or Edit</li>
+                            </ol>
+                        </div>
+
+                    </div>
+                    <hr>
+
+                    <div class="card-body">
+                        <div class="row">
+                            <input type="hidden" name="ServiceTypeId" class="form-control" value="@Model.ServiceTypeId">
+                            <input type="hidden" name="ServiceTypeKey" class="form-control" value="@Model.ServiceTypeKey">
+                            <input type="hidden" name="Image" class="form-control" value="@Model.Image">
+                            <input type="hidden" name="CreateBy" class="form-control" value="@Model.CreateBy">
+                            <input type="hidden" name="CreateDate" class="form-control" value="@Model.CreateDate">
+                            <div class="col-lg-4 col-md-6 col-sm-12">
+                                <div class="form-group">
+                                    <label>Name</label>
+                                    @Html.TextBoxFor(m => m.ServiceTypeName, new { @class = "form-control", required = "required" })
+                                </div>
+                            </div>
+
+                            <div class="col-lg-4 col-md-6 col-sm-12">
+                                <div class="form-group">
+                                    <label>Service</label>
+                                    @Html.DropDownList("ServiceId", (IEnumerable<SelectListItem>)ViewBag.service, "Choose Service", new { @class = "form-control", required = "required" })
+                                </div>
+                            </div>
+                            <div class="col-lg-4 col-md-6 col-sm-12">
+                                <div class="form-group">
+                                    <label>Price</label>
+                                    @Html.TextBoxFor(m => m.Price, new { @class = "form-control", type = "number", required = "required" })
+                                </div>
+                            </div>
+                            <div class="col-lg-4 col-md-6 col-sm-12">
+                                <div>
+                                    <label>Description</label>
+                                    @Html.TextAreaFor(m => m.Description, new { @class = "form-control", required = "required" })
+                                </div>
+                            </div>
+                            <div class="col-lg-4 col-md-6 col-sm-12">
+                                <div>
+                                    <label>Image</label>
+                                    <input type="file" name="Image" accept="image/png, image/jpeg" class="form-control dropify" data-default-file="../../@Model.Image" />
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <div class="card-body">
+                            <div class="form-group mb-0 text-right">
+
+                                <a href="@Url.RouteUrl("Admin_SalonServiceTypeIndex")" class="btn btn-warning waves-effect waves-light">@ButtonTitle</a>
+                                <a href="@Url.RouteUrl("Admin_SalonServiceTypeIndex")" class="btn btn-dark waves-effect waves-light">
+                                    Close
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}

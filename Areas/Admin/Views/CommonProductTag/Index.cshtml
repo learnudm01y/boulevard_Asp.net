@@ -1,0 +1,149 @@
+﻿@{
+    ViewBag.Title = "Common Product Tag";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+@model IEnumerable<Boulevard.Models.CommonProductTag>
+
+<div class="page-wrapper">
+    <div class="container-fluid">
+        <div class="row page-titles">
+            <div class="col-md-5 col-12 align-self-center">
+                @if (ViewBag.FCatagoryKey != null)
+                {
+                    <h4 class="text-themecolor mb-0">@ViewBag.FCatagoryName Product Tag List</h4>
+                }
+                else
+                {
+                    <h4 class="text-themecolor mb-0">Common Product Tag List</h4>
+                }
+
+            </div>
+            <div class="col-md-7 col-12 align-self-center d-none d-md-block">
+                <ol class="breadcrumb mb-0 p-0 bg-transparent float-right">
+                </ol>
+            </div>
+        </div>
+
+        @using (Html.BeginForm("AddCommonProductTag", "CommonProductTag", FormMethod.Post, new { @class = "form-horizontal m-t-40", enctype = "multipart/form-data" }))
+        {
+            @Html.AntiForgeryToken()
+            <input type="hidden" id="fCatagoryKey" name="fCatagoryKey" value="@ViewBag.FCatagoryKey">
+            <div class="row">
+                <div class="col-md-12">
+                    @*<h3>Common Product Tag</h3>*@
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="row" style="margin-left:5px;">
+                                @if (ViewBag.FCatagoryKey != null)
+                                {
+                                    <h3>@ViewBag.FCatagoryName Product Tag</h3>
+                                }
+                                else
+                                {
+                                    <h3>Common Product Tag</h3>
+                                }
+
+                            </div>
+                            <br />
+                            <div class="row">
+                                <div class="col-sm-12" style="border-right: 1px solid #d3d3d3">
+                                    <div class="col-md-8 col-sm-8">
+                                        <div class="form-group">
+                                            <label>Tag Name</label>
+                                            <input type="text" name="TagName" required class="form-control">
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <button type="submit" class="btn waves-effect waves-light btn-success btn-rounded" style="float: right">
+                                            Save
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+
+        <div class="card">
+            <div class="card-body">
+
+                @*<div class="row align-items-center mb-3">
+                        <div class="col-sm-8">
+                            <h4 class="card-title">List</h4>
+                        </div>
+
+                        <div class="col-sm-4 text-right">
+                            <a href="@Url.RouteUrl("Admin_ProductCreateOrEdit", new {fCatagoryKey = ViewBag.FCatagoryKey})" class="btn btn-success  waves-effect">
+                                <i class="mdi mdi-plus"></i> Add
+                            </a>
+                        </div>
+                    </div>*@
+                <hr>
+
+                <div class="table-responsive">
+
+                    <table id="zero_config" class="table table-striped table-bordered" cellspacing="0" width="100%">
+                        <thead>
+                            <tr>
+                                <th style="text-align:center">Tag Name</th>
+                                <th style="text-align:center">Status</th>
+                                <th style="text-align:center">Option</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var node in Model)
+                            {
+                                <tr>
+                                    <td style="text-align:center">@node.TagName</td>
+
+                                    <td style="text-align:center">
+                                        @node.Status
+                                    </td>
+                                    <td style="text-align:center">
+                                        <a href="javascript:;" class="btn btn-danger btn-xs" onclick="Delete('@node.CommonProductTagId')" title="Delete">
+                                            <i class="fa fa-trash"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script type="text/javascript">
+    function Delete(id) {
+        Swal.fire({
+          title: "Are you sure?",
+          text: "You won't be able to revert this!",
+            icon: "question",
+          showCancelButton: true,
+          confirmButtonColor: "#3085d6",
+          cancelButtonColor: "#d33",
+          confirmButtonText: "Yes, delete it!"
+          }).then((result) => {
+              if (result.isConfirmed) {
+                 $.ajax({
+                     url: "@Url.Action("Delete", "CommonProductTag")",
+                     data: { id: id },
+                     type: "GET",
+                     success: function (response) {
+                         location.reload();
+                     },
+                     error: function (jqXHR, textStatus, errorThrown) {
+                         console.log(textStatus, errorThrown);
+                     }
+                 });
+              }
+        });
+    }
+</script>
+
+
+

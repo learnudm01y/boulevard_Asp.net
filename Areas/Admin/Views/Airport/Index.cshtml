@@ -1,0 +1,135 @@
+﻿@model IEnumerable<Boulevard.Models.Airport>
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+<script type="text/javascript" src="http://code.jquery.com/jquery-1.7.1.min.js"></script>
+<!-- Container fluid  -->
+<!-- ============================================================== -->
+<div class="page-wrapper">
+    <div class="container-fluid">
+        <!-- ============================================================== -->
+        <!-- Bread crumb and right sidebar toggle -->
+        <!-- ============================================================== -->
+        <div class="row page-titles">
+            <div class="col-md-5 col-12 align-self-center">
+                <h3 class="text-themecolor mb-0">Airport</h3>
+            </div>
+            <div class="col-md-7 col-12 align-self-center d-none d-md-block">
+                <ol class="breadcrumb mb-0 p-0 bg-transparent float-right">
+                    <li class="breadcrumb-item active"><a href="@Url.RouteUrl("Admin_dashboard")">Home</a></li>
+                    <li class="breadcrumb-item active">Airport</li>
+                </ol>
+            </div>
+        </div>
+        <!-- ============================================================== -->
+        <!-- End Bread crumb and right sidebar toggle -->
+        <!-- ============================================================== -->
+        <!--order list-->
+        <div class="card">
+            <div class="card-body">
+
+                <div class="row align-items-center mb-3">
+                    <div class="col-sm-8">
+                        <h4 class="card-title">Airport</h4>
+                    </div>
+
+                    <div class="col-sm-4 text-right">
+                        <a href="@Url.RouteUrl("Admin_Airport_CreateOrEdit")" class="btn btn-success  waves-effect">
+                            <i class="mdi mdi-plus"></i> Add Airport
+                        </a>
+                    </div>
+                </div>
+
+                <div class="table-responsive">
+
+                    <table id="zero_config" class="table table-striped table-bordered" cellspacing="0" width="100%">
+                        <thead>
+                            <tr>
+                                <th>Airport Code</th>
+                                <th>Airport Name</th>
+                                <th>Details</th>
+                                @*<th>Benefits</th>*@
+                                <th>Status</th>
+                                <th>Option</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var user in Model)
+                            {
+                                <tr>
+                                    <td>@user.AirportCode</td>
+                                    <td>@user.AirportName</td>
+                                    <td>@user.Details</td>
+                                    @*<td>@Html.Raw(user.Benefits)</td>*@
+                                    <td>@user.Status</td>
+                                    <td>
+                                        <a href="@Url.RouteUrl("Admin_Airport_CreateOrEdit", new { key = user.AirportKey })" class="btn btn-success btn-xs">
+                                            <i class="fa fa-edit"></i>
+                                        </a>
+                                        <a href="javascript:;" class="btn btn-primary btn-xs" onclick="Delete('@user.AirportKey')">
+                                            <i class="fa fa-trash"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <!-- ============================================================== -->
+    </div>
+</div>
+<!-- ============================================================== -->
+<!-- End Container fluid  -->
+
+<script type="text/javascript">
+
+    function Delete(id) {
+        const swalWithBootstrapButtons = Swal.mixin({
+            customClass: {
+                confirmButton: 'btn btn-success',
+                cancelButton: 'mr-2 btn btn-danger'
+            },
+            buttonsStyling: false,
+            animation: false,
+            allowOutsideClick: false
+        })
+
+        swalWithBootstrapButtons.fire({
+            title: 'Are you sure?',
+            text: "You won't be able to revert this!",
+            type: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Yes, delete it!',
+            cancelButtonText: 'No, cancel!',
+            reverseButtons: true
+        }).then((result) => {
+            if (result.value) {
+                swalWithBootstrapButtons.fire(
+                    'Deleted!',
+                    'Your file has been deleted.',
+                    'success',
+
+                ).then((sucess) => {
+                    // Fire Delete Method
+                    $.ajax({
+                        url: "@Url.Action("Delete", "Airport")/" + id,
+                        type: "GET",
+                        success: function (response) {
+                            location.reload();
+                        },
+                        error: function (jqXHR, textStatus, errorThrown) {
+                            console.log(textStatus, errorThrown);
+                        }
+                    });
+                })
+
+            }
+        })
+    }
+
+</script>
+
+

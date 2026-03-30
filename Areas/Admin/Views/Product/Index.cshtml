@@ -1,0 +1,384 @@
+﻿@{
+    ViewBag.Title = "Product";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+
+<div class="page-wrapper">
+    <div class="container-fluid">
+        <div class="row page-titles">
+            <div class="col-md-5 col-12 align-self-center">
+                @if (ViewBag.FCatagoryKey == null)
+                {
+                    <h4 class="text-themecolor mb-0">Products</h4>
+                }
+                else
+                {
+                    <h4 class="text-themecolor mb-0">@ViewBag.FCatagoryName</h4>
+                }
+
+                @if (TempData["ErrorMessage"] != null)
+                {
+                    var alertType = TempData["AlertType"] != null ? TempData["AlertType"].ToString() : "success";
+                    <div id="alert-box" class="alert alert-@alertType alert-dismissible fade show text-right" role="alert">
+                        @TempData["ErrorMessage"]
+                     
+                    </div>
+
+                    <script>
+                        setTimeout(function () {
+                            var alertBox = document.getElementById('alert-box');
+                            if (alertBox) {
+                                alertBox.classList.remove('show');
+                                alertBox.classList.add('fade');
+                                setTimeout(function () {
+                                    alertBox.remove();
+                                }, 500); // allow fade-out transition
+                            }
+                        }, 4000); // hide after 3 seconds
+                    </script>
+                }
+            </div>
+            <div class="col-md-7 col-12 align-self-center d-none d-md-block">
+                <ol class="breadcrumb mb-0 p-0 bg-transparent float-right">
+                </ol>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-body">
+
+                <div class="row align-items-center justify-content-between mb-3">
+                    <div class="col-sm-6">
+                        <h4 class="card-title">@ViewBag.FCatagoryName List</h4>
+                    </div>
+                    <div class="col-sm-6">
+                        <div class="right-box-content d-flex justify-content-end align-items-center" style="gap: 10px;">
+                            <a href="@Url.RouteUrl("Admin_ProductCreateOrEdit", new {fCatagoryKey = ViewBag.FCatagoryKey})" class="btn btn-success  waves-effect">
+                                <i class="mdi mdi-plus"></i> Add @ViewBag.FCatagoryName
+                            </a>
+                            @*<form method="post" action="@Url.Action("DownloadExcelFormat", "Product")">
+            <button type="submit" class="btn btn-primary">Download Excel Format</button>
+        </form>*@
+                            @*<button type="button" class="btn btn-primary waves-effect" data-toggle="modal" data-target="#uploadExcelModal">
+            <i class="mdi mdi-upload"></i> Upload Excel
+        </button>*@
+                            <a href="@Url.RouteUrl("Admin_AddBulk", new {fCatagoryKey = ViewBag.FCatagoryKey})" type="button" class="btn btn-primary waves-effect">
+                                <i class="mdi mdi-upload"></i> Upload Excel
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <hr>
+
+                <div class="row mb-3">
+                    <div class="col-sm-4">
+                        <input type="text" id="searchBox" class="form-control" placeholder="Search products..." />
+                    </div>
+                    <div class="col-sm-3">
+                        <select id="rowsPerPage" class="form-control">
+                            <option value="20">20 per page</option>
+                            <option value="50">50 per page</option>
+                            <option value="100">100 per page</option>
+                            <option value="200">200 per page</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="table-responsive" style="min-height:420px">
+                    <table class="table table-striped table-bordered" cellspacing="0" width="100%">
+                        <thead>
+                            <tr>
+                                <th>Product</th>
+                                <th style="text-align:center">Brand</th>
+                                <th style="text-align:center">Description</th>
+                                <th style="text-align:center">Price</th>
+                                <th style="text-align:center">Delivery Info</th>
+                                <th style="text-align:center">Stock Quantity</th>
+                                <th style="text-align:center">Option</th>
+                            </tr>
+                        </thead>
+                        <tbody id="productTableBody">
+                            <tr><td colspan="7" class="text-center">Loading...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="mt-3 d-flex justify-content-between align-items-center flex-wrap" style="gap:8px;">
+                    <span id="paginationInfo" class="text-muted small"></span>
+                    <div id="paginationContainer"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Shared Description Modal -->
+<div class="modal fade" id="descModal" tabindex="-1" role="dialog" aria-labelledby="descModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="descModalLabel">Description</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body" id="descModalBody"></div>
+        </div>
+    </div>
+</div>
+
+<!-- Shared Delivery Info Modal -->
+<div class="modal fade" id="deliveryModal" tabindex="-1" role="dialog" aria-labelledby="deliveryModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deliveryModalLabel">Delivery Info</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body" id="deliveryModalBody"></div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal for File Upload -->
+<div class="modal fade" id="uploadExcelModal" tabindex="-1" role="dialog" aria-labelledby="uploadExcelModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="uploadExcelModalLabel">Upload Excel File</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                @using (Html.BeginForm("UploadExcel", "Product", FormMethod.Post, new { enctype = "multipart/form-data", @class = "qus-form w-100" }))
+                {
+                    <div class="file-upload">
+                        <input type="hidden" name="fCatagoryKey" value="@ViewBag.FCatagoryKey" />
+                        <div class="form-group">
+                            <div class="image-upload-wrap">
+                                <input class="file-upload-input" type="file" name="excelFile" onchange="readURL(this);" accept="image/pdf/xlc*">
+                                <div class="drag-text">
+                                    <h3>Drag and drop a file or select add Files</h3>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="file-upload-content">
+                                <img class="file-upload-image" src="#" alt="Files">
+                                <div class="image-title-wrap">
+                                    <button type="button" onclick="removeUpload()" class="btn details-btn w-auto" style="max-width: 100%;">Remove <span class="image-title">Uploaded Files</span></button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">File Password (if Password protected)</label>
+                            <input type="text" class="form-control" name="Password" placeholder="Enter Password">
+                        </div>
+                        <button class="btn add-btn w-auto mx-auto" type="submit">Upload File</button>
+                        <a href="~/Content/ExcelFile/ProductEntry.xlsx" download class="btn btn-primary">Sample File</a>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    var _page = 1;
+    var _pageSize = 20;
+    var _searchTerm = '';
+    var _fCatagoryKey = '@(ViewBag.FCatagoryKey ?? "")';
+    var _totalRecords = -1;
+    var _cachedRows = [];
+    var _countXhr = null;
+
+    var _upsellUrlTpl    = '@(Url.RouteUrl("Admin_UpsellProduct",       new { Key = "PKEYPH" }))';
+    var _crosssellUrlTpl = '@(Url.RouteUrl("Admin_CrosssellProduct",    new { Key = "PKEYPH" }))';
+    var _detailsUrlTpl   = '@(Url.RouteUrl("Admin_ProductDetails",      new { Key = "PKEYPH" }))';
+    var _editUrlTpl      = '@(Url.RouteUrl("Admin_ProductCreateOrEdit", new { Key = "PKEYPH", fCatagoryKey = ViewBag.FCatagoryKey ?? "" }))';
+    var _stockLogUrlTpl  = '@(Url.RouteUrl("Admin_StockLog_Details",    new { Key = "PKEYPH", fCatagoryKey = ViewBag.FCatagoryKey ?? "" }))';
+    var _deleteUrl       = '@Url.Action("Delete", "Product")';
+
+    function escHtml(s) {
+        if (s == null) return '';
+        return String(s)
+            .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    }
+
+    // ── Step 1: fetch rows only (no COUNT) ──────────────────────
+    function loadProducts() {
+        $('#productTableBody').html('<tr><td colspan="7" class="text-center py-3"><i class="fa fa-spinner fa-spin mr-1"></i> Loading...</td></tr>');
+        $('#paginationContainer').html('');
+        $('#paginationInfo').text('');
+        _totalRecords = -1;
+
+        if (_countXhr) { _countXhr.abort(); _countXhr = null; }
+
+        $.ajax({
+            url: '/admin/product-paged',
+            data: { fCatagoryKey: _fCatagoryKey, searchTerm: _searchTerm, page: _page, pageSize: _pageSize },
+            type: 'GET',
+            success: function (res) {
+                if (!res.success) {
+                    $('#productTableBody').html('<tr><td colspan="7" class="text-center text-danger">Error loading data.</td></tr>');
+                    return;
+                }
+                _cachedRows = res.rows;
+                renderRows(res.rows);
+                renderPaginationHasMore(res.rows && res.rows.length === _pageSize);
+                loadCount();
+            },
+            error: function () {
+                $('#productTableBody').html('<tr><td colspan="7" class="text-center text-danger">Failed to load data.</td></tr>');
+            }
+        });
+    }
+
+    // ── Step 2: fetch total count after rows rendered ────────────
+    function loadCount() {
+        $('#paginationInfo').html('<span class="text-muted">Counting records&hellip;</span>');
+        _countXhr = $.ajax({
+            url: '/admin/product-paged-count',
+            data: { fCatagoryKey: _fCatagoryKey, searchTerm: _searchTerm },
+            type: 'GET',
+            success: function (res) {
+                _countXhr = null;
+                if (!res.success) return;
+                _totalRecords = res.total;
+                var from = _totalRecords === 0 ? 0 : (_page - 1) * _pageSize + 1;
+                var to   = Math.min(_page * _pageSize, _totalRecords);
+                $('#paginationInfo').text('Showing ' + from + ' \u2013 ' + to + ' of ' + _totalRecords);
+                renderPagination(_totalRecords);
+            },
+            error: function () { _countXhr = null; }
+        });
+    }
+
+    function renderRows(rows) {
+        if (!rows || rows.length === 0) {
+            $('#productTableBody').html('<tr><td colspan="7" class="text-center">No products found.</td></tr>');
+            return;
+        }
+        var html = '';
+        for (var i = 0; i < rows.length; i++) {
+            var r = rows[i];
+            var key = escHtml(r.productKey);
+            var upsellUrl    = _upsellUrlTpl.replace('PKEYPH', r.productKey);
+            var crosssellUrl = _crosssellUrlTpl.replace('PKEYPH', r.productKey);
+            var detailsUrl   = _detailsUrlTpl.replace('PKEYPH', r.productKey);
+            var editUrl      = _editUrlTpl.replace('PKEYPH', r.productKey);
+            var stockLogUrl  = _stockLogUrlTpl.replace('PKEYPH', r.productKey);
+
+            html += '<tr>';
+            html += '<td>' + escHtml(r.productName) + '</td>';
+            html += '<td style="text-align:center">' + escHtml(r.brandTitle) + '</td>';
+            html += '<td style="text-align:center"><a href="javascript:void(0);" style="font-size:20px;line-height:1;color:#202020;" onclick="showDesc(' + i + ')"><i class="bi bi-info-circle-fill"></i></a></td>';
+            html += '<td style="text-align:center"><strong>' + escHtml(r.productPrice) + '</strong></td>';
+            html += '<td style="text-align:center"><a href="javascript:void(0);" style="font-size:20px;line-height:1;color:#202020;" onclick="showDelivery(' + i + ')"><i class="bi bi-info-circle-fill"></i></a></td>';
+            html += '<td style="text-align:center"><strong>' + escHtml(r.stockQuantity) + '</strong></td>';
+            html += '<td style="text-align:center">'
+                  + '<a href="' + upsellUrl    + '" class="btn btn-warning btn-xs" title="UpSell"><i class="fa fa-arrow-up"></i></a> '
+                  + '<a href="' + crosssellUrl + '" class="btn btn-dark btn-xs" title="CrossSell"><i class="fa fa-crosshairs"></i></a> '
+                  + '<a href="' + detailsUrl   + '" class="btn btn-info btn-xs" title="Details"><i class="fa fa-eye"></i></a> '
+                  + '<a href="' + editUrl      + '" class="btn btn-success btn-xs" title="Update"><i class="fa fa-edit"></i></a> '
+                  + '<a href="' + stockLogUrl  + '" class="btn btn-secondary btn-xs" title="StockLog"><i class="fa fa-info-circle"></i></a> '
+                  + '<a href="javascript:;" class="btn btn-danger btn-xs" onclick="Delete(\'' + key + '\')" title="Delete"><i class="fa fa-trash"></i></a>'
+                  + '</td>';
+            html += '</tr>';
+        }
+        $('#productTableBody').html(html);
+    }
+
+    function renderPaginationHasMore(hasMore) {
+        var html = '';
+        html += '<button class="btn btn-sm btn-outline-secondary mr-1" onclick="goPage(1)" disabled>&laquo;</button>';
+        html += '<button class="btn btn-sm btn-outline-secondary mr-1" onclick="goPage(' + (_page - 1) + ')"' + (_page <= 1 ? ' disabled' : '') + '>&lsaquo;</button>';
+        html += '<button class="btn btn-sm btn-primary mr-1" disabled>' + _page + '</button>';
+        if (hasMore) {
+            html += '<button class="btn btn-sm btn-outline-secondary mr-1" onclick="goPage(' + (_page + 1) + ')">&rsaquo;</button>';
+            html += '<button class="btn btn-sm btn-outline-secondary" onclick="goPage(' + (_page + 1) + ')">&raquo;</button>';
+        }
+        $('#paginationContainer').html(html);
+    }
+
+    function renderPagination(total) {
+        var totalPages = Math.ceil(total / _pageSize) || 1;
+        var html = '';
+        html += '<button class="btn btn-sm btn-outline-secondary mr-1" onclick="goPage(1)"' + (_page <= 1 ? ' disabled' : '') + '>&laquo;</button>';
+        html += '<button class="btn btn-sm btn-outline-secondary mr-1" onclick="goPage(' + (_page - 1) + ')"' + (_page <= 1 ? ' disabled' : '') + '>&lsaquo;</button>';
+        var start = Math.max(1, _page - 2);
+        var end   = Math.min(totalPages, _page + 2);
+        for (var p = start; p <= end; p++) {
+            html += '<button class="btn btn-sm mr-1 ' + (p === _page ? 'btn-primary' : 'btn-outline-secondary') + '" onclick="goPage(' + p + ')">' + p + '</button>';
+        }
+        html += '<button class="btn btn-sm btn-outline-secondary mr-1" onclick="goPage(' + (_page + 1) + ')"' + (_page >= totalPages ? ' disabled' : '') + '>&rsaquo;</button>';
+        html += '<button class="btn btn-sm btn-outline-secondary"       onclick="goPage(' + totalPages + ')"' + (_page >= totalPages ? ' disabled' : '') + '>&raquo;</button>';
+        $('#paginationContainer').html(html);
+    }
+
+    window.goPage = function(p) {
+        if (_totalRecords >= 0) {
+            var totalPages = Math.ceil(_totalRecords / _pageSize) || 1;
+            if (p < 1 || p > totalPages) return;
+        } else {
+            if (p < 1) return;
+        }
+        _page = p;
+        loadProducts();
+    };
+
+    function showDesc(idx) {
+        $('#descModalBody').html(_cachedRows[idx].productDescription || '<em>No description available.</em>');
+        $('#descModal').modal('show');
+    }
+
+    function showDelivery(idx) {
+        $('#deliveryModalBody').html(_cachedRows[idx].deliveryInfo || '<em>No delivery info available.</em>');
+        $('#deliveryModal').modal('show');
+    }
+
+    window.Delete = function(id) {
+        Swal.fire({
+            title: "Are you sure?",
+            text: "You won't be able to revert this!",
+            icon: "question",
+            showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "Yes, delete it!"
+        }).then(function (result) {
+            if (result.isConfirmed) {
+                $.ajax({
+                    url: _deleteUrl,
+                    data: { Key: id },
+                    type: "GET",
+                    success: function () { loadProducts(); },
+                    error: function (jqXHR, textStatus, errorThrown) { console.log(textStatus, errorThrown); }
+                });
+            }
+        });
+    }
+
+    $(function () {
+        loadProducts();
+
+        var _searchTimer;
+        $('#searchBox').on('input', function () {
+            clearTimeout(_searchTimer);
+            _searchTimer = setTimeout(function () {
+                _searchTerm = $('#searchBox').val();
+                _page = 1;
+                loadProducts();
+            }, 400);
+        });
+
+        $('#rowsPerPage').on('change', function () {
+            _pageSize = parseInt($(this).val(), 10);
+            _page = 1;
+            loadProducts();
+        });
+    });
+</script>

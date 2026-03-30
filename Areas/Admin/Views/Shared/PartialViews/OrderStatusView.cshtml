@@ -1,0 +1,205 @@
+﻿@*@using Gentoo.DataAccess*@
+@model List<Boulevard.Models.OrderStatus>
+
+<style>
+    .delivery-status-timeline {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        position: relative;
+        padding: 20px 0;
+        margin: 20px 0;
+    }
+
+    .delivery-status-timeline::before {
+        content: '';
+        position: absolute;
+        top: 50px;
+        left: 25px;
+        right: 25px;
+        height: 4px;
+        background: #e0e0e0;
+        z-index: 0;
+    }
+
+    .progress-bar-green {
+        position: absolute;
+        top: 50px;
+        left: 25px;
+        height: 4px;
+        background: linear-gradient(90deg, #11998e 0%, #38ef7d 100%);
+        z-index: 1;
+        transition: width 0.8s ease;
+        box-shadow: 0 0 10px rgba(17, 153, 142, 0.5);
+    }
+
+    .status-step {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        position: relative;
+        z-index: 1;
+        flex: 1;
+    }
+
+    .status-step:last-child {
+        flex: 0;
+    }
+
+    .status-icon {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        background: #e0e0e0;
+        color: #999;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 24px;
+        margin-bottom: 10px;
+        border: 3px solid #fff;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        transition: all 0.3s ease;
+    }
+
+    .status-step.active .status-icon {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: #fff;
+        transform: scale(1.1);
+        box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+    }
+
+    .status-step.completed .status-icon {
+        background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+        color: #fff;
+        animation: checkPulse 0.6s ease-in-out;
+    }
+
+    .status-step.completed .status-icon i {
+        font-size: 28px;
+        font-weight: bold;
+    }
+
+    @@keyframes checkPulse {
+        0% {
+            transform: scale(0.8);
+            opacity: 0.5;
+        }
+        50% {
+            transform: scale(1.15);
+        }
+        100% {
+            transform: scale(1);
+            opacity: 1;
+        }
+    }
+
+    .status-name {
+        font-size: 14px;
+        font-weight: 600;
+        color: #666;
+        text-align: center;
+        margin-bottom: 5px;
+        max-width: 120px;
+    }
+
+    .status-step.active .status-name {
+        color: #667eea;
+        font-weight: 700;
+    }
+
+    .status-step.completed .status-name {
+        color: #11998e;
+    }
+
+    .status-date {
+        font-size: 11px;
+        color: #999;
+        text-align: center;
+    }
+
+    .status-step.active .status-date {
+        color: #667eea;
+        font-weight: 600;
+    }
+
+    @@media (max-width: 768px) {
+        .delivery-status-timeline {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .delivery-status-timeline::before {
+            top: 0;
+            bottom: 0;
+            left: 25px;
+            width: 3px;
+            height: auto;
+        }
+
+        .status-step {
+            flex-direction: row;
+            width: 100%;
+            margin-bottom: 20px;
+        }
+
+        .status-icon {
+            margin-right: 15px;
+            margin-bottom: 0;
+        }
+
+        .status-name,
+        .status-date {
+            text-align: left;
+        }
+    }
+</style>
+
+@if (Model != null && Model.Count > 0)
+{
+    var activeIndex = Model.FindIndex(s => s.StatusCondition == true);
+    var totalSteps = Model.Count;
+    var progressPercent = 0.0;
+
+    if (activeIndex >= 0 && totalSteps > 1)
+    {
+        progressPercent = ((double)activeIndex / (totalSteps - 1)) * 100;
+    }
+
+    <div class="col-12">
+        <div class="delivery-status-timeline">
+            <div class="progress-bar-green" style="width: @progressPercent%"></div>
+
+            @for (int i = 0; i < Model.Count; i++)
+            {
+                var status = Model[i];
+                var isActive = status.StatusCondition == true;
+                var isCompleted = i < activeIndex;
+                var stepClass = isActive ? "active" : (isCompleted ? "completed" : "");
+
+                <div class="status-step @stepClass">
+                    <div class="status-icon">
+                        @if (isCompleted)
+                        {
+                            <i class="fa fa-check-circle"></i>
+                        }
+                        else if (isActive)
+                        {
+                            <i class="fa fa-dot-circle-o"></i>
+                        }
+                        else
+                        {
+                            <i class="fa fa-circle-o"></i>
+                        }
+                    </div>
+                    <div class="status-name">@status.PublicName</div>
+                    @if (!string.IsNullOrEmpty(status.statusDate))
+                    {
+                        <div class="status-date">@status.statusDate</div>
+                    }
+                </div>
+            }
+        </div>
+    </div>
+}
+

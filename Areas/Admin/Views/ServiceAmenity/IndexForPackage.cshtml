@@ -1,0 +1,108 @@
+﻿@{
+    ViewBag.Title = "Service Facilities";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+@model IEnumerable<Boulevard.Models.ServiceAmenity>
+
+<div class="page-wrapper">
+    <div class="container-fluid">
+        <div class="row page-titles">
+            <div class="col-md-5 col-12 align-self-center">
+                <h3 class="text-themecolor mb-0">@ViewBag.FCatagoryName Service Facilities </h3>
+            </div>
+            <div class="col-md-7 col-12 align-self-center d-none d-md-block">
+                <ol class="breadcrumb mb-0 p-0 bg-transparent float-right">
+                </ol>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-body">
+
+                <div class="row align-items-center mb-3">
+                    <div class="col-sm-8">
+                        <h4 class="card-title">List</h4>
+                    </div>
+
+                    <div class="col-sm-4 text-right">
+                        <a href="@Url.RouteUrl("Admin_ServiceFacilitiesCreateOrEdit", new {fCatagoryKey = ViewBag.FCatagoryKey})" class="btn btn-success  waves-effect">
+                            <i class="mdi mdi-plus"></i> Add Facilities
+                        </a>
+                    </div>
+                </div>
+                <hr>
+
+                <div class="table-responsive">
+
+                    <table id="zero_config" class="table table-striped table-bordered" cellspacing="0" width="100%">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Service</th>
+                                <th>Logo</th>
+                                <th>Option</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var node in Model)
+                            {
+                                <tr>
+                                    <td>@node.AmenitiesName</td>
+                                    <td>@node.Service.Name</td>
+                                    <td>
+                                        @if (!string.IsNullOrEmpty(node.AmenitiesLogo))
+                                        {
+                                            <img src="@node.AmenitiesLogo" style="max-width:50px;max-height:50px;">
+                                        }
+                                        else
+                                        {
+                                            <span> No Logo </span>
+                                        }
+                                    </td>
+                                    <td>
+                                        <a href="@Url.RouteUrl("Admin_ServiceFacilitiesCreateOrEdit", new { Key = node.ServiceAmenityKey, fCatagoryKey = ViewBag.FCatagoryKey  })" class="btn btn-success btn-xs">
+                                            <i class="fa fa-edit"></i>
+                                        </a>
+                                        <a href="javascript:;" class="btn btn-primary btn-xs" onclick="Delete('@node.ServiceAmenityKey')">
+                                            <i class="fa fa-trash"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    function Delete(id) {
+        Swal.fire({
+          title: "Are you sure?",
+          text: "You won't be able to revert this!",
+            icon: "question",
+          showCancelButton: true,
+          confirmButtonColor: "#3085d6",
+          cancelButtonColor: "#d33",
+          confirmButtonText: "Yes, delete it!"
+          }).then((result) => {
+              if (result.isConfirmed) {
+                 $.ajax({
+                     url: "@Url.Action("Delete", "ServiceAmenity")",
+                     data: { Key: id },
+                     type: "GET",
+                     success: function (response) {
+                         location.reload();
+                     },
+                     error: function (jqXHR, textStatus, errorThrown) {
+                         console.log(textStatus, errorThrown);
+                     }
+                 });
+              }
+        });
+    }
+</script>
+
+

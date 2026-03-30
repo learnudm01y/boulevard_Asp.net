@@ -1,0 +1,476 @@
+﻿
+@{
+    ViewBag.Title = "Invoice";
+    var text = @"@media";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+@model Boulevard.Models.OrderRequestProduct
+<style>
+    table, th, td {
+        border: 1px solid rgba(0,0,0,.8);
+        border-collapse: collapse;
+        text-align: center;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+    }
+
+    table {
+        width: 500px;
+    }
+/*    body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+        background-color: #fff;
+        color: #000;
+        font-size: 12px;
+    }*/
+/*
+    .print-button {
+        position: static;
+        top: 20px;
+        left: 20px;
+        padding: 10px 20px;
+        background-color: #2c3e50;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+
+    .label {
+        width: 210mm;
+        height: auto;
+        margin: 0 auto;
+        padding: 8mm;
+        border: 1px solid rgba(0,0,0,.8);
+        box-sizing: border-box;
+    }*/
+
+    .header {
+        text-align: center;
+        margin-bottom: 10px;
+        border-bottom: 1px solid rgba(0,0,0,.8);
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+    }
+
+    .logo {
+        width: 100px;
+        height: 50px;
+        background-color: transparent;
+        margin: 0 auto 10px;
+    }
+
+    .shipment-details {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 10px;
+    }
+
+    .origin-dest, .tracking {
+        width: 48%;
+    }
+
+    .tracking {
+        text-align: right;
+    }
+
+    .info-section {
+        border: 1px solid #000 !important;
+        margin-bottom: 10px;
+        padding: 5px;
+        width: 100%;
+        display: block;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+    }
+
+    .info-text {
+        flex: 3;
+    }
+
+    .qr-code {
+        flex: 1;
+        margin-left: 10px;
+    }
+
+        .qr-code img {
+            width: 100%;
+            height: auto;
+            aspect-ratio: 5 / 2;
+        }
+
+    .info-section h3 {
+        margin: 0 0 5px 0;
+        font-size: 14px;
+        font-weight: bold;
+    }
+
+    .info-section p {
+        margin: 0;
+        line-height: 1.4;
+    }
+
+    .bordered-slot {
+        border: 1px solid rgba(0,0,0,.8);
+        padding: 5px;
+        margin-bottom: 5px;
+    }
+
+    .bordered-weight {
+        border: 1px solid rgba(0,0,0,.8);
+        padding: 5px;
+        margin-bottom: 5px;
+    }
+
+    .bordered-cod {
+        border: 1px solid rgba(0,0,0,.8);
+        padding: 5px;
+        display: flex;
+        justify-content: space-between;
+    }
+
+    .barcode-area {
+        text-align: center;
+        margin-top: 20px;
+        border: 1px solid rgba(0,0,0,.8);
+    }
+
+    .barcode {
+        width: 100px;
+        height: 50px;
+        background-color: #ccc;
+        display: inline-block;
+    }
+
+    .footer {
+        margin-top: 20px;
+        text-align: right;
+        border-top: 1px solid #000;
+    }
+
+    .table > tbody > tr,
+    .table > tbody > tr > td,
+    .table > tbody > tr > th,
+    .table > tfoot > tr > td,
+    .table > tfoot > tr > th,
+    .table > thead > tr > td,
+    .table > thead > tr > th {
+        border: 1px solid #000;
+        padding: 8px;
+        line-height: 1.42857143;
+        font-size: 14px;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+    }
+
+    .column-border > tbody > tr:nth-of-type(odd) {
+        background-color: #f9f9f9;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+    }
+
+</style>
+<div class="page-wrapper">
+
+    <div class="container-fluid">
+        <!-- ============================================================== -->
+        <!-- Bread crumb and right sidebar toggle -->
+        <!-- ============================================================== -->
+        <div class="row page-titles no-print">
+            <div class="col-md-5 col-12 align-self-center">
+                <h3 class="text-themecolor mb-0">@Model.FeatureCategory.Name Order Details</h3>
+            </div>
+            <div class="col-md-7 col-12 align-self-center d-none d-md-block">
+                <ol class="breadcrumb mb-0 p-0 bg-transparent float-right">
+                    <li class="breadcrumb-item active"><a href="@Url.RouteUrl("Admin_Member")">Member</a></li>
+                    <li class="breadcrumb-item active">@Model.FeatureCategory.Name Order Details</li>
+                </ol>
+            </div>
+        </div>
+        <!-- ============================================================== -->
+        <!-- End Bread crumb and right sidebar toggle -->
+        <!-- ============================================================== -->
+        <!--order list-->
+        <div class="row">
+            <div class="col-12">
+                <div class="card mb-0">
+                    <div class="card-body pb-0">
+                        <h4 class="card-title">@Model.FeatureCategory.Name Invoice Details</h4>
+                        <button class="btn btn-xs btn-success float-right no-print" style="margin-top: -36px;" id="btnPrint" onclick="Print()"><i class="fas fa-print"></i> print</button>
+                    </div>
+                    <hr>
+                    <div class="col-xl-8 col-lg-12 col-md-12 col-sm-12 col-12 mx-auto" id="print">
+                        <div class="card" style="border: 1px solid #000;">
+                            <div class="card-header p-4">
+                                <a><img style="height: 70px; width: 170px;" src="~/Areas/Admin/Content/assets/images/logoBlack.png"></a>
+                                <div class="float-right">
+                                    <h3 class="mb-0">Invoice No: @Model.ReadableOrderId</h3>
+                                    <span>Date: <strong>@Model.OrderDateTime.ToString("dd/MM/yyyy")</strong></span>
+                                    <p class="mb-0">Order Status : <strong>@Model.OrderStatus.Name</strong></p>
+
+                                    <p class="mb-0">Payment Method : <strong>@Model.PaymentMethod.PaymentMethodName</strong></p>
+                                </div>
+                            </div>
+                            <h3 class="bg-dark text-white text-center py-2 mb-0">Invoice</h3>
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between flex-column">
+                                    @*<div class="shipment-details">
+            <div class="origin-dest">
+                <p><strong>Origin:</strong> @Model.MemberAddresses.City.CityName</p>
+                <p><strong>Dest:</strong> MUS</p>
+                <p><strong>Route:</strong> No Route</p>
+
+            </div>
+            <div class="tracking">
+                <p><strong>Tracking No:</strong> 1100023624955</p>
+            </div>
+        </div>*@
+                                    <div class="info-section">
+                                        <div class="info-text">
+                                            <h5>Sender Info:</h5>
+                                            <h3>@Model.Member.Name</h3>
+                                            <p>@Model.MemberAddresses.AddressLine1,</p>
+                                            <p>@Model.MemberAddresses.AddressLine2</p>
+                                            @if (Model.MemberAddresses.City != null)
+                                            {
+                                                <div>@Model.MemberAddresses.City.CityName,</div>
+                                            }
+
+                                            @if (Model.MemberAddresses.Country != null)
+                                            {
+                                                <div>@Model.MemberAddresses.Country.CountryName</div>
+                                            }
+                                            <p>Phone: @Model.Member.PhoneNumber</p>
+
+                                        </div>
+
+                                    </div>
+                                    <div class="info-section">
+                                        <div class="info-text">
+                                            <h5>Receiver Info</h5>
+                                            <h3>Boulvard</h3>
+
+                                        </div>
+
+                                    </div>
+
+                                    <div class="info-section">
+                                        <div class="info-text">
+                                            <h5>Order Date</h5>
+                                            <h3>@Model.OrderDateTime.ToShortDateString()</h3>
+
+                                        </div>
+
+                                    </div>
+
+                                    <div class="info-section">
+                                        <div class="info-text">
+                                            <h5>Delivery Date</h5>
+                                            <h3>@Model.DeliveryDateTime.ToShortDateString()</h3>
+
+                                        </div>
+
+                                    </div>
+                                    @*<div class="">
+            <h5 class="mb-3">Sender Info:</h5>
+            <h3 class="text-dark mb-1">@Model.Member.Name</h3>
+            <div>@Model.MemberAddresses.AddressLine1,</div>
+            <div>@Model.MemberAddresses.AddressLine2</div>
+            @if (Model.MemberAddresses.City != null)
+            {
+                <div>@Model.MemberAddresses.City.CityName,</div>
+            }
+
+            @if (Model.MemberAddresses.Country != null)
+            {
+                <div>@Model.MemberAddresses.Country.CountryName</div>
+            }
+
+            <div>Phone: @Model.Member.PhoneNumber</div>
+
+        </div>*@
+                                    @*<div class="">
+            <h5 class="mb-3">Receiver Info:</h5>
+            <h3 class="text-dark mb-1">Blue Bird</h3>
+
+
+        </div>*@
+                                </div>
+                                <div class="table-responsive-sm">
+                                    <table class="table table-bordered" style="margin-bottom: 10px;">
+                                        <thead>
+                                            <tr>
+                                                <th>Product Name</th>
+                                                <th>Brand Name</th>
+                                                <th>Product Price</th>
+                                                <th>Quantity</th>
+                                                <th>Price</th>
+
+                                                <th>Discount Name</th>
+                                                <th>Amount Discount</th>
+                                                <th>Gross Price</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach (var node in Model.OrderRequestProduxtDetails)
+                                            {
+                                                var grossPrize = @node.GrossPrice * @node.Quantity;
+                                                <tr>
+                                                    <td>@node.Product.ProductName</td>
+                                                    <td>@node.BrandName</td>
+                                                    <td>@node.Product.ProductPrice</td>
+                                                    <td>@node.Quantity</td>
+
+                                                    <td>@grossPrize</td>
+                                                    <td></td>
+                                                    @*@if (node.IsOffer == true)
+                   {
+                       <td>@node.OfferName</td>
+                   }
+        else
+          {
+              <td></td>
+            }*@
+
+                                                    @*@if (node.IsMemberShipOffer == true)
+           {
+        <td>@node.MemberShipName</td>
+            }*@
+
+                                                    @if (!string.IsNullOrEmpty(node.OfferDiscountType))
+                                                    {
+                                                        if (node.OfferDiscountType == "Percentage")
+                                                        {
+                                                            <td>@node.DiscountAmount %</td>
+                                                        }
+                                                        else
+                                                        {
+                                                            <td>@node.DiscountAmount AED</td>
+                                                        }
+                                                    }
+                                                    else
+                                                    {
+                                                        <td>@node.DiscountAmount</td>
+                                                    }
+
+                                                    <td>@node.GrossPrice</td>
+
+                                                </tr>
+                                            }
+                                        </tbody>
+                                    </table>
+                                </div>
+
+
+                                <div class="row">
+                                    <div class="col-lg-12 col-md-12 col-sm-12">
+
+                                        <div class="d-flex justify-content-between">
+
+                                            <p style="font-size:smaller;width:50%"> <strong>Comments :  @Model.Comments</strong>  </p>
+
+                                            <div>
+                                                <table class="table table-bordered table-sm" style="font-size:smaller">
+                                                    <tbody>
+                                                        <tr>
+                                                            <td class="left">
+                                                                <strong class="text-dark">Total Quantity:</strong>
+                                                            </td>
+                                                            <td class="right">@Model.OrderRequestProduxtDetails.Sum(t => t.Quantity)</td>
+                                                        </tr>
+
+                                                        <tr>
+                                                            <td class="left">
+                                                                <strong class="text-dark">Delivery Charge :</strong>
+                                                            </td>
+                                                            <td class="right">@Model.DeliveryCharge</td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td class="left">
+                                                                <strong class="text-dark">Total Price :</strong>
+                                                            </td>
+                                                            <td class="right">@Model.TotalPrice</td>
+                                                        </tr>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                </div>
+
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<script src="~/Areas/Admin/MainContent/assets/libs/jquery/dist/jquery.min.js"></script>
+<script>
+    function Print() {
+        var divElement = document.getElementById('print').innerHTML;
+        var fullPage = document.body.innerHTML;
+
+        document.body.innerHTML = divElement;
+
+        window.print();
+        document.body.innerHTML = fullPage;
+    }
+</script>
+
+<script type="text/javascript">
+
+    function Delete(id) {
+        const swalWithBootstrapButtons = Swal.mixin({
+            customClass: {
+                confirmButton: 'btn btn-success',
+                cancelButton: 'mr-2 btn btn-danger'
+            },
+            buttonsStyling: false,
+            animation: false,
+            allowOutsideClick: false
+        })
+
+        swalWithBootstrapButtons.fire({
+            title: 'Are you sure?',
+            text: "You won't be able to revert this!",
+            type: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Yes, delete it!',
+            cancelButtonText: 'No, cancel!',
+            reverseButtons: true
+        }).then((result) => {
+            if (result.value) {
+                swalWithBootstrapButtons.fire(
+                    'Deleted!',
+                    'Your file has been deleted.',
+                    'success',
+
+                ).then((sucess) => {
+                    // Fire Delete Method
+                    $.ajax({
+                        url: "@Url.Action("Delete", "MemberAddress")/" + id,
+                        type: "GET",
+                        success: function (response) {
+                            location.reload();
+                        },
+                        error: function (jqXHR, textStatus, errorThrown) {
+                            console.log(textStatus, errorThrown);
+                        }
+                    });
+                })
+
+            }
+        })
+    }
+
+</script>
+
+

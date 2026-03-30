@@ -1,0 +1,100 @@
+﻿@model Boulevard.Areas.Admin.Data.MemberViewModel
+
+@*@model double*@
+
+@{
+    #region Pagination
+    Int64 TotalRecord = 0;
+    if(Model.Members.Count() > 0)
+    {
+        TotalRecord = Model.TotalRecord;
+    }
+
+    Int64 ShowingFrom = ((Model.Page - 1) * Model.PageSize) + 1;
+    if(ShowingFrom > TotalRecord)
+    { ShowingFrom = TotalRecord; }
+
+    Int64 ShowingTo = (Model.Page * Model.PageSize);
+    if(ShowingTo > TotalRecord)
+    { ShowingTo = TotalRecord; }
+
+    double TotalPage = 1;
+    double TotalPageCount = 1;
+    int maxPage = 5;
+    if(TotalRecord > 0)
+    {
+        TotalPageCount = Math.Ceiling((double)TotalRecord / (double)Model.PageSize);
+        TotalPage = TotalPageCount;
+
+    }
+    #endregion
+}
+
+<div class="bg-white text-right m-t-10">
+    <input type="hidden" id="Page" name="Page" value="1" />
+    <ul class="pagination mb-0 justify-content-end">
+        <li class="paginate_button page-item previous">
+            <a href="javascript:void(0);" onclick="GoPreviousPage()" class="page-link">Previous</a>
+        </li>
+        @for(int i = 1;i <= TotalPage;i++)
+        {
+            if(Model.Page >= 5 && i == 1)
+            {
+                i=i+(Model.Page-4);
+                maxPage= maxPage+(Model.Page-4);
+            }
+
+            if(i <= maxPage)
+            {
+                <li class="paginate_button page-item" id="Pager-@i">
+                    <a href="javascript:void(0);" onclick="GoToPage(@i)" class="page-link">@i</a>
+                </li>
+            }
+            if(i == (maxPage+1) && i != TotalPage)
+            {
+                <li class="paginate_button page-item">
+                    <a href="javascript:void(0);" class="page-link">...</a>
+                </li>
+            }
+
+        }
+        @if(TotalPageCount > 5)
+        {
+            <li class="paginate_button page-item" id="Pager-@TotalPageCount">
+                <a href="javascript:void(0);" onclick="GoToPage(@TotalPageCount)" class="page-link">@TotalPageCount</a>
+            </li>
+        }
+        <li class="paginate_button page-item next">
+            <a href="javascript:void(0);" onclick="GoNextPage()" class="page-link">Next</a>
+        </li>
+    </ul>
+</div>
+
+
+<script type="text/javascript">
+    function GoPreviousPage() {
+        var pageNo = parseInt($("#Page").val());
+        var prePageNo = pageNo - 1;
+        if (prePageNo > 0) {
+            $("#Page").val(prePageNo);
+            $("#frmFilterPagingSize").submit();
+        }
+    }
+
+    function GoNextPage() {
+        var pageNo = parseInt($("#Page").val());
+        var nextPageNo = pageNo + 1;
+        if (nextPageNo <= @Model.Members.Count()) {
+            $("#Page").val(nextPageNo);
+            $("#frmFilterPagingSize").submit();
+        }
+    }
+
+    function GoToPage(index) {
+        var pageNo = parseInt($("#Page").val());
+        if (pageNo != index) {
+            $("#Page").val(index);
+            $("#frmFilterPagingSize").submit();
+        }
+    }
+</script>

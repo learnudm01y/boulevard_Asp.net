@@ -1,0 +1,179 @@
+﻿
+
+@{
+    ViewBag.Title = "Salon Service Detials";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+
+<style>
+    table, th, td {
+        border: 1px solid black;
+        border-collapse: collapse;
+        text-align: center;
+    }
+
+    table {
+        width: 500px;
+    }
+</style>
+<div class="page-wrapper">
+    <div class="container-fluid">
+        <!-- ============================================================== -->
+        <!-- Bread crumb and right sidebar toggle -->
+        <!-- ============================================================== -->
+        <div class="row page-titles">
+            <div class="col-md-5 col-12 align-self-center">
+                <h3 class="text-themecolor mb-0">Salon Service Details</h3>
+            </div>
+            <div class="col-md-7 col-12 align-self-center d-none d-md-block">
+                <ol class="breadcrumb mb-0 p-0 bg-transparent float-right">
+                    <li class="breadcrumb-item active"><a href="@Url.RouteUrl("Admin_Order_Request_Service_List")">Order Service</a></li>
+                    <li class="breadcrumb-item active">Salon Service Details</li>
+                </ol>
+            </div>
+        </div>
+        <!-- ============================================================== -->
+        <!-- End Bread crumb and right sidebar toggle -->
+        <!-- ============================================================== -->
+        <!--order list-->
+        <form>
+            <div class="card">
+                <div class="card-header">
+                    Salon Service Details
+                </div>
+                <div class="card-body">
+                    <div class="row" style="font-size:20px">
+                        @*<input type="hidden" name="MemberId" class="form-control" value="@Model.MemberId">*@
+
+                        <div class="col-md-12 col-sm-12">
+                            <div class="form-group">
+                                <label>Booking Id : 1125965</label>
+                            </div>
+                        </div>
+                        <div class="col-md-12 col-sm-12">
+                            <div class="form-group">
+                                <label>Booking Date : @DateTime.Now.ToString("dd/MM/yyyy")</label>
+                            </div>
+                        </div>
+                        <div class="col-md-12 col-sm-12">
+                            <div class="form-group">
+                                <label>Booking Time : @DateTime.Now.ToShortTimeString()</label>
+                            </div>
+                        </div>
+                        <div class="col-md-12 col-sm-12">
+                            <div class="form-group">
+                                <label>Booking Member Type : Regular</label>
+                            </div>
+                        </div>
+                        <div class="col-md-12 col-sm-12">
+                            <div class="form-group">
+                                <label>Member Name : Nafiz Chowdhury</label>
+                            </div>
+                        </div>
+
+                        <div class="col-md-12 col-sm-12">
+                            <div class="form-group">
+                                <label>Phone No : 56636525</label>
+                            </div>
+                        </div>
+                        <div class="col-md-12 col-sm-12">
+                            <div class="form-group">
+                                <label>Email : nafiz.chow019@gmail.com</label>
+                            </div>
+                        </div>
+                        <div class="col-md-12 col-sm-12">
+                            <div class="form-group">
+                                <label>
+                                    Motor Company Name : Strike Salon
+                                </label>
+                            </div>
+                        </div>
+
+                        @*<div class="col-md-12 col-sm-12">
+                            <div class="form-group">
+                                <label>
+                                    Servicing Vehical Name : Sedan(Honda Civic r100)
+                                </label>
+                            </div>
+                        </div>*@
+
+                        <div class="col-md-12 col-sm-12">
+                            <div class="form-group">
+                                <label>Extra Charge : 10</label>
+                            </div>
+                        </div>
+                        <div class="col-md-12 col-sm-12">
+                            <div class="form-group">
+                                <label>Gross Price : 900</label>
+                            </div>
+                        </div>
+                        <div class="col-md-12 col-sm-12">
+                            <div class="form-group">
+                                <label>Total Price : 910</label>
+                            </div>
+                        </div>
+                        <div class="col-md-12 col-sm-12">
+                            <div class="form-group">
+                                <label>Booking Status : Active</label>
+                            </div>
+                        </div>
+                    </div>
+                    <br />
+                    <br />
+                    <br />
+
+                    <div class="row">
+                        <div class="col-md-12 col-sm-12">
+                            @*<h1>Order Details</h1>*@
+                            <div class="form-group float-xl-right">
+                                <h1>Salon Service Details</h1>
+                                @*<label style="font-size:30px">Total Price : @Model.TotalPrice</label>*@
+                            </div>
+                        </div>
+                        <div class="table-responsive">
+
+                            <table id="zero_config" class="table table-striped table-bordered" cellspacing="0" width="100%">
+                                <thead>
+                                    <tr>
+                                        <th></th>
+                                        <th>Salon Service Type</th>
+                                        <th>Image</th>
+
+                                        <th>Description</th>
+                                        <th>Price</th>
+
+                                    </tr>
+                                </thead>
+                                <tbody>
+
+                                    <tr>
+                                        <td></td>
+                                        <td>Hair Cut and styling</td>
+                                        <td><img src="~/Areas/Admin/Content/assets/images/Productservice/Motors section/Frame 1000003454.png" style="max-width:50px;max-height:50px;"></td>
+                                        <td>Need to wash and drier</td>
+
+                                        <td>440</td>
+
+                                    </tr>
+
+                                    <tr>
+                                        <td></td>
+                                        <td>Foot massage</td>
+                                        <td><img src="~/Areas/Admin/Content/assets/images/Productservice/Motors section/Frame 1000005100.png" style="max-width:50px;max-height:50px;"></td>
+                                        <td>Need to wash by antibacterial Product</td>
+
+                                        <td>450</td>
+
+                                    </tr>
+
+                                </tbody>
+                            </table>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+        <!-- ============================================================== -->
+    </div>
+</div>

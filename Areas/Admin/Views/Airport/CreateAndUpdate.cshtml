@@ -1,0 +1,163 @@
+﻿
+@{
+    Layout = null;
+}
+@model Boulevard.Models.Airport
+@{
+    ViewBag.Title = "Create Or Update";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+
+
+
+
+<!-- Container fluid  -->
+<!-- ============================================================== -->
+<div class="page-wrapper">
+    <div class="container-fluid">
+        <!-- ============================================================== -->
+        <!-- Bread crumb and right sidebar toggle -->
+        <!-- ============================================================== -->
+
+        <div class="row page-titles">
+            <div class="col-md-5 col-12 align-self-center">
+                <h3 class="text-themecolor mb-0">Add Airport</h3>
+            </div>
+            <div class="col-md-7 col-12 align-self-center d-none d-md-block">
+                <ol class="breadcrumb mb-0 p-0 bg-transparent float-right">
+                    <li class="breadcrumb-item active"><a href="@Url.RouteUrl("Admin_Airport_List")">Airport</a></li>
+                    <li class="breadcrumb-item active">Add Airport</li>
+                </ol>
+            </div>
+        </div>
+        <!-- ============================================================== -->
+        <!-- End Bread crumb and right sidebar toggle -->
+        <!-- ============================================================== -->
+        <!--order list-->
+        @*<form>*@
+        <div class="card">
+            <div class="card-header">
+                <!--<h4 class="">General</h4>-->
+                Airport Information
+            </div>
+            <div class="card-body">
+                @using (Html.BeginForm("CreateAndUpdate", "Airport", FormMethod.Post, new { enctype = "multipart/form-data", @id = "myForm", @class = "row" }))
+                {
+                    @*<div class="row">*@
+                    <input type="hidden" name="AirportId" class="form-control" value="@Model.AirportId">
+                    <input type="hidden" name="CreateDate" class="form-control" value="@Model.CreateDate">
+                    <input type="hidden" name="CreateBy" class="form-control" value="@Model.CreateBy">
+                    <input type="hidden" name="AirportKey" class="form-control" value="@Model.AirportKey">
+
+
+                    <div class="col-md-6 col-sm-6">
+                        <div class="form-group">
+                            <label>Airport Code</label>
+                            <input type="text" name="AirportCode" required class="form-control" value="@Model.AirportCode">
+                        </div>
+                    </div>
+
+                    <div class="col-md-6 col-sm-6">
+                        <div class="form-group">
+                            <label>Airport Name</label>
+                            <input type="text" name="AirportName" required class="form-control" value="@Model.AirportName">
+                        </div>
+                    </div>
+                   
+                    <div class="col-md-6 col-sm-6">
+                        <div class="form-group">
+                            <label>Airport Name (Arabic)</label>
+                            <input type="text" name="AirportNameAr" dir="rtl" required class="form-control" value="@Model.AirportNameAr">
+                        </div>
+                    </div>
+
+                    <div class="col-md-6 col-sm-6">
+                        <div class="form-group">
+                            <label>Country Name</label>
+                            @Html.DropDownListFor(model => model.CountryId, (List<SelectListItem>)ViewBag.Country, new { @class = "form-control select-2", @id = "ddCountryId", @onchange = "jsFunction(this.value)" })
+                        </div>
+                    </div>
+
+                    <div class="col-md-6 col-sm-6">
+                        <div class="form-group">
+                            <label>City Name</label>
+                            @Html.DropDownListFor(model => model.CityId, (List<SelectListItem>)ViewBag.City, new { @class = "form-control", @id = "CityId" })
+                        </div>
+                    </div>
+
+                    <div class="col-12">
+                        <div class="form-group">
+                            <label>Details</label>
+                            <textarea type="text" name="Details" rows="5" required class="form-control">@Model.Details</textarea>
+                        </div>
+                    </div>
+
+
+                    <div class="col-md-4 col-sm-4">
+                        <div class="form-group">
+                            <label>Status</label>
+                            <div class="switch">
+                                <label>
+                                    InActive
+                                    @if (Model.Status == "Active")
+                                    {
+                                        <input type="checkbox" checked="checked" name="Status" value="Active"><span class="lever"></span>
+                                    }
+                                    else
+                                    {
+                                        <input type="checkbox" name="Status" value="Active"><span class="lever"></span>
+                                    }
+                                    <input name="Status" type="hidden" value="InActive" />
+                                    Active
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    @*</div>*@
+                    <div class="col-12">
+                        <div class="form-group mb-0 text-right">
+                            @if (Model.AirportId > 0)
+                            {
+                                <button type="submit" class="btn btn-warning waves-effect waves-light">Reset</button>
+                            }
+                            else
+                            {
+                                <button type="submit" class="btn btn-success waves-effect waves-light">Save</button>
+                            }
+                            <a href="@Url.RouteUrl("Admin_Airport_List")" class="btn btn-dark waves-effect waves-light">
+                                Close
+                            </a>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+        @*</form>*@
+        <!-- ============================================================== -->
+    </div>
+</div>
+<!-- ============================================================== -->
+<!-- End Container fluid  -->
+
+
+<script>
+    function jsFunction(value) {
+        $.ajax({
+            async: true,
+            crossDomain: true,
+            type: "GET",
+
+            url: "/admin/get/city/by/countryId?countryId=" + value,
+            success: function (data) {
+                console.log(data);
+                //var city = data.data.cities;
+                var s = '<option value="-1">Please Select a City</option>';
+                for (var i = 0; i < data.length; i++) {
+                    s += '<option value="' + data[i].CityId + '">' + data[i].CityName + '</option>';
+                }
+                $("#CityId").html(s);
+            }
+        });
+    }
+</script>

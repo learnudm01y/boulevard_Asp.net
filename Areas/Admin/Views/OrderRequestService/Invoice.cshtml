@@ -1,0 +1,752 @@
+﻿@model Boulevard.Models.OrderRequestService
+@{
+    ViewBag.Title = "Invoice";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+
+<style type="text/css">
+    table, th, td {
+        border: 1px solid black;
+        border-collapse: collapse;
+        text-align: center;
+    }
+
+    .card-header {
+        padding: .75rem 1.25rem;
+        margin-bottom: 0;
+        background-color: rgba(0, 0, 0, .03);
+        border-bottom: 0 solid rgba(0, 0, 0, .125);
+    }
+
+    .bg-dark {
+        background-color: #263238 !important;
+        color: #fff;
+    }
+
+    .element {
+        print-color-adjust: economy;
+    }
+
+    /*    table {
+        width: 500px;
+    }*/
+</style>
+
+<div class="page-wrapper">
+    <div class="container-fluid">
+        <!-- ============================================================== -->
+        <!-- Bread crumb and right sidebar toggle -->
+        <!-- ============================================================== -->
+        <div class="row page-titles">
+            <div class="col-md-5 col-12 align-self-center">
+                <h3 class="text-themecolor mb-0"> @Model.FeatureCategory.Name Service Details</h3>
+            </div>
+            <div class="col-md-7 col-12 align-self-center d-none d-md-block">
+                <ol class="breadcrumb mb-0 p-0 bg-transparent float-right">
+                    <li class="breadcrumb-item active"><a href="@Url.RouteUrl("Admin_Order_Request_Service_List")">Order Service</a></li>
+                    <li class="breadcrumb-item active"> @Model.FeatureCategory.Name Service Details</li>
+                </ol>
+            </div>
+        </div>
+        <!-- ============================================================== -->
+        <!-- End Bread crumb and right sidebar toggle -->
+        <!-- ============================================================== -->
+        <!--order list-->
+        @*<form>*@
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-body">
+                        <h4 class="card-title">@Model.FeatureCategory.Name Order Service Details</h4>
+                        <button class="btn btn-xs btn-success float-right" style="margin-top: -36px;" id="btnPrint" onclick="Print()"><i class="fas fa-print"></i> print</button>
+                    </div>
+                    <hr>
+                    <div class="col-xl-10 col-lg-12 col-md-12 col-sm-12 col-12 mx-auto" id="print">
+                        <div class="card">
+                            <div class="card-header p-4">
+                                <a><img style="height: 70px; width: 170px;" src="~/Areas/Admin/Content/assets/images/logoBlack.png"></a>
+                                <div class="float-right">
+                                    <h3 class="mb-0">Booking ID: @Model.BookingId</h3>
+                                    <span>Booking Date: <strong>@Model.BookingDate.ToShortDateString()</strong></span>
+                                    <p class="mb-0">Booking Status : <strong>@Model.BookingStatus</strong></p>
+                                </div>
+                            </div>
+                            <h3 class="bg-dark text-white text-center py-2">Invoice</h3>
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between mb-4">
+                                    <div class="">
+                                        <h5 class="mb-3">To:</h5>
+                                        <h3 class="text-dark mb-1">@Model.Member.Name</h3>
+                                        <div>Email: @Model.Member.Email</div>
+                                        <div>Phone: @Model.Member.PhoneNumber</div>
+
+                                    </div>
+                                </div>
+
+                            </div>
+                            <div class="card-body">
+                                <div class="row" style="font-size:20px; color:black">
+                                    @*<input type="hidden" name="MemberId" class="form-control" value="@Model.MemberId">*@
+
+                                    @if (ViewBag.FCatagoryKey == "dd501b2d-fe22-4c31-b340-1b4237fab5cc")
+                                    {
+                                        <div class="col-lg-6 col-md-6 col-sm-12">
+                                            <div class="row col-12 table-bordered">
+                                                <div class="col-md-4 col-sm-4">Enquery Id</div>
+                                                <div class="col-md-1 col-sm-1">:</div>
+                                                <div class="col-md-7 col-sm-7">@Model.BookingId</div>
+                                            </div>
+                                            <div class="row col-12 table-bordered">
+                                                <div class="col-md-4 col-sm-4">Enquery Date</div>
+                                                <div class="col-md-1 col-sm-1">:</div>
+                                                <div class="col-md-7 col-sm-7">@Model.BookingDate.ToShortDateString()</div>
+                                            </div>
+                                            <div class="row col-12 table-bordered">
+                                                <div class="col-md-4 col-sm-4">Enquery Time</div>
+                                                <div class="col-md-1 col-sm-1">:</div>
+                                                <div class="col-md-7 col-sm-7">@Model.BookingDate.ToShortTimeString()</div>
+                                            </div>
+                                            <div class="row col-12 table-bordered">
+                                                <div class="col-md-4 col-sm-4">Enquery Member Type</div>
+                                                <div class="col-md-1 col-sm-1">:</div>
+                                                <div class="col-md-7 col-sm-7">@Model.BookingMemberType</div>
+                                            </div>
+                                            <div class="row col-12 table-bordered">
+                                                <div class="col-md-4 col-sm-4">Enquery Status</div>
+                                                <div class="col-md-1 col-sm-1">:</div>
+                                                <div class="col-md-7 col-sm-7">@Model.BookingStatus</div>
+                                            </div>
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <div class="col-lg-6 col-md-6 col-sm-12">
+                                            <div class="row col-12 table-bordered">
+                                                <div class="col-md-4 col-sm-4">Booking Id</div>
+                                                <div class="col-md-1 col-sm-1">:</div>
+                                                <div class="col-md-7 col-sm-7">@Model.BookingId</div>
+                                            </div>
+                                            <div class="row col-12 table-bordered">
+                                                <div class="col-md-4 col-sm-4">Booking Date</div>
+                                                <div class="col-md-1 col-sm-1">:</div>
+                                                <div class="col-md-7 col-sm-7">@Model.BookingDate.ToShortDateString()</div>
+                                            </div>
+                                            <div class="row col-12 table-bordered">
+                                                <div class="col-md-4 col-sm-4">Booking Time</div>
+                                                <div class="col-md-1 col-sm-1">:</div>
+                                                <div class="col-md-7 col-sm-7">@Model.BookingDate.ToShortTimeString()</div>
+                                            </div>
+                                            <div class="row col-12 table-bordered">
+                                                <div class="col-md-4 col-sm-4">Booking Member Type</div>
+                                                <div class="col-md-1 col-sm-1">:</div>
+                                                <div class="col-md-7 col-sm-7">@Model.BookingMemberType</div>
+                                            </div>
+                                            <div class="row col-12 table-bordered">
+                                                <div class="col-md-4 col-sm-4">Booking Status</div>
+                                                <div class="col-md-1 col-sm-1">:</div>
+                                                <div class="col-md-7 col-sm-7">@Model.BookingStatus</div>
+                                            </div>
+                                        </div>
+                                    }
+                                    <div class="col-lg-6 col-md-6 col-sm-12">
+                                        @if (Model.FirstName == null && Model.LastName == null)
+                                        {
+
+                                            <div class="row col-12 table-bordered">
+                                                <div class="col-md-4 col-sm-4">Member Name</div>
+                                                <div class="col-md-1 col-sm-1">:</div>
+                                                <div class="col-md-7 col-sm-7">@Model.Member.Name</div>
+                                            </div>
+                                        }
+                                        else
+                                        {
+                                            <div class="row col-12 table-bordered">
+                                                <div class="col-md-4 col-sm-4">Member Name</div>
+                                                <div class="col-md-1 col-sm-1">:</div>
+                                                <div class="col-md-7 col-sm-7">@Model.MemberNameTitle @Model.FirstName @Model.LastName</div>
+                                            </div>
+                                        }
+                                        @if (Model.Email == null)
+                                        {
+                                            <div class="row col-12 table-bordered">
+                                                <div class="col-md-4 col-sm-4">Phone No</div>
+                                                <div class="col-md-1 col-sm-1">:</div>
+                                                <div class="col-md-7 col-sm-7">@Model.Member.PhoneNumber</div>
+                                            </div>
+                                        }
+                                        else
+                                        {
+                                            <div class="row col-12 table-bordered">
+                                                <div class="col-md-4 col-sm-4">Phone No</div>
+                                                <div class="col-md-1 col-sm-1">:</div>
+                                                <div class="col-md-7 col-sm-7">@Model.PhoneNo</div>
+                                            </div>
+                                        }
+                                        @if (Model.Email == null)
+                                        {
+                                            <div class="row col-12 table-bordered">
+                                                <div class="col-md-4 col-sm-4">Email</div>
+                                                <div class="col-md-1 col-sm-1">:</div>
+                                                <div class="col-md-7 col-sm-7">@Model.Member.Email</div>
+                                            </div>
+                                        }
+                                        else
+                                        {
+                                            <div class="row col-12 table-bordered">
+                                                <div class="col-md-4 col-sm-4">Email</div>
+                                                <div class="col-md-1 col-sm-1">:</div>
+                                                <div class="col-md-7 col-sm-7">@Model.Email</div>
+                                            </div>
+                                        }
+                                        @*<div class="row col-12 table-bordered">
+                                                <div class="col-md-4 col-sm-4"> Name</div>
+                                                <div class="col-md-1 col-sm-1">:</div>
+                                                <div class="col-md-7 col-sm-7">@Model.Name</div>
+                                            </div>*@
+                                        @if (Model.IsPackage != true)
+                                        {
+                                            <div class="row col-12 table-bordered">
+                                                <div class="col-md-4 col-sm-4">Extra Charge</div>
+                                                <div class="col-md-1 col-sm-1">:</div>
+                                                <div class="col-md-7 col-sm-7">@Model.ExtraCharge</div>
+                                            </div>
+                                            @*<div class="row col-12 table-bordered">
+                                                    <div class="col-md-4 col-sm-4">Gross Price</div>
+                                                    <div class="col-md-1 col-sm-1">:</div>
+                                                    <div class="col-md-7 col-sm-7">@Model.GrossPrice</div>
+                                                </div>*@
+
+                                            <div class="row col-12 table-bordered">
+                                                <div class="col-md-4 col-sm-4">Total Price</div>
+                                                <div class="col-md-1 col-sm-1">:</div>
+                                                <div class="col-md-7 col-sm-7">@Model.TotalPrice</div>
+                                            </div>
+                                        }
+                                        @*<div class="row col-12 table-bordered">
+                                                <div class="col-md-4 col-sm-4">Booking Status</div>
+                                                <div class="col-md-1 col-sm-1">:</div>
+                                                <div class="col-md-7 col-sm-7">@Model.OrderRequestService.BookingStatus</div>
+                                            </div>*@
+
+                                        @if (ViewBag.FCatagoryKey == "b3e3e680-c8ef-4ab2-a4ac-d75bb48a3647")
+                                        {
+                                            <div class="row col-12 table-bordered">
+                                                <div class="col-md-4 col-sm-4">Vehical Brand</div>
+                                                <div class="col-md-1 col-sm-1">:</div>
+                                                <div class="col-md-7 col-sm-7">@Model.MemberVehicalInfo.Brand.Title</div>
+                                            </div>
+                                            @*<div class="row col-12 table-bordered">
+                                                    <div class="col-md-4 col-sm-4">Vehical Brand Details</div>
+                                                    <div class="col-md-1 col-sm-1">:</div>
+                                                    <div class="col-md-7 col-sm-7">@Model.MemberVehicalInfo.Brand.Details</div>
+                                                </div>*@
+                                            <div class="row col-12 table-bordered">
+                                                <div class="col-md-4 col-sm-4">Vehical Model Name</div>
+                                                <div class="col-md-1 col-sm-1">:</div>
+                                                <div class="col-md-7 col-sm-7">@Model.MemberVehicalInfo.VehicalModel.VehicalModelName</div>
+                                            </div>
+                                            @*<div class="row col-12 table-bordered">
+                                                    <div class="col-md-4 col-sm-4">Vehical Model Details</div>
+                                                    <div class="col-md-1 col-sm-1">:</div>
+                                                    <div class="col-md-7 col-sm-7">@Model.MemberVehicalInfo.VehicalModel.ModelDetails</div>
+                                                </div>*@
+                                            <div class="row col-12 table-bordered">
+                                                <div class="col-md-4 col-sm-4">Vehical Model Year</div>
+                                                <div class="col-md-1 col-sm-1">:</div>
+                                                <div class="col-md-7 col-sm-7">@Model.MemberVehicalInfo.Year</div>
+                                            </div>
+                                            <div class="row col-12 table-bordered">
+                                                <div class="col-md-4 col-sm-4">Vehical Model PlateNo</div>
+                                                <div class="col-md-1 col-sm-1">:</div>
+                                                <div class="col-md-7 col-sm-7">@Model.MemberVehicalInfo.PlateNo</div>
+                                            </div>
+                                        }
+                                        @if (ViewBag.FCatagoryKey != "dd501b2d-fe22-4c31-b340-1b4237fab5cc")
+                                        {
+                                            <div class="row col-12 table-bordered">
+                                                <div class="col-md-4 col-sm-4">Payment Status</div>
+                                                <div class="col-md-1 col-sm-1">:</div>
+                                                <div class="col-md-7 col-sm-7">@Model.PaymentStatus</div>
+                                            </div>
+                                        }
+                                        @if (ViewBag.FCatagoryKey == "6440039b-6e5a-4e65-a0e4-f38b69c46c8c" || ViewBag.FCatagoryKey == "2cdcebcf-ba2c-4c2c-9c53-f32c06233ffd")
+                                        {
+                                            <div class="row col-12 table-bordered">
+                                                <div class="col-md-4 col-sm-4">IsPackage?</div>
+                                                <div class="col-md-1 col-sm-1">:</div>
+                                                @if (Model.IsPackage == true)
+                                                {
+                                                    <div class="col-md-7 col-sm-7"><strong style="color:green">YES</strong></div>
+                                                }
+                                                else
+                                                {
+                                                    <div class="col-md-7 col-sm-7"><strong style="color:red">NO</strong></div>
+                                                }
+                                            </div>
+                                        }
+                                        @if (ViewBag.FCatagoryKey == "f4309df5-9121-41ad-831a-994c46b62766")
+                                        {
+                                            <div class="row col-12 table-bordered">
+                                                <div class="col-md-4 col-sm-4">Is Approved By Admin</div>
+                                                <div class="col-md-1 col-sm-1">:</div>
+                                                @if (Model.IsApprovedByAdmin == true)
+                                                {
+                                                    <div class="col-md-7 col-sm-7"><strong style="color:green; font-size:20px;">YES</strong></div>
+                                                }
+                                                else
+                                                {
+                                                    <div class="col-md-7 col-sm-7"><strong style="color:red; font-size:20px;">NO</strong></div>
+                                                }
+                                            </div>
+                                        }
+
+                                        @if (ViewBag.FCatagoryKey == "c286a46b-5b9a-4519-bb10-8d47ec254ffb" && Model.IsApprovedByAdmin == true)
+                                        {
+                                            //if(Model.IsApprovedByAdmin == true)
+                                            //{ }
+                                            <div class="row col-12 table-bordered">
+                                                <div class="col-md-4 col-sm-4">Quoted Price</div>
+                                                <div class="col-md-1 col-sm-1">:</div>
+                                                <div class="col-md-7 col-sm-7">@Model.QuotedPrice</div>
+                                            </div>
+
+                                            <div class="row col-12 table-bordered">
+                                                <div class="col-md-4 col-sm-4">Quotation Note</div>
+                                                <div class="col-md-1 col-sm-1">:</div>
+                                                <div class="col-md-7 col-sm-7">@Model.QuotationNote</div>
+                                            </div>
+                                        }
+
+                                        @if (ViewBag.FCatagoryKey == "6440039b-6e5a-4e65-a0e4-f38b69c46c8c")
+                                        {
+                                            if (Model.InTime.HasValue == true)
+                                            {
+
+                                                <div class="row col-12 table-bordered">
+                                                    <div class="col-md-4 col-sm-4">Checkin Time</div>
+                                                    <div class="col-md-1 col-sm-1">:</div>
+                                                    <div class="col-md-7 col-sm-7">@Model.InTime.Value.ToShortDateString() @Model.InTime.Value.ToShortTimeString()</div>
+                                                </div>
+                                            }
+                                            if (Model.OutTime.HasValue == true)
+                                            {
+
+                                                <div class="row col-12 table-bordered">
+                                                    <div class="col-md-4 col-sm-4">Checkout Time</div>
+                                                    <div class="col-md-1 col-sm-1">:</div>
+                                                    <div class="col-md-7 col-sm-7">@Model.OutTime.Value.ToShortDateString() @Model.OutTime.Value.ToShortTimeString()</div>
+                                                </div>
+                                            }
+                                        }
+
+                                        @if (ViewBag.FCatagoryKey == "2cdcebcf-ba2c-4c2c-9c53-f32c06233ffd")
+                                        {
+                                            if (Model.InTime.HasValue == true)
+                                            {
+
+                                                <div class="row col-12 table-bordered">
+                                                    <div class="col-md-4 col-sm-4">Departure</div>
+                                                    <div class="col-md-1 col-sm-1">:</div>
+                                                    <div class="col-md-7 col-sm-7">@Model.InTime.Value.ToShortDateString() @Model.InTime.Value.ToShortTimeString()</div>
+                                                </div>
+                                            }
+                                            if (Model.OutTime.HasValue == true)
+                                            {
+
+                                                <div class="row col-12 table-bordered">
+                                                    <div class="col-md-4 col-sm-4">Return</div>
+                                                    <div class="col-md-1 col-sm-1">:</div>
+                                                    <div class="col-md-7 col-sm-7">@Model.OutTime.Value.ToShortDateString() @Model.OutTime.Value.ToShortTimeString()</div>
+                                                </div>
+                                            }
+                                        }
+
+                                        @if (ViewBag.FCatagoryKey == "f4309df5-9121-41ad-831a-994c46b62766" || ViewBag.FCatagoryKey == "c286a46b-5b9a-4519-bb10-8d47ec254ffb")
+                                        {
+                                            <div class="row col-12 table-bordered">
+                                                <div class="col-md-4 col-sm-4">Passport Copy</div>
+                                                <div class="col-md-1 col-sm-1">:</div>
+                                                <div class="col-md-7 col-sm-7">
+                                                    <div class="row">
+                                                        <div class="col-12">
+                                                            <div class="action-icon">
+                                                                <button type="button" class="btn btn-close-white" data-toggle="modal" data-target="#myModal"><i class="fa fa-eye" aria-hidden="true"></i></button>
+                                                                @*<a data-fancybox data-src="@Model.OrderRequestService.PassportCopy" href="javascript:void(0);"> <i class="fa fa-eye" aria-hidden="true"></i></a>*@
+                                                                <a href="/@Model.PassportCopy" download="@Model.Member.Name-Passport-Copy"> <i class="fa fa-download" aria-hidden="true"></i></a>
+
+                                                            </div>
+                                                            @*<a href="@Model.DriverLicensePicture" target="_blank">Driver's License</a>*@
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        }
+
+
+                                        <div id="myModal" class="modal fade" tabindex="-1" role="dialog">
+                                            <div class="modal-dialog" style="max-width:fit-content">
+                                                <div class="modal-content">
+                                                    <div class="modal-body">
+                                                        <img src="/@Model.PassportCopy" class="img-responsive">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        @if (ViewBag.FCatagoryKey == "c286a46b-5b9a-4519-bb10-8d47ec254ffb" && Model.IsApprovedByAdmin == true)
+                                        {
+                                            <div class="row col-12 table-bordered">
+                                                <div class="col-md-4 col-sm-4">Quotation File Link</div>
+                                                <div class="col-md-1 col-sm-1">:</div>
+                                                <div class="col-md-7 col-sm-7">
+                                                    <div class="row">
+                                                        <div class="col-12">
+                                                            <div class="action-icon">
+                                                                <button type="button" class="btn btn-close-white" data-toggle="modal" data-target="#myModalPDF"><i class="fa fa-file-pdf" aria-hidden="true"></i></button>
+                                                                @*<a href="/@Model.QuotationFileLink" target="_blank" class="btn btn-close-white" data-toggle="modal" data-target="#myModalPDF"><i class="fa fa-file-pdf" aria-hidden="true"></i></a>*@
+                                                                @*<a data-fancybox data-src="@Model.OrderRequestService.PassportCopy" href="javascript:void(0);"> <i class="fa fa-eye" aria-hidden="true"></i></a>*@
+                                                                <a href="/@Model.QuotationFileLink" download="@Model.Member.Name-Quotation-File-PDF"> <i class="fa fa-download" aria-hidden="true"></i></a>
+
+                                                            </div>
+                                                            @*<a href="@Model.DriverLicensePicture" target="_blank">Driver's License</a>*@
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        }
+
+                                    </div>
+                                    <div id="myModalPDF" class="modal fade" tabindex="-1" role="dialog">
+                                        <div class="modal-dialog" style="max-width:fit-content">
+                                            <div class="modal-content">
+                                                <div class="modal-body">
+                                                    <embed src="/@Model.QuotationFileLink" width="800px" height="2100px" />
+                                                    @*<img src="/@Model.QuotationFileLink" class="img-responsive">*@
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                @if (ViewBag.FCatagoryKey == "f4309df5-9121-41ad-831a-994c46b62766")
+                                {
+                                    if (Model.IsApprovedByAdmin == false)
+                                    {
+                                        <div class="col-12" style="margin-top:20px;">
+                                            <button class="btn btn-outline-success" onclick="Approved('@Model.OrderRequestServiceId')">Approved</button>
+                                        </div>
+                                    }
+                                }
+
+
+
+                                <div class="row col-12">
+
+                                </div>
+                                <br />
+                                <br />
+                                @if (ViewBag.FCatagoryKey == "c286a46b-5b9a-4519-bb10-8d47ec254ffb" && Model.IsApprovedByAdmin != true)
+                                {
+                                    <div class="col-sm-3 col-xs-3">
+                                        <button type="button" class="btn btn-outline-warning" data-toggle="modal" data-target="#login-modal"><strong style="font-size:25px;">Quotation</strong></button>
+                                    </div>
+                                }
+                                <div id="login-modal" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">
+                                    <div class="modal-dialog">
+                                        <div class="modal-content">
+                                            <div class="modal-body">
+                                                @*<div class="text-center mt-2 mb-4">
+                                                        <a href="index.html" class="text-success">
+                                                            <span>
+                                                                <img class="mr-2" src="../assets/images/logo-icon.png"
+                                                                     alt="" height="18"><img src="../assets/images/logo-text.png" alt=""
+                                                                                             height="18">
+                                                            </span>
+                                                        </a>
+                                                    </div>*@
+                                                @using (Html.BeginForm("Quotation", "OrderRequestService", FormMethod.Post, new { @class = "form-horizontal m-t-40", enctype = "multipart/form-data" }))
+                                                {
+                                                    @Html.AntiForgeryToken()
+                                                    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                                                    <input type="hidden" name="orderRequestServiceId" class="form-control" value="@Model.OrderRequestServiceId">
+                                                    <form action="#" class="pl-3 pr-3">
+
+                                                        <div class="form-group">
+                                                            <label for="quotedPrice">Quoted Price</label>
+                                                            <input class="form-control" type="number" name="quotedPrice" id="quotedPrice" required
+                                                                   placeholder="Enter amount">
+                                                        </div>
+
+                                                        <div class="form-group">
+                                                            <label for="quotationNote">Quotation Note</label>
+                                                            <textarea class="form-control" type="text" rows="5" name="quotationNote" required
+                                                                      id="quotationNote" placeholder="Enter quotation Note"></textarea>
+                                                        </div>
+
+                                                        <div class="form-group">
+                                                            <label for="quotationFileLink">Quotation File</label>
+                                                            <input type="file" name="quotationFileLink" id="quotationFileLinkID" accept="application/pdf" required />
+                                                        </div>
+
+                                                        <div class="form-group text-center">
+                                                            <button class="btn btn-rounded btn-primary" type="submit">
+                                                                SUBMIT
+                                                            </button>
+                                                        </div>
+
+                                                    </form>
+                                                }
+                                            </div>
+                                        </div><!-- /.modal-content -->
+                                    </div><!-- /.modal-dialog -->
+                                </div><!-- /.modal -->
+
+                                <div class="row">
+                                    <div class="col-md-12 col-sm-12">
+                                        @*<h1>Order Details</h1>*@
+                                        <div class="form-group" style="text-align:center">
+                                            <h1>@Model.FeatureCategory.Name Service Type List</h1>
+                                            @*<label style="font-size:30px">Total Price : @Model.TotalPrice</label>*@
+                                        </div>
+                                    </div>
+                                    <div class="table-responsive">
+
+                                        <table id="zero_config1" class="table table-striped table-bordered" cellspacing="0" width="100%">
+                                            <thead>
+                                                <tr>
+
+                                                    <th>Service Type</th>
+                                                    <th>Service Name</th>
+                                                    @if (ViewBag.FCatagoryKey == "dd501b2d-fe22-4c31-b340-1b4237fab5cc")
+                                                    {
+                                                        <th>Rooms</th>
+                                                        <th>Bathrooms</th>
+                                                    }
+                                                    else
+                                                    {
+                                                        <th>Quantity</th>
+                                                    }
+                                                    <th>Description</th>
+                                                    @if (ViewBag.FCatagoryKey == "6440039b-6e5a-4e65-a0e4-f38b69c46c8c")
+                                                    {
+                                                        <th>Size</th>
+                                                    }
+                                                    @if (ViewBag.FCatagoryKey != "dd501b2d-fe22-4c31-b340-1b4237fab5cc")
+                                                    {
+                                                        if (ViewBag.Package != true)
+                                                        {
+                                                            <th>Price</th>
+                                                            <th>Offer Name</th>
+
+                                                            <th>Discount Name</th>
+
+                                                            <th>Offer Discount</th>
+                                                        }
+                                                    }
+                                                    @if (ViewBag.FCatagoryKey == "dd501b2d-fe22-4c31-b340-1b4237fab5cc")
+                                                    {
+                                                        <th>Payment Status</th>
+                                                    }
+                                                    <th>Image</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @if (Model.OrderRequestServiceDetailList != null)
+                                                {
+                                                    foreach (var node in Model.OrderRequestServiceDetailList)
+                                                    {
+                                                        <tr>
+                                                            <td>@node.ServiceType.ServiceTypeName</td>
+                                                            <td>@node.Service.Name</td>
+                                                            @if (ViewBag.FCatagoryKey == "dd501b2d-fe22-4c31-b340-1b4237fab5cc")
+                                                            {
+                                                                <td>@node.ServiceType.AdultQuantity</td>
+                                                                <td>@node.ServiceType.ChildrenQuantity</td>
+                                                            }
+                                                            else
+                                                            {
+                                                                <td>@node.ServiceType.PersoneQuantity</td>
+                                                            }
+                                                            <td>@node.ServiceType.Description</td>
+                                                            @if (ViewBag.FCatagoryKey == "6440039b-6e5a-4e65-a0e4-f38b69c46c8c")
+                                                            {
+                                                                <td>@node.ServiceType.Size</td>
+                                                            }
+                                                            @if (ViewBag.FCatagoryKey != "dd501b2d-fe22-4c31-b340-1b4237fab5cc")
+                                                            {
+                                                                if (Model.IsPackage != true)
+                                                                {
+                                                                    <td>@node.GrossPrice</td>
+
+                                                                    @*<td>@node.OfferName</td>*@
+                                                                    if (node.IsOffer == true)
+                                                                    {
+                                                                        <td>@node.OfferName</td>
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        <td>
+                                                                            <h5>No Offer Found</h5>
+                                                                        </td>
+                                                                    }
+                                                                    if (node.IsMemberShipOffer == true)
+                                                                    {
+                                                                        <td>@node.MemberShipName</td>
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        <td>
+                                                                            <h5>No Offer Found</h5>
+                                                                        </td>
+                                                                    }
+                                                                    if (!string.IsNullOrEmpty(node.OfferDiscountType))
+                                                                    {
+                                                                        if (node.OfferDiscountType == "Percentage")
+                                                                        {
+                                                                            <td>@node.DiscountAmount %</td>
+                                                                        }
+                                                                        else
+                                                                        {
+                                                                            <td>@node.DiscountAmount AED</td>
+                                                                        }
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        <td>@node.DiscountAmount</td>
+                                                                    }
+                                                                }
+                                                            }
+                                                            @if (ViewBag.FCatagoryKey == "dd501b2d-fe22-4c31-b340-1b4237fab5cc")
+                                                            {
+                                                                <td>@node.OrderRequestService.PaymentStatus</td>
+                                                            }
+                                                            <td>
+                                                                @if (!string.IsNullOrEmpty(node.ServiceType.Image))
+                                                                {
+                                                                    <img src="@node.ServiceType.Image" style="max-width:50px;max-height:50px;">
+                                                                }
+                                                                else
+                                                                {
+                                                                    <img src="~/Areas/Admin/Content/assets/images/no-preview.jpg" style="max-width:50px;max-height:50px;">
+                                                                }
+                                                            </td>
+                                                        </tr>
+                                                    }
+                                                }
+                                            </tbody>
+                                        </table>
+
+                                    </div>
+                                </div>
+
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        @*<div class="card">
+                <div class="card-header">
+                    @Model.FeatureCategory.Name Order Service Details
+                </div>
+
+            </div>
+
+            <div class="card">
+                <div class="card-body">
+
+
+                </div>
+
+            </div>*@
+        @*</form>*@
+        <!-- ============================================================== -->
+    </div>
+</div>
+
+<script>
+  
+    function Print() {
+        var divElement = document.getElementById('print').innerHTML;
+        var fullPage = document.body.innerHTML;
+
+        document.body.innerHTML = divElement;
+
+        window.print();
+        document.body.innerHTML = fullPage;
+    }
+</script>
+
+
+
+<script type="text/javascript">
+
+    $('#quotationFileLinkID').on('change', function () {
+
+        var fileExtension = ['pdf'];
+        if ($.inArray($(this).val().split('.').pop().toLowerCase(), fileExtension) == -1) {
+            Swal.fire("Please upload the Quotation File in pdf formate");
+
+            this.value = "";
+        }
+        //this.files[0].size gets the size of your file.
+        var size = this.files[0].size;
+
+        if (size > 3145728) {
+            Swal.fire("File Size is greater Than 3 MB");
+
+            this.value = "";
+            return false;
+        }
+
+    });
+
+
+    function Approved(id) {
+        const swalWithBootstrapButtons = Swal.mixin({
+            customClass: {
+                confirmButton: 'btn btn-success',
+                cancelButton: 'mr-2 btn btn-danger'
+            },
+            buttonsStyling: false,
+            animation: false,
+            allowOutsideClick: false
+        })
+
+        swalWithBootstrapButtons.fire({
+            title: 'Are you sure?',
+            text: "You won't be able to revert this!",
+            type: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Yes, Approved it!',
+            cancelButtonText: 'No, cancel!',
+            reverseButtons: true
+        }).then((result) => {
+            if (result.value) {
+                swalWithBootstrapButtons.fire(
+                    'Approved!',
+                    'Your file has been approved.',
+                    'success',
+
+                ).then((sucess) => {
+                    // Fire Delete Method
+                    $.ajax({
+                        url: "@Url.Action("Approved", "OrderRequestService")",
+                        data: { orderRequestServiceId: id },
+                        type: "post",
+                        success: function (response) {
+                            location.reload();
+                            //window.location = window.orderRequestServiceId;
+                        },
+                        error: function (jqXHR, textStatus, errorThrown) {
+                            console.log(textStatus, errorThrown);
+                        }
+                    });
+                })
+
+            }
+        })
+    }
+
+</script>
+

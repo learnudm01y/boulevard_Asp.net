@@ -1,0 +1,147 @@
+﻿@{
+    ViewBag.Title = "Update";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+    string activeChk = "";
+    string PageTitle = "", ButtonTitle = "";
+
+}
+
+<div class="page-wrapper">
+    <div class="container-fluid">
+        <div class="row page-titles">
+            <div class="col-md-5 col-12 align-self-center">
+                <h3 class="text-themecolor mb-0">Chocolate  & Flawer Brand</h3>
+            </div>
+            <div class="col-md-7 col-12 align-self-center d-none d-md-block">
+                <ol class="breadcrumb mb-0 p-0 bg-transparent float-right">
+                </ol>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-body">
+
+                <div class="row align-items-center mb-3">
+                    <div class="col-md-5 col-12 align-self-center">
+                        <h3>Update</h3>
+                    </div>
+                    <div class="col-md-7 col-12 align-self-center d-none d-md-block">
+                        <ol class="breadcrumb mb-0 p-0 bg-transparent float-right">
+                            <li class="breadcrumb-item active"><a href="@Url.RouteUrl("Admin_ChocolateAndFlawerBrandTestIndex")">Chocolate  & Flawer Brand</a></li>
+                            <li class="breadcrumb-item active">Update</li>
+                        </ol>
+                    </div>
+
+                </div>
+                <hr>
+
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-12 col-md-6 col-lg-6">
+                            <div class="form-group">
+                                <label>Title*</label>
+                                <input type="text" name="Name" required class="form-control" value="Guylian Chocolate">
+                            </div>
+                        </div>
+                        @*<div class="col-12 col-md-6 col-lg-6">
+                            <div class="form-group">
+                                <label>Chocolate  & Flawer Category*</label>
+                                <select class="form-control custom-select select-2" name="Category" id="Category" required>
+                                    <option value="">Select</option>
+                                    <option value="true">Vegetable</option>
+                                    <option value="false">HairCare</option>
+                                    <option value="false" selected>Food</option>
+                                    <option value="false">Dairy & Desserts</option>
+                                </select>
+                            </div>
+                        </div>*@
+                    </div>
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="form-group">
+                                <label>Details*</label>
+                                <textarea type="text" name="Name" required class="form-control description" value="Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. ">Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. </textarea>
+                            </div>
+                        </div>
+
+                    </div>
+                    <div class="row">
+                        <div class="col-lg-4 col-md-6 col-sm-12">
+                            <div class="form-group">
+                                <label>Image</label>
+                                <input type="file" name="Image" accept="image/png, image/jpeg" class="form-control dropify" data-default-file="../../Areas/Admin/Content/assets/images/Test Image/images1.jpeg">
+                                @*<input type="file" name="Image" accept="image/png, image/jpeg" class="form-control dropify" data-default-file="../../Areas/Admin/Content/assets/images/Test Image/3d_miloactivgo_gh_400g-new_tin_hr.jpg">*@
+                            </div>
+                        </div>
+                        <div class="col-lg-4 col-md-6 col-sm-12">
+                            <div class="form-group">
+                                <label>Medium Image</label>
+                                <input type="file" name="Image" accept="image/png, image/jpeg" class="form-control dropify" data-default-file="../../Areas/Admin/Content/assets/images/Test Image/images1.jpeg">
+                            </div>
+                        </div>
+                        <div class="col-lg-4 col-md-6 col-sm-12">
+                            <div class="form-group">
+                                <label>Large Image</label>
+                                <input type="file" name="Image" accept="image/png, image/jpeg" class="form-control dropify" data-default-file="../../Areas/Admin/Content/assets/images/Test Image/images1.jpeg">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4 col-sm-4">
+                            <div class="form-group">
+                                <label>Is Feature</label>
+                                <div class="switch">
+                                    <label>
+                                        YES
+                                        @*@if (Model.IsFeature == true)
+                                            {
+                                                <input type="checkbox" checked="checked" name="IsFeature" value="true"><span class="lever"></span>
+                                            }
+                                            else
+                                            {*@
+                                        <input type="checkbox" name="IsFeature" value="true"><span class="lever"></span>
+                                        @*}*@
+                                        @*<input name="IsFeature" type="hidden" value="false" />*@
+                                        NO
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4 col-sm-4">
+                            <div class="form-group">
+                                <label>Is Trenbding</label>
+                                <div class="switch">
+                                    <label>
+                                        YES
+                                        @*@if (Model.IsTrenbding == true)
+                                            {
+                                                <input type="checkbox" checked="checked" name="IsTrenbding" value="true"><span class="lever"></span>
+                                            }
+                                            else
+                                            {*@
+                                        <input type="checkbox" name="IsTrenbding" value="true"><span class="lever"></span>
+                                        @*}*@
+                                        @*<input name="IsTrenbding" type="hidden" value="false" />*@
+                                        NO
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="form-group mb-0 text-right">
+
+                            <a href="@Url.RouteUrl("Admin_ChocolateAndFlawerBrandTestIndex")" type="submit" class="btn btn-warning waves-effect waves-light" id="submit-btn">Reset</a>
+                            <a href="@Url.RouteUrl("Admin_ChocolateAndFlawerBrandTestIndex")" class="btn btn-dark waves-effect waves-light">
+                                Close
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+

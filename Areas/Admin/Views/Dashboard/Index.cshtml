@@ -1,0 +1,627 @@
+﻿@model Boulevard.Areas.Admin.Data.DashboardViewModel
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+
+@* Chartist is loaded by _Scripts.cshtml (local copy) - no CDN duplicate needed *@
+
+<div class="page-wrapper">
+    <div class="container-fluid">
+        @*Admin Dashboard*@
+        <div class="row">
+            <div class="col-lg-4">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="d-flex">
+                            <div class="mr-3 align-self-center">
+                                <img src="~/Content/Logo/Sale.png" style="height:60px" alt="Sale" />
+                            </div>
+                            <div class="align-self-center">
+                                <h6 class="text-muted mt-2 mb-0">
+                                    Total Product Sales
+                                </h6>
+                                <h2><strong class="stat-tps">0</strong></h2>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-4">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="d-flex">
+                            <div class="mr-3 align-self-center">
+                                <img src="~/Content/Logo/Sale.png" style="height:60px" alt="Sale" />
+                            </div>
+                            <div class="align-self-center">
+                                <h6 class="text-muted mt-2 mb-0">
+                                    Total Service Sales
+                                </h6>
+                                <h2><strong class="stat-tss">0</strong></h2>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="d-flex">
+                            <div class="mr-3 align-self-center">
+                                <img src="~/Content/Logo/Category.png" style="height:60px" alt="Category" />
+                            </div>
+                            <div class="align-self-center">
+                                <h6 class="text-muted mt-2 mb-0">
+                                    Number Of Customer
+                                </h6>
+                                <h2><strong class="stat-tc">0</strong></h2>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="d-flex">
+                            <div class="mr-3 align-self-center">
+                                <img src="~/Content/Logo/Order.png"
+                                     style="height:60px" alt="Order" />
+                            </div>
+                            <div class="align-self-center">
+                                <h6 class="text-muted mt-2 mb-0">Total Number of Product Orders</h6>
+                                <h2><strong class="stat-tpo">0</strong></h2>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="d-flex">
+                            <div class="mr-3 align-self-center">
+                                <img src="~/Content/Logo/Order.png"
+                                     style="height:60px" alt="Order" />
+                            </div>
+                            <div class="align-self-center">
+                                <h6 class="text-muted mt-2 mb-0">Total Number of Service Orders</h6>
+                                <h2><strong class="stat-tso">0</strong></h2>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+        </div>
+
+        <div class="row">
+            <div class="col-lg-6 col-md-12">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="d-flex">
+                            <div>
+                                <h3 class="card-title m-b-5"><span class="lstick"></span>Product Orders Overview</h3>
+                            </div>
+                        </div>
+                        <div id="dashboard-sales-overview" class="ct-bar-chart p-relative" style="height:360px;"></div>
+                        <div class="stats-bar bg-light-info">
+                            <div class="row text-center">
+                                <div class="col-lg-4 col-md-4">
+                                    <div class="p-20">
+                                        <h6 class="m-b-0">Total Orders</h6>
+                                        <h3 class="m-b-0 stat-tpo">0</h3>
+                                    </div>
+                                </div>
+                                <div class="col-lg-4 col-md-4">
+                                    <div class="p-20">
+                                        <h6 class="m-b-0">This Month</h6>
+                                        <h3 class="m-b-0 stat-tpom">0</h3>
+                                    </div>
+                                </div>
+                                <div class="col-lg-4 col-md-4">
+                                    <div class="p-20">
+                                        <h6 class="m-b-0">This Week</h6>
+                                        <h3 class="m-b-0 stat-tpow">0</h3>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6 col-md-12">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="d-flex">
+                            <div>
+                                <h3 class="card-title m-b-5"><span class="lstick"></span>Product Sales Overview</h3>
+                            </div>
+                        </div>
+                        <div id="dashboard-bar-chart" class="p-relative" style="height:360px;"></div>
+                        <div class="stats-bar bg-light-info">
+                            <div class="row text-center">
+                                <div class="col-lg-4 col-md-4">
+                                    <div class="p-20">
+                                        <h6 class="m-b-0">Total Sales</h6>
+                                        <h3 class="m-b-0 stat-tps">0</h3>
+                                    </div>
+                                </div>
+                                <div class="col-lg-4 col-md-4">
+                                    <div class="p-20">
+                                        <h6 class="m-b-0">This Month</h6>
+                                        <h3 class="m-b-0 stat-tpsm">0</h3>
+                                    </div>
+                                </div>
+                                <div class="col-lg-4 col-md-4">
+                                    <div class="p-20">
+                                        <h6 class="m-b-0">This Week</h6>
+                                        <h3 class="m-b-0 stat-tpsw">0</h3>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-6 col-md-12">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="d-flex">
+                            <div>
+                                <h3 class="card-title m-b-5"><span class="lstick"></span>Service Orders Overview</h3>
+                            </div>
+                        </div>
+                        <div id="dashboard-service-sales-overview" class="ct-bar-chart p-relative" style="height:360px;"></div>
+                        <div class="stats-bar bg-light-info">
+                            <div class="row text-center">
+                                <div class="col-lg-4 col-md-4">
+                                    <div class="p-20">
+                                        <h6 class="m-b-0">Total Services</h6>
+                                        <h3 class="m-b-0 stat-tso">0</h3>
+                                    </div>
+                                </div>
+                                <div class="col-lg-4 col-md-4">
+                                    <div class="p-20">
+                                        <h6 class="m-b-0">This Month</h6>
+                                        <h3 class="m-b-0 stat-tsom">0</h3>
+                                    </div>
+                                </div>
+                                <div class="col-lg-4 col-md-4">
+                                    <div class="p-20">
+                                        <h6 class="m-b-0">This Week</h6>
+                                        <h3 class="m-b-0 stat-tsow">0</h3>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6 col-md-12">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="d-flex">
+                            <div>
+                                <h3 class="card-title m-b-5"><span class="lstick"></span>Service Sales Overview</h3>
+                            </div>
+                        </div>
+                        <div id="dashboard-service-bar-chart" class="p-relative" style="height:360px;"></div>
+                        <div class="stats-bar bg-light-info">
+                            <div class="row text-center">
+                                <div class="col-lg-4 col-md-4">
+                                    <div class="p-20">
+                                        <h6 class="m-b-0">Total Sales</h6>
+                                        <h3 class="m-b-0 stat-tss">0</h3>
+                                    </div>
+                                </div>
+                                <div class="col-lg-4 col-md-4">
+                                    <div class="p-20">
+                                        <h6 class="m-b-0">This Month</h6>
+                                        <h3 class="m-b-0 stat-tssm">0</h3>
+                                    </div>
+                                </div>
+                                <div class="col-lg-4 col-md-4">
+                                    <div class="p-20">
+                                        <h6 class="m-b-0">This Week</h6>
+                                        <h3 class="m-b-0 stat-tssw">0</h3>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+
+            <div class="col-lg-8">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="d-flex">
+                            <div>
+                                <h3 class="card-title m-b-5 font-semi-bold"><span class="lstick"></span>Newly Joined Customers</h3>
+                            </div>
+                        </div>
+
+                        <div class="table-responsive m-t-20">
+                            <table class="table nowrap table-striped table-bordered" cellspacing="0" width="100%">
+                                <thead>
+                                    <tr>
+                                        <th>Name</th>
+                                        <th style="text-align:center">Email</th>
+                                        <th style="text-align:center">Mobile</th>
+                                        @*<th style="text-align:center">Orders</th>*@
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @if (Model.Member != null && Model.Member.Count() > 0)
+                                    {
+                                        foreach (var modelData in Model.Member)
+                                        {
+                                        <tr>
+                                            <td>
+                                                @{
+                                                    string _mRaw = modelData.Image ?? "";
+                                                    string memberImgSrc;
+                                                    if (string.IsNullOrEmpty(_mRaw)) {
+                                                        memberImgSrc = Url.Content("~/Areas/Admin/Content/assets/images/no-preview.jpg");
+                                                    } else if (_mRaw.StartsWith("http://", StringComparison.OrdinalIgnoreCase) || _mRaw.StartsWith("https://", StringComparison.OrdinalIgnoreCase)) {
+                                                        var _mUri = new Uri(_mRaw);
+                                                        memberImgSrc = _mUri.Host.Contains(".") ? _mRaw : _mUri.PathAndQuery;
+                                                    } else {
+                                                        memberImgSrc = "/" + _mRaw.TrimStart(new char[]{(char)47});
+                                                    }
+                                                }
+                                                <img src="@memberImgSrc"
+                                                     onerror="this.onerror=null;this.src='@Url.Content("~/Areas/Admin/Content/assets/images/no-preview.jpg")';" 
+                                                     style="max-width:50px;max-height:50px;"> @modelData.Name
+                                            </td>
+                                            <td style="text-align:center">@modelData.Email</td>
+                                            <td style="text-align:center">@modelData.PhoneNumber</td>
+                                        </tr>
+                                        }
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="d-flex">
+                            <div>
+                                <h3 class="card-title m-b-5 font-semi-bold"><span class="lstick"></span>Top Categories</h3>
+                            </div>
+                        </div>
+
+                        <div class="table-responsive m-t-20">
+                            <table class="table nowrap table-striped table-bordered" cellspacing="0" width="100%">
+                                <thead>
+                                    <tr>
+                                        <th>Category</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var cat in Model.Categories)
+                                    {
+                                        <tr>
+                                            <td>
+                                                @{
+                                                    string _cRaw = cat.Image ?? "";
+                                                    string catImgSrc;
+                                                    if (string.IsNullOrEmpty(_cRaw)) {
+                                                        catImgSrc = Url.Content("~/Areas/Admin/Content/assets/images/no-preview.jpg");
+                                                    } else if (_cRaw.StartsWith("http://", StringComparison.OrdinalIgnoreCase) || _cRaw.StartsWith("https://", StringComparison.OrdinalIgnoreCase)) {
+                                                        var _cUri = new Uri(_cRaw);
+                                                        catImgSrc = _cUri.Host.Contains(".") ? _cRaw : _cUri.PathAndQuery;
+                                                    } else {
+                                                        catImgSrc = "/" + _cRaw.TrimStart(new char[]{(char)47});
+                                                    }
+                                                }
+                                                <img src="@catImgSrc"
+                                                     onerror="this.onerror=null;this.src='@Url.Content("~/Areas/Admin/Content/assets/images/no-preview.jpg")';" 
+                                                     style="max-width:50px;max-height:50px;"> @cat.Name <strong>(<span class="cat-count" data-cat="@cat.FeatureCategoryId">...</span>)</strong>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+@* jQuery and Chart.js are provided by the layout - no CDN duplicates needed *@
+
+
+
+
+<script type="text/javascript">
+
+    $(document).ready(function () {
+        //alert("ss");
+        function OnSuccess(response) {
+            var result = response;
+            var arraySeries = [];
+
+            $.map(result, function (item, index) {
+                arraySeries.push(item);
+            });
+
+            console.log(arraySeries);
+            "use strict";
+            // ==============================================================
+            // Sales overview
+            // ==============================================================
+            new Chartist.Line('#dashboard-sales-overview', {
+                labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+                series: [
+                    {
+                        meta: "Product Orders",
+                        data: arraySeries
+                    }
+                ]
+            }, {
+                low: 0,
+                high: 250,
+                showArea: true,
+                divisor: 10,
+                lineSmooth: false,
+                fullWidth: true,
+                showLine: true,
+                chartPadding: 30,
+                axisX: {
+                    showLabel: true,
+                    showGrid: false,
+                    offset: 50
+                },
+                plugins: [
+                    Chartist.plugins.tooltip()
+                ],
+                // As this is axis specific we need to tell Chartist to use whole numbers only on the concerned axis
+                axisY: {
+                    onlyInteger: true,
+                    showLabel: true,
+                    scaleMinSpace: 50,
+                    showGrid: true,
+                    offset: 10,
+                    labelInterpolationFnc: function (value) {
+                        return (value);
+                        //return (value / 10000) + '10k';
+                    },
+
+                }
+
+            });
+
+        };
+        function OnSuccessNew(response) {
+            var result = response;
+            var arraySeries = [];
+
+            $.map(result, function (item, index) {
+                arraySeries.push(item);
+            });
+
+            console.log(arraySeries);
+
+            // Dynamically calculate the max value for the Y-axis
+            var maxValue = Math.max.apply(null, arraySeries);
+            // Optional: Round up to the nearest 1000 (or adjust based on your scale)
+            var roundedMax = Math.ceil(maxValue / 1000) * 1000;
+
+            "use strict";
+            new Chartist.Line('#dashboard-bar-chart', {
+                labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+                series: [
+                    {
+                        meta: "Product Sales",
+                        data: arraySeries
+                    }
+                ]
+            }, {
+                low: 0,
+                high: roundedMax, // ← Dynamic high value
+                showArea: true,
+                divisor: 10,
+                lineSmooth: false,
+                fullWidth: true,
+                showLine: true,
+                chartPadding: 30,
+                axisX: {
+                    showLabel: true,
+                    showGrid: false,
+                    offset: 50
+                },
+                plugins: [
+                    Chartist.plugins.tooltip()
+                ],
+                axisY: {
+                    onlyInteger: true,
+                    showLabel: true,
+                    scaleMinSpace: 50,
+                    showGrid: true,
+                    offset: 10,
+                    labelInterpolationFnc: function (value) {
+                        return value;
+                    }
+                }
+            });
+        }
+
+
+        function OnSuccessService(response) {
+            var result = response;
+            var arraySeries = [];
+
+            $.map(result, function (item, index) {
+                arraySeries.push(item);
+            });
+
+            console.log(arraySeries);
+            "use strict";
+            // ==============================================================
+            // Sales overview
+            // ==============================================================
+            new Chartist.Line('#dashboard-service-sales-overview', {
+                labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+                series: [
+                    {
+                        meta: "Service Orders",
+                        data: arraySeries
+                    }
+                ]
+            }, {
+                low: 0,
+                high: 250,
+                showArea: true,
+                divisor: 10,
+                lineSmooth: false,
+                fullWidth: true,
+                showLine: true,
+                chartPadding: 30,
+                axisX: {
+                    showLabel: true,
+                    showGrid: false,
+                    offset: 50
+                },
+                plugins: [
+                    Chartist.plugins.tooltip()
+                ],
+                // As this is axis specific we need to tell Chartist to use whole numbers only on the concerned axis
+                axisY: {
+                    onlyInteger: true,
+                    showLabel: true,
+                    scaleMinSpace: 50,
+                    showGrid: true,
+                    offset: 10,
+                    labelInterpolationFnc: function (value) {
+                        return (value);
+                        //return (value / 10000) + '10k';
+                    },
+
+                }
+
+            });
+
+        };
+        function OnSuccessServiceNew(response) {
+            var result = response;
+            var arraySeries = [];
+
+            $.map(result, function (item, index) {
+                arraySeries.push(item);
+            });
+
+            console.log(arraySeries);
+
+            // Calculate the max value dynamically
+            var maxValue = Math.max.apply(null, arraySeries);
+            // Round up for cleaner Y-axis (adjust rounding as needed)
+            var roundedMax = Math.ceil(maxValue / 1000) * 1000;
+            // Ensure minimum high if data is very low (optional fallback)
+            if (roundedMax < 1000) roundedMax = 1000;
+
+            "use strict";
+            new Chartist.Line('#dashboard-service-bar-chart', {
+                labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+                series: [
+                    {
+                        meta: "Service Sales",
+                        data: arraySeries
+                    }
+                ]
+            }, {
+                low: 0,
+                high: roundedMax, // ← dynamic high
+                showArea: true,
+                divisor: 10,
+                lineSmooth: false,
+                fullWidth: true,
+                showLine: true,
+                chartPadding: 30,
+                axisX: {
+                    showLabel: true,
+                    showGrid: false,
+                    offset: 50
+                },
+                plugins: [
+                    Chartist.plugins.tooltip()
+                ],
+                axisY: {
+                    onlyInteger: true,
+                    showLabel: true,
+                    scaleMinSpace: 50,
+                    showGrid: true,
+                    offset: 10,
+                    labelInterpolationFnc: function (value) {
+                        return value;
+                    }
+                }
+            });
+        }
+
+
+        // Single combined request — uses explicit route registered in AdminAreaRegistration
+        $.ajax({
+            type: "POST",
+            async: true,
+            url: '/admin/dashboard/get-all-charts-data',
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            success: function (data) {
+                if (data && data.productOrders) {
+                    OnSuccess(data.productOrders);
+                    OnSuccessNew(data.productSales);
+                    OnSuccessService(data.serviceOrders);
+                    OnSuccessServiceNew(data.serviceSales);
+                }
+            },
+            error: function (xhr, status, err) {
+                console.error('GetAllChartsData failed:', xhr.status, err);
+            }
+        });
+
+        // Load all summary stat numbers asynchronously — does not block initial render
+        $.ajax({
+            type: "POST",
+            url: '/admin/dashboard/get-dashboard-stats',
+            success: function (data) {
+                if (!data || !data.success) return;
+                $('.stat-tps').text(data.totalProductSales);
+                $('.stat-tss').text(data.totalServiceSales);
+                $('.stat-tc').text(data.totalCustomer);
+                $('.stat-tpo').text(data.totalProductOrder);
+                $('.stat-tso').text(data.totalServiceOrder);
+                $('.stat-tpom').text(data.totalProductOrderMonth);
+                $('.stat-tpsm').text(data.totalProductSaleMonth);
+                $('.stat-tpow').text(data.totalProductOrderWeek);
+                $('.stat-tpsw').text(data.totalProductSaleWeek);
+                $('.stat-tsom').text(data.totalServiceOrderMonth);
+                $('.stat-tssm').text(data.totalServiceSaleMonth);
+                $('.stat-tsow').text(data.totalServiceOrderWeek);
+                $('.stat-tssw').text(data.totalServiceSaleWeek);
+                if (data.catCounts) {
+                    $.each(data.catCounts, function (catId, count) {
+                        $('.cat-count[data-cat="' + catId + '"]').text(count);
+                    });
+                }
+            },
+            error: function () {
+                console.warn('GetDashboardStats failed');
+            }
+        });
+    });
+</script>

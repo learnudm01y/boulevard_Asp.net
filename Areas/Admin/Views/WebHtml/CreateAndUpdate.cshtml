@@ -1,0 +1,422 @@
+﻿@model Boulevard.Models.WebHtml
+@{
+    ViewBag.Title = "Create Or Update";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+
+
+    string parentCheck = "";
+    string brandCheck = "";
+
+    var brandId = ViewBag.brandId;
+    var categoryId = ViewBag.categoryId;
+
+}
+
+@using (Html.BeginForm("CreateAndUpdate", "WebHtml", FormMethod.Post, new { enctype = "multipart/form-data", @id = "myForm" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+    @*@Html.HiddenFor(model => model.FeatureCategoryKey)*@
+
+    <!-- Container fluid  -->
+    <!-- ============================================================== -->
+    <div class="page-wrapper">
+        <div class="container-fluid">
+            <!-- ============================================================== -->
+            <!-- Bread crumb and right sidebar toggle -->
+            <!-- ============================================================== -->
+
+            <div class="row page-titles">
+                <div class="col-md-5 col-12 align-self-center">
+                    @if (ViewBag.FeatureCategoryKey == null)
+                    {
+                        <h3 class="text-themecolor mb-0">WebHtml Info</h3>
+                    }
+                    else
+                    {
+                        <h3 class="text-themecolor mb-0">@ViewBag.FCatagoryName Banner Info</h3>
+                    }
+                </div>
+                <div class="col-md-7 col-12 align-self-center d-none d-md-block">
+                    <ol class="breadcrumb mb-0 p-0 bg-transparent float-right">
+                        @if (ViewBag.FeatureCategoryKey == null)
+                        {
+                            <li class="breadcrumb-item active"><a href="@Url.RouteUrl("Admin_WebHtml")">WebHtml</a></li>
+                        }
+                        else
+                        {
+                            <li class="breadcrumb-item active"><a href="@Url.RouteUrl("Admin_WebHtml", new {fCatagoryKey = ViewBag.FCatagoryKey})">@ViewBag.FCatagoryName Banner</a></li>
+                        }
+                        @*<li class="breadcrumb-item active"><a href="@Url.RouteUrl("Admin_WebHtml")">WebHtml</a></li>*@
+                        @if (Model.WebHtmlId == 0)
+                        {
+                            <li class="breadcrumb-item active">Create</li>
+                        }
+                        else
+                        {
+                            <li class="breadcrumb-item active">Update</li>
+                        }
+                    </ol>
+                </div>
+            </div>
+            <!-- ============================================================== -->
+            <!-- End Bread crumb and right sidebar toggle -->
+            <!-- ============================================================== -->
+            <!--order list-->
+            <div class="card">
+                <!--<div class="card-header">-->
+                <!--<h4 class="">General</h4>-->
+                <!--WebHtml Information
+                </div>-->
+                <div class="card-body">
+                    <div class="row">
+                        <input type="hidden" name="WebHtmlId" class="form-control" value="@Model.WebHtmlId">
+                        <input type="hidden" name="CreateDate" class="form-control" value="@Model.CreateDate">
+                        <input type="hidden" name="CreateBy" class="form-control" value="@Model.CreateBy">
+                        <input type="hidden" name="WebHtmlkey" class="form-control" value="@Model.WebHtmlkey">
+                        <input type="hidden" name="FeatureCategoryKey" class="form-control" value="@ViewBag.FeatureCategoryKey">
+
+                        <div class="card ac">
+                            <div class="card-header ac-q">Basic</div>
+                            <div class="ac-a">
+                                <div class="card-body">
+                                    <div class="row">
+
+                                        @if (Model.WebHtmlId > 0)
+                                        {
+                                            <div class="col-md-6 col-sm-6">
+                                                <div class="form-group">
+                                                    <label>Identifier</label>
+                                                    <input type="text" name="Identifier" readonly required class="form-control" value="@Model.Identifier">
+                                                </div>
+                                            </div>
+                                        }
+                                        else
+                                        {
+                                            <div class="col-md-6 col-sm-6">
+                                                <div class="form-group">
+                                                    <label>Identifier</label>
+                                                    <input type="text" name="Identifier" required class="form-control" value="@Model.Identifier">
+                                                </div>
+                                            </div>
+                                        }
+                                        @if (string.IsNullOrEmpty(Convert.ToString(ViewBag.FeatureCategoryKey)))
+                                        {
+                                            <div class="col-lg-4 col-md-6 col-sm-12">
+                                                <div class="form-group">
+                                                    <label>Feature Category</label>
+                                                    @Html.DropDownList("FeatureCategoryId", (IEnumerable<SelectListItem>)ViewBag.FeatureCategory, "Choose Feature Category", new { @class = "form-control" })
+                                                </div>
+                                            </div>
+                                        }
+
+                                        <div class="col-md-6 col-sm-6">
+                                            <div class="form-group">
+                                                <label>Title</label>
+                                                <input type="text" name="Title" @*@dd*@ class="form-control" value="@Model.Title">
+                                            </div>
+                                        </div>
+
+                                        <div class="col-md-6 col-sm-6">
+                                            <div class="form-group">
+                                                <label>Title (Arabic)</label>
+                                                <input type="text" name="TitleAr" dir="rtl" class="form-control" value="@Model.TitleAr">
+                                            </div>
+                                        </div>
+
+                                        <div class="col-md-6 col-sm-6">
+                                            <div class="form-group">
+                                                <label>Sub Title</label>
+                                                <input type="text" name="SubTitle" class="form-control" value="@Model.SubTitle">
+                                            </div>
+                                        </div>
+
+                                        <div class="col-md-6 col-sm-6">
+                                            <div class="form-group">
+                                                <label>Sub Title (Arabic)</label>
+                                                <input type="text" name="SubTitleAr" dir="rtl" class="form-control" value="@Model.SubTitleAr">
+                                            </div>
+                                        </div>
+
+                                        <div class="col-md-6 col-sm-6">
+                                            <div class="form-group">
+                                                <label>Button Text</label>
+                                                <input type="text" name="ButtonText" class="form-control" value="@Model.ButtonText">
+                                            </div>
+                                        </div>
+
+                                        <div class="col-md-6 col-sm-6">
+                                            <div class="form-group">
+                                                <label>Button Link</label>
+                                                <input type="text" name="ButtonLink" class="form-control" value="@Model.ButtonLink">
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-6 col-sm-6">
+                                                <h3>Category</h3>
+                                                @foreach (var item in Model.CategoryTree)
+                                                {
+                                                    if (categoryId == item.CategoryId)
+                                                    {
+                                                        <label style="margin-right:10px;">
+                                                            <input type="checkbox" style="margin-right:7px;" checked class="radio" value="@item.CategoryId" name="CategoryId" />@item.CategoryName
+                                                        </label>
+                                                    }
+                                                    else
+                                                    {
+                                                        <label style="margin-right:10px;">
+                                                            <input type="checkbox" style="margin-right:7px;" class="radio" value="@item.CategoryId" name="CategoryId" />@item.CategoryName
+                                                        </label>
+                                                    }
+                                                }
+
+                                            </div>
+                                            @if (ViewBag.fCategoryId == "Product")
+                                            {
+                                                <div class="col-md-6 col-sm-6">
+                                                    <h3>Brand</h3>
+                                                    @foreach (var item in Model.BrandTree)
+                                                    {
+                                                        if (brandId == item.BrandId)
+                                                        {
+                                                            <label style="margin-right:10px;">
+                                                                <input type="checkbox" style="margin-right:7px;" checked class="radio" value="@item.BrandId" name="BrandId" />@item.Title
+                                                            </label>
+                                                        }
+                                                        else
+                                                        {
+                                                            <label style="margin-right:10px;">
+                                                                <input type="checkbox" style="margin-right:7px;" class="radio" value="@item.BrandId" name="BrandId" />@item.Title
+                                                            </label>
+                                                        }
+                                                    }
+                                                </div>
+                                            }
+                                        </div>
+                                        <div class="col-12">
+
+                                        </div>
+                                        <div class="col-md-6 col-sm-6">
+                                            <div class="form-group">
+                                                <label>Status</label>
+                                                <div class="switch">
+                                                    <label>
+                                                        InActive
+                                                        @if (Model.Status == "Active")
+                                                        {
+                                                            <input type="checkbox" checked="checked" name="Status" value="Active"><span class="lever"></span>
+                                                        }
+                                                        else
+                                                        {
+                                                            <input type="checkbox" name="Status" value="Active"><span class="lever"></span>
+                                                        }
+                                                        <input name="Status" type="hidden" value="Active" />
+                                                        Active
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card ac">
+                            <div class="card-header ac-q">Content</div>
+                            <div class="ac-a">
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col-md-12 col-sm-12">
+                                            <div class="form-group">
+                                                <label>Small Details One</label>
+                                                <input type="text" name="SmallDetailsOne" class="form-control" value="@Model.SmallDetailsOne">
+                                            </div>
+                                        </div>
+
+                                        <div class="col-md-12 col-sm-12">
+                                            <div class="form-group">
+                                                <label>Small Details One (Arabic)</label>
+                                                <input type="text" name="SmallDetailsOneAr" dir="rtl" class="form-control" value="@Model.SmallDetailsOneAr">
+                                            </div>
+                                        </div>
+
+                                        <div class="col-md-12 col-sm-12">
+                                            <div class="form-group">
+                                                <label>Small Details Two</label>
+                                                <input type="text" name="SmallDetailsTwo" class="form-control" value="@Model.SmallDetailsTwo">
+                                            </div>
+                                        </div>
+
+                                        <div class="col-md-12 col-sm-12">
+                                            <div class="form-group">
+                                                <label>Small Details Two (Arabic)</label>
+                                                <input type="text" name="SmallDetailsTwoAr" dir="rtl" class="form-control" value="@Model.SmallDetailsTwoAr">
+                                            </div>
+                                        </div>
+
+
+                                        <div class="col-md-12">
+                                            <label>Big Details One</label>
+                                            <textarea class="form-control description" rows="10" id="textarea" placeholder="Enter ..." name="BigDetailsOne">@Model.BigDetailsOne</textarea>
+                                            @*<textarea name="BigDetailsOne" value="@Model.BigDetailsOne" class="form-control description">@Model.BigDetailsOne</textarea>*@
+                                        </div>
+
+                                        <div class="col-md-12">
+                                            <label>Big Details One (Arabic)</label>
+                                            <textarea class="form-control description" rows="10" id="textarea" placeholder="Enter ..." name="BigDetailsOneAr">@Model.BigDetailsOneAr</textarea>
+                                            @*<textarea name="BigDetailsOne" value="@Model.BigDetailsOne" class="form-control description">@Model.BigDetailsOne</textarea>*@
+                                        </div>
+
+                                        <div class="col-md-12">
+                                            <label>Big Details Two</label>
+                                            <textarea class="form-control description" rows="10" id="textarea" placeholder="Enter ..." name="BigDetailsTwo">@Model.BigDetailsTwo</textarea>
+                                            @*<textarea name="BigDetailsTwo" value="@Model.BigDetailsTwo" class="form-control description">@Model.BigDetailsTwo</textarea>*@
+                                        </div>
+
+                                        <div class="col-md-12">
+                                            <label>Big Details Two (Arabic)</label>
+                                            <textarea class="form-control description" rows="10" id="textarea" placeholder="Enter ..." name="BigDetailsTwoAr">@Model.BigDetailsTwoAr</textarea>
+                                            @*<textarea name="BigDetailsTwo" value="@Model.BigDetailsTwo" class="form-control description">@Model.BigDetailsTwo</textarea>*@
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <div class="card ac">
+                            <div class="card-header ac-q">Picture</div>
+                            <div class="ac-a">
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col-md-12 col-sm-12">
+                                            <div class="form-group">
+                                                <label>Picture One</label>
+                                                <input type="file" name="PictureOne" class="form-control dropify" data-default-file="../../@Model.PictureOne">
+                                            </div>
+                                        </div>
+
+                                        @*<div class="col-md-4 col-sm-4">
+                            <div class="form-group">
+                                <label>Picture Two</label>
+                                <input type="file" name="PictureTwo" class="form-control dropify" data-default-file="../../@Model.PictureTwo">
+                            </div>
+                        </div>
+
+                        <div class="col-md-4 col-sm-4">
+                            <div class="form-group">
+                                <label>Picture Three</label>
+                                <input type="file" name="PictureThree" class="form-control dropify" data-default-file="../../@Model.PictureThree">
+                            </div>
+                        </div>*@
+
+                                        @*<div class="col-md-4 col-sm-4">
+                            <div class="">
+
+                            </div>
+                        </div>*@
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+
+
+                        <div class="card ac">
+                            <div class="card-header ac-q">Picture</div>
+                            <div class="ac-a">
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col-md-12 col-sm-12">
+                                            <div class="form-group">
+                                                <label>Picture One Arabic</label>
+                                                <input type="file" name="PictureTwo" class="form-control dropify" data-default-file="../../@Model.PictureOneAr">
+                                            </div>
+                                        </div>
+
+                                        @*<div class="col-md-4 col-sm-4">
+                            <div class="form-group">
+                                <label>Picture Two</label>
+                                <input type="file" name="PictureTwo" class="form-control dropify" data-default-file="../../@Model.PictureTwo">
+                            </div>
+                        </div>
+
+                        <div class="col-md-4 col-sm-4">
+                            <div class="form-group">
+                                <label>Picture Three</label>
+                                <input type="file" name="PictureThree" class="form-control dropify" data-default-file="../../@Model.PictureThree">
+                            </div>
+                        </div>*@
+
+                                        @*<div class="col-md-4 col-sm-4">
+                            <div class="">
+
+                            </div>
+                        </div>*@
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+
+
+                    </div>
+                    <div class="card-body">
+                        <div class="form-group mb-0 text-right">
+                            @if (Model.WebHtmlId > 0)
+                            {
+                                <button type="submit" class="btn btn-warning waves-effect waves-light" id="submit-btn">Reset</button>
+                            }
+                            else
+                            {
+                                <button type="submit" class="btn btn-success waves-effect waves-light" id="submit-btn">Save</button>
+                            }
+                            @if (ViewBag.FeatureCategoryKey != null)
+                            {
+                                <a href="@Url.RouteUrl("Admin_WebHtml", new {fCatagoryKey = ViewBag.FeatureCategoryKey})" class="btn btn-dark waves-effect waves-light">
+                                    Close
+                                </a>
+                            }
+                            else
+                            {
+                                <a href="@Url.RouteUrl("Admin_WebHtml")" class="btn btn-dark waves-effect waves-light">
+                                    Close
+                                </a>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- ============================================================== -->
+        </div>
+    </div>
+    <!-- ============================================================== -->
+    <!-- End Container fluid  -->
+}
+
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+<script>
+    //This snippet will:
+
+    //Allow grouping like Radio buttons
+    //Act like Radio
+    //Allow unselecting all
+    // the selector will match all input controls of type :checkbox
+    // and attach a click event handler
+    $("input:checkbox").on('click', function () {
+        // in the handler, 'this' refers to the box clicked on
+        var $box = $(this);
+        if ($box.is(":checked")) {
+            // the name of the box is retrieved using the .attr() method
+            // as it is assumed and expected to be immutable
+            var group = "input:checkbox[name='" + $box.attr("name") + "']";
+            // the checked state of the group/box on the other hand will change
+            // and the current value is retrieved using .prop() method
+            $(group).prop("checked", false);
+            $box.prop("checked", true);
+        } else {
+            $box.prop("checked", false);
+        }
+    });
+</script>

@@ -1,0 +1,189 @@
+﻿@{
+    ViewBag.Title = "Dessert And Flower";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+
+<div class="page-wrapper">
+    <div class="container-fluid">
+        <div class="row page-titles">
+            <div class="col-md-5 col-12 align-self-center">
+                <h3 class="text-themecolor mb-0">Dessert And Flower</h3>
+            </div>
+            <div class="col-md-7 col-12 align-self-center d-none d-md-block">
+                <ol class="breadcrumb mb-0 p-0 bg-transparent float-right">
+                </ol>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-body">
+
+                <div class="row align-items-center mb-3">
+                    <div class="col-sm-8">
+                        <h4 class="card-title">List</h4>
+                    </div>
+
+                    <div class="col-sm-4 text-right">
+                        <a href="@Url.RouteUrl("Admin_ChocolateAndFlawerTestAdd")" class="btn btn-success  waves-effect">
+                            <i class="mdi mdi-plus"></i> Add
+                        </a>
+                    </div>
+                </div>
+                <hr>
+
+                <div class="table-responsive">
+
+                    <table id="zero_config" class="table table-striped table-bordered" cellspacing="0" width="100%">
+                        <thead>
+                            <tr>
+                                <th>Chocolate And Flower</th>
+                                <th style="text-align:center">Chocolate And Flower Category</th>
+                                <th style="text-align:center">Description</th>
+                                <th style="text-align:center">Brand</th>
+                                <th style="text-align:center">Price</th>
+                                <th style="text-align:center">Image</th>
+                                <th style="text-align:center">Option</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Guylian Chocolate</td>
+
+                                <td style="text-align:center">
+                                    Chocolate
+                                </td>
+                                <td style="text-align:center">
+                                    Cabbage is a  vegetable also known as Beta vulgaris rubra or red beetroot. Vibrant red or gold beetroot has been planted everywhere from the ancient Mediterranean to George Washington's Mount Vernon. In modern times, hybrid species of beets even have candy-cane stripes of red and white
+                                </td>
+                                <td style="text-align:center">Guylian</td>
+                                <td style="text-align:center">5 AED</td>
+                                <td>
+                                    <img src="~/Areas/Admin/Content/assets/images/Test Image/images .jpeg" style="max-width:80px;max-height:80px;">
+                                </td>
+                                <td style="text-align:center">
+                                    <a href="@Url.RouteUrl("Admin_ChocolateAndFlawerTestDetails")" class="btn btn-info btn-xs">
+                                        <i class="fa fa-eye"></i>
+                                    </a>
+                                    <a href="@Url.RouteUrl("Admin_GroceryTestEdit")" class="btn btn-warning btn-xs">
+                                        <i class="fa fa-edit"></i>
+                                    </a>
+                                    <a href="javascript:;" class="btn btn-primary btn-xs" onclick="Delete()">
+                                        <i class="fa fa-trash"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Guylian Chocolate</td>
+
+                                <td style="text-align:center">
+                                    Chocolate
+                                </td>
+                                <td style="text-align:center">
+                                    Beetroot is a root vegetable also known as Beta vulgaris rubra or red beetroot. Vibrant red or gold beetroot has been planted everywhere from the ancient Mediterranean to George Washington's Mount Vernon. In modern times, hybrid species of beets even have candy-cane stripes of red and white
+                                </td>
+                                <td style="text-align:center">Guylian</td>
+                                <td style="text-align:center">200 AED</td>
+                                <td>
+                                    <img src="~/Areas/Admin/Content/assets/images/Test Image/images1.jpeg" style="max-width:80px;max-height:80px;">
+                                </td>
+                                <td style="text-align:center">
+                                    <a href="@Url.RouteUrl("Admin_ChocolateAndFlawerTestDetails")" class="btn btn-info btn-xs">
+                                        <i class="fa fa-eye"></i>
+                                    </a>
+                                    <a href="@Url.RouteUrl("Admin_ChocolateAndFlawerTestEdit")" class="btn btn-warning btn-xs">
+                                        <i class="fa fa-edit"></i>
+                                    </a>
+                                    <a href="javascript:;" class="btn btn-primary btn-xs" onclick="Delete()">
+                                        <i class="fa fa-trash"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Lily Flower</td>
+
+                                <td style="text-align:center">
+                                    Flower
+                                </td>
+                                <td style="text-align:center">
+                                    Beetroot is a root vegetable also known as Beta vulgaris rubra or red beetroot. Vibrant red or gold beetroot has been planted everywhere from the ancient Mediterranean to George Washington's Mount Vernon. In modern times, hybrid species of beets even have candy-cane stripes of red and white
+                                </td>
+                                <td style="text-align:center"></td>
+                                <td style="text-align:center">7 AED</td>
+                                <td>
+                                    <img src="~/Areas/Admin/Content/assets/images/Test Image/download.jpeg" style="max-width:80px;max-height:80px;">
+                                </td>
+                                <td style="text-align:center">
+                                    <a href="@Url.RouteUrl("Admin_ChocolateAndFlawerTestDetails")" class="btn btn-info btn-xs">
+                                        <i class="fa fa-eye"></i>
+                                    </a>
+                                    <a href="@Url.RouteUrl("Admin_ChocolateAndFlawerTestEdit")" class="btn btn-warning btn-xs">
+                                        <i class="fa fa-edit"></i>
+                                    </a>
+                                    <a href="javascript:;" class="btn btn-primary btn-xs" onclick="Delete()">
+                                        <i class="fa fa-trash"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Butlers Chocolate</td>
+
+                                <td style="text-align:center">
+                                    Chocolate
+                                </td>
+                                <td style="text-align:center">
+                                    Butlers is a Butlers also known as Beta vulgaris rubra or red beetroot. Vibrant red or gold beetroot has been planted everywhere from the ancient Mediterranean to George Washington's Mount Vernon. In modern times, hybrid species of beets even have candy-cane stripes of red and white
+                                </td>
+                                <td style="text-align:center">Butlers</td>
+                                <td style="text-align:center">6 AED</td>
+                                <td>
+                                    <img src="~/Areas/Admin/Content/assets/images/Test Image/download (3).jpeg" style="max-width:80px;max-height:80px;">
+                                </td>
+                                <td style="text-align:center">
+                                    <a href="@Url.RouteUrl("Admin_ChocolateAndFlawerTestDetails")" class="btn btn-info btn-xs">
+                                        <i class="fa fa-eye"></i>
+                                    </a>
+                                    <a href="@Url.RouteUrl("Admin_ChocolateAndFlawerTestEdit")" class="btn btn-warning btn-xs">
+                                        <i class="fa fa-edit"></i>
+                                    </a>
+                                    <a href="javascript:;" class="btn btn-primary btn-xs" onclick="Delete()">
+                                        <i class="fa fa-trash"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    function Delete(id) {
+        Swal.fire({
+          title: "Are you sure?",
+          text: "You won't be able to revert this!",
+            icon: "question",
+          showCancelButton: true,
+          confirmButtonColor: "#3085d6",
+          cancelButtonColor: "#d33",
+          confirmButtonText: "Yes, delete it!"
+          }).then((result) => {
+              if (result.isConfirmed) {
+                 $.ajax({
+                     url: "@Url.Action("Delete", "Product")",
+                     data: { Key: id },
+                     type: "GET",
+                     success: function (response) {
+                         location.reload();
+                     },
+                     error: function (jqXHR, textStatus, errorThrown) {
+                         console.log(textStatus, errorThrown);
+                     }
+                 });
+              }
+        });
+    }
+</script>
+
+

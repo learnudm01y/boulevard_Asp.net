@@ -1,0 +1,95 @@
+@model List<Boulevard.Models.AdminNotification>
+
+@if (Model != null && Model.Count > 0)
+{
+    if (Model.Any(s => s.IsSeen == false))
+    {
+        <script>
+            $("#NotifyIcon").html('<div class="notify"> <span class="heartbit"></span> <span class="point"></span> </div>');
+        </script>
+    }
+    else
+    {
+        <script>
+            $("#NotifyIcon").html('');
+        </script>
+    }
+
+    foreach (var not in Model)
+    {
+        string bgColor = "";
+        string mouseOutColor = "transparent";
+        string btnClasses = "btn-light-info text-info";
+        string titleClasses = "fw-normal";
+        string redirectUrl = "javascript:void(0);";
+
+        if (!not.IsSeen)
+        {
+            bgColor = "background-color: #f8f9fa;";
+            mouseOutColor = "#f8f9fa";
+            btnClasses = "btn-light-primary text-primary";
+            titleClasses = "fw-bold";
+        }
+
+        if (not.OrderId.HasValue && not.OrderId.Value > 0)
+        {
+            if (not.FeatureType == "Product")
+            {
+                redirectUrl = Url.Action("Details", "OrderRequestProduct", new { id = not.OrderId.Value });
+            }
+            else if (not.FeatureType == "Service")
+            {
+                redirectUrl = Url.Action("Details", "OrderRequestService", new { id = not.OrderId.Value });
+            }
+            else
+            {
+                 redirectUrl = "javascript:void(0);";
+            }
+        }
+
+        <div class="message-item d-flex align-items-start border-bottom py-3 px-3"
+             style="transition: all 0.3s ease; position: relative; cursor: pointer; @bgColor"
+             onmouseover="this.style.backgroundColor='#f8f9fa'"
+             onmouseout="this.style.backgroundColor='@mouseOutColor'"
+             onclick="window.location.href='@redirectUrl'">
+
+            @if (not.IsSeen == false)
+            {
+                <audio controls autoplay style="display:none">
+                    <source src="~/Content/NotificationJson/notificationsound.wav" type="audio/wav">
+                    Your browser does not support the audio element.
+                </audio>
+                <span class="position-absolute p-1 bg-primary border border-light rounded-circle" style="left: 12px; top: 18px; width: 8px; height: 8px; padding: 0 !important;">
+                    <span class="visually-hidden">New notification</span>
+                </span>
+            }
+
+            <div class="flex-shrink-0 me-3" style="margin-left: 0; margin-top: 2px;">
+                <span class="btn btn-circle @btnClasses" style="width: 45px; height: 45px; display: flex; align-items: center; justify-content: center; font-size: 20px;">
+                    <i class="bi bi-bell-fill"></i>
+                </span>
+            </div>
+
+            <div class="w-100 d-inline-block v-middle" style="padding-left: 0; padding-right: 8px;">
+                <div class="d-flex justify-content-between align-items-start mb-2">
+                    <h5 class="message-title mb-0 @titleClasses" style="font-size: 16px; color: #2c3e50; line-height: 1.4;">
+                        @not.Title
+                    </h5>
+                    @if (!not.IsSeen)
+                    {
+                        <span class="badge bg-primary ms-2 flex-shrink-0" style="font-size: 9px; padding: 3px 8px;">NEW</span>
+                    }
+                </div>
+                <p class="mb-2" style="font-size: 14px; color: #6c757d; line-height: 1.6; margin-top: 4px;">
+                    @not.Message
+                </p>
+                <div class="d-flex align-items-center">
+                    <i class="bi bi-clock me-1" style="font-size: 11px; color: #95a5a6;"></i>
+                    <span style="font-size: 12px; color: #95a5a6;">
+                        @not.LastModified.ToString("MMM dd, yyyy hh:mm tt")
+                    </span>
+                </div>
+            </div>
+        </div>
+    }
+}

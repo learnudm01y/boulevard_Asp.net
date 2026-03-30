@@ -1,0 +1,89 @@
+﻿
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+<script type="text/javascript" src="http://code.jquery.com/jquery-1.7.1.min.js"></script>
+<!-- Container fluid  -->
+<!-- ============================================================== -->
+<div class="page-wrapper">
+    <div class="container-fluid">
+        <!-- ============================================================== -->
+        <!-- Bread crumb and right sidebar toggle -->
+        <!-- ============================================================== -->
+        <div class="row page-titles">
+            <div class="col-md-5 col-12 align-self-center">
+                <h3 class="text-themecolor mb-0">Setting</h3>
+            </div>
+            <div class="col-md-7 col-12 align-self-center d-none d-md-block">
+                <ol class="breadcrumb mb-0 p-0 bg-transparent float-right">
+                    <li class="breadcrumb-item active"><a href="@Url.RouteUrl("Admin_dashboard")">Home</a></li>
+                    <li class="breadcrumb-item active">Setting</li>
+                </ol>
+            </div>
+        </div>
+        <!-- ============================================================== -->
+        <!-- End Bread crumb and right sidebar toggle -->
+        <!-- ============================================================== -->
+        <!--order list-->
+        <div class="row">
+
+
+            <div class="col-md-3 col-sm-4 col-6">
+                <div class="card card-body settings-wrapper text-center">
+                    <a href="@Url.RouteUrl("Admin_Country")">
+                        <div class="icon-holder">
+                            <i class="ti ti-flag-alt-2"></i>
+                        </div>
+                        <h2>Country</h2>
+                    </a>
+                </div>
+            </div>
+
+            <div class="col-md-3 col-sm-4 col-6">
+                <div class="card card-body settings-wrapper text-center">
+                    <a href="@Url.RouteUrl("Admin_City")">
+                        <div class="icon-holder">
+                            <i class="fa fa-building"></i>
+                        </div>
+                        <h2>City</h2>
+                    </a>
+                </div>
+            </div>
+
+            <div class="col-md-3 col-sm-4 col-6">
+                <div class="card card-body settings-wrapper text-center">
+                    <a href="@Url.RouteUrl("Admin_WebHtml")">
+                        <div class="icon-holder">
+                            <i class="fa fa-code"></i>
+                        </div>
+                        <h2>Web Html</h2>
+                    </a>
+                </div>
+            </div>
+
+
+            @*<div class="col-md-3 col-sm-4 col-6">
+                <div class="card card-body settings-wrapper text-center">
+                    <a href="@Url.RouteUrl("Admin_FeatureCategoryList")">
+                        <div class="icon-holder">
+                            <i class="fa fa-code"></i>
+                        </div>
+                        <h2>Feature Category</h2>
+                    </a>
+                </div>
+            </div>*@
+           
+
+
+        </div>
+        <!-- ============================================================== -->
+    </div>
+</div>
+<!-- ============================================================== -->
+<!-- End Container fluid  -->
+
+
+
+
+

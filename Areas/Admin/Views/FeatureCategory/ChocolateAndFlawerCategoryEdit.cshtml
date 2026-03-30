@@ -1,0 +1,80 @@
+﻿@{
+    ViewBag.Title = "Update";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+
+}
+
+
+
+
+
+<div class="page-wrapper">
+    <div class="container-fluid">
+        <div class="row page-titles">
+            <div class="col-md-5 col-12 align-self-center">
+                <h3 class="text-themecolor mb-0">Chocolate & Flawer Category</h3>
+            </div>
+            <div class="col-md-7 col-12 align-self-center d-none d-md-block">
+                <ol class="breadcrumb mb-0 p-0 bg-transparent float-right">
+                </ol>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-body">
+
+                <div class="row align-items-center mb-3">
+                    <div class="col-md-5 col-12 align-self-center">
+                        <h3>Update</h3>
+                    </div>
+                    <div class="col-md-7 col-12 align-self-center d-none d-md-block">
+                        <ol class="breadcrumb mb-0 p-0 bg-transparent float-right">
+                            <li class="breadcrumb-item active"><a href="@Url.RouteUrl("Admin_ChocolateAndFlawerCategoryIndex")">Chocolate & Flawer Category</a></li>
+                            <li class="breadcrumb-item active">Update</li>
+                        </ol>
+                    </div>
+
+                </div>
+                <hr>
+
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-12 col-md-6 col-lg-6">
+                            <div class="form-group">
+                                <label>Name*</label>
+                                <input type="text" name="Name" required class="form-control" value="Lily">
+                            </div>
+                        </div>
+                        <div class="col-lg-4 col-md-6 col-sm-12">
+                            <div class="form-group">
+                                <label>Chocolate And Flawer Type</label>
+                                <select name="FeatureType" id="FeatureType" Value="" class="form-control">
+                                    <option value="Service" selected>Service</option>
+                                    <option value="Product">Product</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-lg-4 col-md-6 col-sm-12">
+                            <div class="form-group">
+                                <label>Image</label>
+                                <input type="file" name="Image" accept="image/png, image/jpeg" class="form-control dropify" data-default-file="../../Areas/Admin/Content/assets/images/Test Image/download.jpeg">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="form-group mb-0 text-right">
+
+                            <a href="@Url.RouteUrl("Admin_ChocolateAndFlawerCategoryIndex")" type="submit" class="btn btn-warning waves-effect waves-light" id="submit-btn">Reset</a>
+                            <a href="@Url.RouteUrl("Admin_ChocolateAndFlawerCategoryIndex")" class="btn btn-dark waves-effect waves-light">
+                                Close
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+

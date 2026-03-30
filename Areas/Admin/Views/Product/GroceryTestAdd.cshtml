@@ -1,0 +1,204 @@
+﻿@{
+    ViewBag.Title = "Create";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+    //string parentCheck = "";
+    //string childCheck = "";
+    //string grandChildCheck = "";
+
+
+}
+
+@*<link rel="stylesheet" href="~/Areas/Admin/Content/assets/libs/tinymce/skins/lightgray/content.min.css">
+<link rel="stylesheet" href="~/Areas/Admin/Content/assets/libs/tinymce/skins/lightgray/content.mobile.min.css">*@
+
+
+<div class="page-wrapper">
+    <div class="container-fluid">
+        <div class="row page-titles">
+            <div class="col-md-5 col-12 align-self-center">
+                <h3 class="text-themecolor mb-0">Grocery</h3>
+            </div>
+            <div class="col-md-7 col-12 align-self-center d-none d-md-block">
+                <ol class="breadcrumb mb-0 p-0 bg-transparent float-right">
+                    <li class="breadcrumb-item active"><a href="@Url.RouteUrl("Admin_GroceryTestIndex")">Grocery</a></li>
+                    <li class="breadcrumb-item active">Create Grocery</li>
+                </ol>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-body">
+
+                <div class="row align-items-center mb-3">
+                    <div class="col-md-5 col-12 align-self-center">
+                        <h3>Create</h3>
+                    </div>
+                </div>
+                <hr>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-xl-4 col-lg-4 col-md-5 col-sm-12 col-12">
+                            <div class="contact-list">
+                                <div class="contact_list_box">
+                                    <div class="contact_search_list entity-form-box">
+                                        <div class="form-group mb-4">
+                                            <div class="category-list tree--js category-left-sidebar">
+                                                <div class="search-jstree">
+                                                    <div class="input-group p-0">
+                                                        <button type="submit"
+                                                                class="btn input-group-append table-btn h-auto px-3 d-flex border-right justify-content-center align-items-center">
+                                                            <i class="ti-search"></i>
+                                                        </button>
+                                                        <input type="text" id="jstree-q" class="form-control search-form-control input-group-text px-0" placeholder="Search Category..." aria-describedby="input-group-append">
+                                                    </div>
+                                                </div>
+                                                <div class="" id="jstree">
+                                                    <ul>
+                                                        <li class="item active" data-jstree='{"opened": true,"icon":"fas fa-folder-open"}'>
+                                                            <a href="javascript:;" class="menu-link" onclick="TreeClick()">
+                                                                Default <span class=""></span>
+                                                            </a>
+
+                                                            <ul class="inner-menu">
+                                                                <li class="item" data-jstree='{"opened":true,"icon":"fas fa-folder-open"}' id="">
+                                                                    <a href="javascript:;" onclick="TreeClick()" class="menu-link">
+                                                                        <i class="mdi mdi-chevron-right"></i>
+                                                                        Vegetable<span class=""></span>
+                                                                    </a>
+                                                                </li>
+                                                                <li class="item" data-jstree='{"opened":true,"icon":"fas fa-folder-open"}' id="">
+                                                                    <a href="javascript:;" onclick="TreeClick()" class="menu-link">
+                                                                        <i class="mdi mdi-chevron-right"></i>
+                                                                        HairCare<span class=""></span>
+                                                                    </a>
+                                                                </li>
+                                                                <li class="item" data-jstree='{"opened":true,"icon":"fas fa-folder-open"}' id="">
+                                                                    <a href="javascript:;" onclick="TreeClick()" class="menu-link">
+                                                                        <i class="mdi mdi-chevron-right"></i>
+                                                                        Food<span class=""></span>
+                                                                    </a>
+                                                                </li>
+                                                                <li class="item" data-jstree='{"opened":true,"icon":"fas fa-folder-open"}' id="">
+                                                                    <a href="javascript:;" onclick="TreeClick()" class="menu-link">
+                                                                        <i class="mdi mdi-chevron-right"></i>
+                                                                        Dairy & Desserts<span class=""></span>
+                                                                    </a>
+                                                                </li>
+                                                            </ul>
+                                                        </li>
+                                                    </ul>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xl-8 col-lg-8 col-md-7 col-sm-12 col-12">
+                            <div class="right-box-content">
+
+                                <div class="tenant-list d-block box-of-supplier">
+                                    <div class="tenant-filter-box tab-pane">
+
+
+                                        <div class="row">
+                                            <!-- Column 1 -->
+                                            <div class="col-12 col-md-6 col-lg-6">
+                                                <div class="form-group">
+                                                    <label>Name*</label>
+                                                    <input type="text" name="Name" required class="form-control">
+                                                </div>
+                                            </div>
+                                            <div class="col-12 col-md-6 col-lg-6">
+                                                <div class="form-group">
+                                                    <label>Slug*</label>
+                                                    <input type="text" name="Name" required class="form-control">
+                                                </div>
+                                            </div>
+                                            <div class="col-12 col-md-6 col-lg-6">
+                                                <div class="form-group">
+                                                    <label>Brand*</label>
+                                                    <select class="form-control custom-select select-2" name="Status" id="ddlStatus" required>
+                                                        <option value="">Select</option>
+                                                        <option value="true">Nestle</option>
+                                                        <option value="false">Uniliver</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="col-12 col-md-6 col-lg-6">
+                                                <div class="form-group">
+                                                    <label>Grocery Category*</label>
+                                                    <select class="form-control custom-select select-2" name="Category" id="Category" required>
+                                                        <option value="">Select</option>
+                                                        <option value="true">Vegetable</option>
+                                                        <option value="false">HairCare</option>
+                                                        <option value="false">Food</option>
+                                                        <option value="false">Dairy & Desserts</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="col-12 col-md-6 col-lg-6">
+                                                <div class="form-group">
+                                                    <label>Store*</label>
+                                                    <select class="form-control custom-select select-2" name="Category" id="Category" required>
+                                                        <option value="">Select</option>
+                                                        <option value="true">Store 1</option>
+                                                        <option value="false">Store 2</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="col-12 col-md-6 col-lg-6">
+                                                <div class="form-group">
+                                                    <label>Price*</label>
+                                                    <input type="number" name="Name" required class="form-control">
+                                                </div>
+                                            </div>
+                                            <div class="col-md-12">
+                                                <label>Details*</label>
+                                                <textarea class="form-control description" rows="10"  placeholder="Enter ..." name="BigDetailsTwo"></textarea>
+                                                @*<textarea name="BigDetailsTwo" value="@Model.BigDetailsTwo" class="form-control description">@Model.BigDetailsTwo</textarea>*@
+                                            </div>
+
+
+                                            <div class="col-12 col-md-6 col-lg-6">
+                                                <div>
+                                                    <label>Image</label>
+                                                    <input type="file" name="images" accept="image/png, image/jpeg" class="form-control dropify" multiple />
+                                                </div>
+                                            </div>
+                                        </div>
+                                        @*<div class="row">
+                                                @foreach (var image in Model.Images)
+                                                {
+                                                    <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+                                                        <div class="image-holder rounded-lg overflow-hidden" style="cursor: pointer; padding-top:25px">
+                                                            <img src="@image.Image" class="img-fluid" style="height: 150px;">
+                                                            <a onclick="DeleteImage(@image.ProductImageId)" class="remove-image"><i class="mdi mdi-close" style="color:red"></i> </a>
+                                                        </div>
+                                                    </div>
+                                                }
+                                            </div>*@
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card-body">
+                        <div class="form-group mb-0 text-right">
+
+                            <a href="@Url.RouteUrl("Admin_GroceryTestIndex")" class="btn btn-success waves-effect waves-light" onclick="SubmitProductForm()">Save</a>
+                            <a href="@Url.RouteUrl("Admin_GroceryTestIndex")" class="btn btn-dark waves-effect waves-light">
+                                Close
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+

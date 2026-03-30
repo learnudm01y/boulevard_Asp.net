@@ -1,0 +1,238 @@
+﻿@model Boulevard.Models.ServiceTypeAmenity
+@{
+    ViewBag.Title = "Create Or Update";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+
+    string link = HttpContext.Current.Request.Url.GetLeftPart(UriPartial.Authority) + "/";
+
+}
+
+@using (Html.BeginForm("CreateAndUpdate", "ServiceTypeAmenity", FormMethod.Post, new { enctype = "multipart/form-data", @id = "myForm" }))
+{
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/dropify/0.2.2/css/dropify.min.css">
+
+    <!-- Container fluid  -->
+    <!-- ============================================================== -->
+    <div class="page-wrapper">
+        <div class="container-fluid">
+            <!-- ============================================================== -->
+            <!-- Bread crumb and right sidebar toggle -->
+            <!-- ============================================================== -->
+
+            <div class="row page-titles">
+                <div class="col-md-5 col-12 align-self-center">
+                    <h3 class="text-themecolor mb-0">Service Type Amenity</h3>
+                </div>
+                <div class="col-md-7 col-12 align-self-center d-none d-md-block">
+                    <ol class="breadcrumb mb-0 p-0 bg-transparent float-right">
+                        <li class="breadcrumb-item active"><a href="@Url.RouteUrl("Admin_Service_Type_Amenity")">Service Type Amenity</a></li>
+                        @if (Model.ServiceAmenityId == 0)
+                        {
+                            <li class="breadcrumb-item active">Create Service Type Amenity</li>
+                        }
+                        else
+                        {
+                            <li class="breadcrumb-item active">Update Service Type Amenity</li>
+                        }
+                    </ol>
+                </div>
+            </div>
+            <!-- ============================================================== -->
+            <!-- End Bread crumb and right sidebar toggle -->
+            <!-- ============================================================== -->
+            <!--order list-->
+            <form>
+                <div class="card">
+                    <div class="card-header">
+                        <!--<h4 class="">General</h4>-->
+                        Service Type Amenity Information
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <input type="hidden" name="ServiceAmenityId" class="form-control" value="@Model.ServiceAmenityId">
+                            <input type="hidden" name="CreateDate" class="form-control" value="@Model.CreateDate">
+                            <input type="hidden" name="CreateBy" class="form-control" value="@Model.CreateBy">
+                            <input type="hidden" name="ServiceAmenityKey" class="form-control" value="@Model.ServiceAmenityKey">
+
+
+                            <div class="col-md-4 col-sm-4">
+                                <div class="form-group">
+                                    <label>Service Type</label>
+                                    @Html.DropDownListFor(model => model.ServiceTypeId, (List<SelectListItem>)ViewBag.ServiceType, new { @class = "form-control select-2", @id = "CountryId" })
+                                </div>
+                            </div>
+
+                            <div class="col-md-4 col-sm-4">
+                                <div class="form-group">
+                                    <label>Amenities Name</label>
+                                    <input type="text" name="AmenitiesName" required class="form-control" value="@Model.AmenitiesName">
+                                </div>
+                            </div>
+                           
+                            <div class="col-md-4 col-sm-4">
+                                <div class="form-group">
+                                    <label>Amenities Name (Arabic)</label>
+                                    <input type="text" name="AmenitiesNameAr" dir="rtl" required class="form-control" value="@Model.AmenitiesNameAr">
+                                </div>
+                            </div>
+
+                            <div class="col-md-4 col-sm-4">
+                                <div class="form-group">
+                                    <label>Amenities Type</label>
+                                    <select name="AmenitiesType" id="AmenitiesType" class="form-control select-2" required>
+                                        <option value="">Select Amenities Type</option>
+                                        <option value="CloserProperty">Closer Property</option>
+                                        <option value="Materials">Materials</option>
+                                        <option value="Utility">Utility</option>
+                                        <option value="Materials">Materials</option>
+                                        <option value="Amenity">Amenity</option>
+                                        <option value="ProjectPlan">Project Plan</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="col-md-4 col-sm-4">
+                                <div class="form-group">
+                                    <label>Linked With File</label>
+                                    <div class="switch">
+                                        <label>
+                                            <strong style="color: red; font-size: 20px;">NO</strong>
+                                            @if (Model.LinkedWithFile == true)
+                                            {
+                                                <input type="checkbox" checked="checked" name="LinkedWithFile" id="LinkedWithFileOpen" value="true" onchange="UploadLogo()"><span class="lever"></span>
+                                            }
+                                            else
+                                            {
+                                                <input type="checkbox" name="LinkedWithFile" id="LinkedWithFileOpen" value="true" onchange="UploadLogo()"><span class="lever"></span>
+                                            }
+                                            <input name="LinkedWithFile" type="hidden" value="false" />
+                                            <strong style="color: green; font-size: 20px;">YES</strong>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-4 col-sm-4">
+                                <div class="form-group">
+                                    <label>Status</label>
+                                    <div class="switch">
+                                        <label>
+                                            <strong style="color: red; font-size: 20px;">InActive</strong>
+                                            @if (Model.Status == "Active")
+                                            {
+                                                <input type="checkbox" checked="checked" name="Status" value="Active"><span class="lever"></span>
+                                            }
+                                            else
+                                            {
+                                                <input type="checkbox" name="Status" value="Active"><span class="lever"></span>
+                                            }
+                                            <input name="Status" type="hidden" value="InActive" />
+                                            <strong style="color:green; font-size:20px;">Active</strong>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row col-12">
+                                <div class="col-md-4 col-sm-4">
+                                    <div class="form-group">
+                                        <label>Amenities Logo</label>
+                                        <input type="file" name="amenitiesLogo" class="form-control dropify" data-default-file="@link@Model.AmenitiesLogo">
+                                    </div>
+                                </div>
+                                <div class="col-md-4 col-sm-4" id="ServiceTypeFiles">
+                                    <div class="form-group">
+                                        <label>Service Type Files</label>
+                                        <input type="file" name="serviceTypeFiles" class="form-control dropify">
+                                    </div>
+                                </div>
+                                @if (Model.FileLink != null && Model.FileType == "File")
+                                {
+                                    <div class="col-md-4 col-sm-4">
+                                        <div class="row">
+                                            <div class="form-group">
+                                                <label>Service Type Files</label>
+                                                <div class="action-icon">
+                                                    <button type="button" class="btn btn-close-white" data-toggle="modal" data-target="#myModalPDF"><i class="fa fa-file-pdf" aria-hidden="true"></i></button>
+                                                    @*<a href="/@Model.QuotationFileLink" target="_blank" class="btn btn-close-white" data-toggle="modal" data-target="#myModalPDF"><i class="fa fa-file-pdf" aria-hidden="true"></i></a>*@
+                                                    @*<a data-fancybox data-src="@Model.OrderRequestService.PassportCopy" href="javascript:void(0);"> <i class="fa fa-eye" aria-hidden="true"></i></a>*@
+                                                    <a href="@link@Model.FileLink" download="@DateTime.Now.ToShortDateString()-Real-State-Amenity"> <i class="fa fa-download" aria-hidden="true"></i></a>
+
+                                                </div>
+                                                @*<a href="@Model.DriverLicensePicture" target="_blank">Driver's License</a>*@
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+
+                                @if (Model.FileLink != null && Model.FileType == "Image")
+                                {
+                                    <div class="col-md-4 col-sm-4" id="ServiceTypeFiles">
+                                        <div class="form-group">
+                                            <label>Service Type Files</label>
+                                            <div>
+                                                <img src="@Model.FileLink" style="max-width: 180px; max-height: 180px;">
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+
+                                <div id="myModalPDF" class="modal fade" tabindex="-1" role="dialog">
+                                    <div class="modal-dialog" style="max-width:fit-content">
+                                        <div class="modal-content">
+                                            <div class="modal-body">
+                                                <embed src="@link@Model.FileLink" width="800px" height="2100px" />
+                                                @*<img src="/@Model.QuotationFileLink" class="img-responsive">*@
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card-body">
+                        <div class="form-group mb-0 text-right">
+                            @if (Model.ServiceAmenityId > 0)
+                            {
+                                <button type="submit" class="btn btn-warning waves-effect waves-light" id="submit-btn">Reset</button>
+                            }
+                            else
+                            {
+                                <button type="submit" class="btn btn-success waves-effect waves-light" id="submit-btn">Save</button>
+                            }
+                            <a href="@Url.RouteUrl("Admin_Service_Type_Amenity")" class="btn btn-dark waves-effect waves-light">
+                                Close
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </form>
+            <!-- ============================================================== -->
+        </div>
+    </div>
+    <!-- ============================================================== -->
+    <!-- End Container fluid  -->
+}
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/dropify/0.2.2/js/dropify.min.js"></script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#AmenitiesType").val('@Model.AmenitiesType');
+        $("#ServiceTypeFiles").hide();
+        if ('@Model.LinkedWithFile' == 'True') {
+            $("#ServiceTypeFiles").show();
+        }
+    });
+
+    function UploadLogo() {
+        const uploadLinkedWithFile = document.getElementById('LinkedWithFileOpen');
+        if (uploadLinkedWithFile.checked) {
+            $("#ServiceTypeFiles").show();
+        }
+        else {
+            $("#ServiceTypeFiles").hide();
+        }
+    }
+</script>

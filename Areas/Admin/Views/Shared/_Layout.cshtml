@@ -1,0 +1,28 @@
+﻿
+@{
+    Boulevard.Service.LayoutSettingAccess layoutSettingAccess = new Boulevard.Service.LayoutSettingAccess();
+    var layout = layoutSettingAccess.GetDefaultLayout();
+    Layout = null;
+    var body = layout.Body;
+}
+<!DOCTYPE html>
+<html dir="ltr" lang="en">
+@Html.Partial("~/Areas/Admin/Views/Shared/_Head.cshtml")
+<body data-theme="@body">
+    <div id="main-wrapper">
+        @Html.Partial("~/Areas/Admin/Views/Shared/_Header.cshtml")
+        @Html.Partial("~/Areas/Admin/Views/Shared/_Sidebar.cshtml")
+
+        @RenderBody()
+        @*<div class="page-wrapper">
+
+        </div>*@
+        @Html.Partial("~/Areas/Admin/Views/Shared/_Footer.cshtml")
+    </div>
+    <div class="chat-windows"></div>
+    @Html.Partial("~/Areas/Admin/Views/Shared/_Scripts.cshtml")
+    @RenderSection("scripts", required: false)
+    @RenderSection("PageScripts", required: false)
+</body>
+
+</html>

@@ -1,0 +1,105 @@
+﻿@model Boulevard.Models.ServiceAmenity
+@{
+    ViewBag.Title = "Create";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+    string activeChk = "";
+    string PageTitle = "", ButtonTitle = "";
+    if (Model.ServiceId != 0)
+    {
+        PageTitle = "Edit";
+        ButtonTitle = "Reset";
+    }
+    else
+    {
+        PageTitle = "Add";
+        ButtonTitle = "Save";
+    }
+}
+
+
+
+@using (Html.BeginForm("Create", "ServiceAmenity", FormMethod.Post, new { enctype = "multipart/form-data", @id = "myForm" }))
+{
+
+
+    <div class="page-wrapper">
+        <div class="container-fluid">
+            <div class="row page-titles">
+                <div class="col-md-5 col-12 align-self-center">
+                    <h3 class="text-themecolor mb-0">@ViewBag.FCatagoryName Service Amenity</h3>
+                </div>
+                <div class="col-md-7 col-12 align-self-center d-none d-md-block">
+                    <ol class="breadcrumb mb-0 p-0 bg-transparent float-right">
+                    </ol>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-body">
+
+                    <div class="row align-items-center mb-3">
+                        <div class="col-md-5 col-12 align-self-center">
+                            <h3>@PageTitle @ViewBag.FCatagoryName</h3>
+                        </div>
+                        <div class="col-md-7 col-12 align-self-center d-none d-md-block">
+                            <ol class="breadcrumb mb-0 p-0 bg-transparent float-right">
+                                <li class="breadcrumb-item active"><a href="@Url.RouteUrl("Admin_ServiceAmenityList")">@ViewBag.FCatagoryName Service</a></li>
+                                <li class="breadcrumb-item active">Create Or Edit</li>
+                            </ol>
+                        </div>
+
+                    </div>
+                    <hr>
+
+                    <div class="card-body">
+                        <div class="row">
+                            <input type="hidden" name="ServiceAmenityId" class="form-control" value="@Model.ServiceAmenityId">
+                            <input type="hidden" name="ServiceAmenityKey" class="form-control" value="@Model.ServiceAmenityKey">
+                            <input type="hidden" name="AmenitiesLogo" class="form-control" value="@Model.AmenitiesLogo">
+                            <input type="hidden" name="CreateBy" class="form-control" value="@Model.CreateBy">
+                            <input type="hidden" name="CreateDate" class="form-control" value="@Model.CreateDate">
+                            <input type="hidden" name="FeatureCategoryKey" class="form-control" value="@ViewBag.FeatureCategoryKey">
+
+                            <div class="col-lg-4 col-md-6 col-sm-12">
+                                <div class="form-group">
+                                    <label>Name</label>
+                                    @Html.TextBoxFor(m => m.AmenitiesName, new { @class = "form-control", required = "required" })
+                                </div>
+                            </div>
+                            <div class="col-lg-4 col-md-6 col-sm-12">
+                                <div class="form-group">
+                                    <label>Name (Arabic)</label>
+                                    @Html.TextBoxFor(m => m.AmenitiesNameAr, new { @class = "form-control", required = "required", dir = "rtl" })
+                                </div>
+                            </div>
+                            <div class="col-lg-4 col-md-6 col-sm-12">
+                                <div class="form-group">
+                                    <label>Service</label>
+                                    @Html.DropDownList("ServiceId", (IEnumerable<SelectListItem>)ViewBag.service, "Choose Category", new { @class = "form-control", required = "required" })
+                                </div>
+                            </div>
+
+                            <div class="col-lg-4 col-md-6 col-sm-12">
+                                <div>
+                                    <label>Image</label>
+                                    <input type="file" name="Image" accept="image/png, image/jpeg" class="form-control dropify" data-default-file="../../@Model.AmenitiesLogo" />
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <div class="card-body">
+                            <div class="form-group mb-0 text-right">
+
+                                <button type="submit" class="btn btn-warning waves-effect waves-light" id="submit-btn">@ButtonTitle</button>
+                                <a href="@Url.RouteUrl("Admin_ServiceAmenityList")" class="btn btn-dark waves-effect waves-light">
+                                    Close
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+ }

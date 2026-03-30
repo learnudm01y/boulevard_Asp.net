@@ -1,0 +1,821 @@
+﻿@model Boulevard.Models.OrderRequestProduct
+@{
+    ViewBag.Title = "CreateInvoice";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+@using (Html.BeginForm("CreateInvoice", "OrderRequestProduct", FormMethod.Post, new { enctype = "multipart/form-data", @id = "myForm" }))
+{
+    <div class="page-wrapper">
+        <div class="container-fluid">
+
+
+            <div class="row page-titles">
+                <div class="col-md-5 col-12 align-self-center">
+                    <h3 class="text-themecolor mb-0">@Model.FeatureCategory.Name Invoice</h3>
+                </div>
+                <div class="col-md-7 col-12 align-self-center d-none d-md-block">
+                    <ol class="breadcrumb mb-0 p-0 bg-transparent float-right">
+                        <li class="breadcrumb-item active"><a href="@Url.RouteUrl("Admin_Member")">Member</a></li>
+                        <li class="breadcrumb-item active">@Model.FeatureCategory.Name Invoice</li>
+                    </ol>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header">
+                            @Model.FeatureCategory.Name Invoice
+                        </div>
+                        <form class="form-horizontal">
+                            <div class="card-body">
+                                <div class="row">
+
+
+                                    @Html.HiddenFor(model => model.FeatureCategoryId)
+                                    @Html.HiddenFor(model => model.FeatureCategory)
+                                    <input type="hidden" id="MemberAddressId" name="MemberAddressId" />
+
+                                    <div class="col-sm-12 col-lg-6">
+                                        <div class="form-group row">
+                                            <label for="fname2" class="col-sm-3 text-right control-label col-form-label">Order Date</label>
+                                            <div class="col-sm-9">
+                                                @Html.EditorFor(model => model.OrderDateTime, new { htmlAttributes = new { @class = "form-control" } })
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-sm-12 col-lg-6">
+                                        <div class="form-group row">
+                                            <label for="fname2" class="col-sm-3 text-right control-label col-form-label">Delivery Date</label>
+                                            <div class="col-sm-9">
+                                                @Html.EditorFor(model => model.DeliveryDateTime, new { htmlAttributes = new { @class = "form-control" } })
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-sm-12 col-lg-6" style="padding-left: 45px;">
+                                        <div class="input-group row">
+                                            <label for="fname2" class="col-sm-3 text-right control-label col-form-label">Member Name</label>
+
+                                            <input type="hidden" id="memberId" name="memberId" class="form-control" value="@Model.MemberId">
+                                            <input type="text" id="memberSearch" class="form-control" placeholder="Type member name..." />
+                                            <div class="input-group-append">
+                                                <div class="input-group-text" onclick="addCustomer()"><i class="fa fa-user-plus"></i></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-12 col-lg-6">
+                                        <div id="addressContainer" class="mt-3">
+                                            <!-- Radio buttons for addresses will be loaded here -->
+                                        </div>
+                                    </div>
+
+                                    <div class="col-sm-12 col-lg-6" style="padding-top:15px">
+                                        <div class="form-group row">
+                                            <label for="fname2" class="col-sm-3 text-right control-label col-form-label">Comments</label>
+                                            <div class="col-sm-9">
+                                                <textarea class="form-control" rows="3" placeholder="Enter ..." name="Comments">@Model.Comments</textarea>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-12">
+                                        @*<div class="row">
+                                            <div class="col-md-10"></div>
+                                            <div class="col-md-2">
+                                                <input id="myInput" type="text" class="form-control form-control-sm" placeholder="Search.....">
+                                            </div>
+                                        </div>*@
+                                        <span style="color: red">@TempData["ErrorMessage"]</span><br />
+                                        <table class="display nowrap table table-bordered table-bordered">
+
+                                            <thead>
+                                                <tr>
+                                                    <th>#</th>
+                                                    <th>Product Name</th>
+                                                    <th>Available Qty</th>
+                                                    <th>Qty</th>
+                                                    <th>Discount</th>
+                                                    <th>Unit Price</th>
+                                                    <th>Total Unit</th>
+                                                    <th>Option</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="tblSalesInvoice">
+
+                                                @for (int i = 0; i < Model.OrderRequestProduxtDetails.Count; i++)
+                                                {
+
+                                                    var name = "OrderRequestProduxtDetails[" + i + "].Product.ProductName";
+
+                                                    <tr>
+                                                        <td>1</td>
+                                                        <td>
+                                                            <input type="hidden" id="rowCount" name="rowCount" />
+                                                            <input name="@name" onkeypress="loadAutocomplete(this)" class="form-control" value="@Model.OrderRequestProduxtDetails[i].Product.ProductName">
+                                                            @Html.HiddenFor(m => m.OrderRequestProduxtDetails[i].ProductId)
+
+                                                        </td>
+                                                        <td>
+                                                            @Html.TextBoxFor(m => m.OrderRequestProduxtDetails[i].Product.StockQuantity, new { @class = "form-control", @readonly = true })
+                                                        </td>
+                                                        <td>
+                                                            @Html.TextBoxFor(m => m.OrderRequestProduxtDetails[i].Quantity, new { @class = "form-control", @onkeyup = "calculateQty_price(this)" })
+                                                        </td>
+                                                        <td>
+                                                            @Html.TextBoxFor(m => m.OrderRequestProduxtDetails[i].DiscountAmount, new { @class = "form-control", @onkeyup = "calculateQty_price(this)" })
+                                                        </td>
+
+                                                        <td>
+                                                            @Html.TextBoxFor(m => m.OrderRequestProduxtDetails[i].GrossPrice, new { @class = "form-control", @onkeyup = "calculateQty_price(this)" })
+                                                        </td>
+                                                        <td>
+                                                            @Html.TextBoxFor(m => m.OrderRequestProduxtDetails[i].TotalGrossPrice, new { @class = "form-control" })
+                                                        </td>
+                                                        <td>
+                                                            <a href="javascript:void(0)" id="addRow" class="btn btn-success btn-xs" onclick="addGrade()"><span class="fas fa-plus"></span></a>
+                                                            <a href="javascript:void(0)" id="deleteRow" class="deleteRow btn btn-danger btn-xs" onclick="removeGrade(this);"><span class="fa fa-trash"></span></a>
+                                                        </td>
+
+                                                    </tr>
+                                                }
+
+                                            </tbody>
+                                            <tr>
+                                                <td>
+                                                </td>
+                                                <td>
+                                                </td>
+                                                <td>
+                                                    <label style="text-align:right"> Total:</label>
+                                                </td>
+                                                <td>
+                                                    <input type="number" id="TotalQty" name="TotalQty" readonly="true" class="form-control">
+                                                </td>
+                                                <td>
+                                                </td>
+                                                <td>
+                                                </td>
+                                                <td>
+                                                    <input type="number" id="TotalUnit" name="TotalUnit" readonly="true" class="form-control">
+                                                </td>
+
+                                            </tr>
+                                        </table>
+                                    </div>
+                                    <div class="col-md-12">
+                                        <div class="row">
+                                            <div class="col-md-8"></div>
+
+                                            <div class="col-md-4">
+                                                <div class="card card-success">
+                                                    <div class="card-body" style="background-color: snow; border: ridge;">
+                                                        <div class="form-group">
+                                                            <label for="inputEstimatedBudget">Delivery Charge</label>
+                                                            <input type="number" id="DeliveryCharge" name="DeliveryCharge" class="form-control" onkeyup="GrandTotalCalculation()">
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label for="inputEstimatedBudget">Total Amount</label>
+                                                            <input type="number" id="SubTotalAmount" name="TotalPrice" readonly="True" class="form-control">
+                                                        </div>
+
+                                                        <div class="form-group">
+                                                            <label for="inputEstimatedBudget">Payment Method</label>
+                                                            <select name="PaymentMethodId" id="PaymentMethodId" class="form-control">
+                                                                <option value="1">Cash on delivery</option>
+                                                            </select>
+                                                        </div>
+                                                        <div style="width: 100%; height: 3px; background-color: gray"></div>
+
+
+                                                        <div class="card-body">
+                                                            <div class="form-group mb-0 text-right">
+                                                                @if (Model.OrderRequestProductId > 0)
+                                                                {
+                                                                    <button type="submit" class="btn btn-warning waves-effect waves-light" id="submit-btn">Reset</button>
+                                                                }
+                                                                else
+                                                                {
+                                                                    <button type="submit" class="btn btn-info waves-effect waves-light" id="submit-btn">Add New</button>
+                                                                }
+                                                                <a href="@Url.RouteUrl("Admin_Order_CreateInvoice", new { fCatagoryKey = Model.FeatureCategoryId })" class="btn btn-dark waves-effect waves-light">
+                                                                    Close
+                                                                </a>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+}
+
+<div class="modal fade" id="modal-lg">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Add New Member</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label>Name</label>
+                            <input type="text" id="Name" name="Name" placeholder="Enter  Name" class="form-control">
+                            <span style="color: red" id="spnFirstName"></span>
+                        </div>
+                        <div class="form-group">
+                            <label>Phone Number</label>
+                            <input type="text" id="PhoneNumber" name="PhoneNumber" placeholder="Enter Phone Number" class="form-control">
+                            <span style="color: red" id="spnPhoneNumber"></span>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label>Email</label>
+                            <input type="email" id="Email" name="Email" placeholder="Enter Email" class="form-control">
+                        </div>
+                    </div>
+                  
+                </div>
+            </div>
+            <div class="modal-footer justify-content-between">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" onclick="SaveCustomer()">Add New Member</button>
+            </div>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>
+
+
+<div class="modal fade" id="addressModal" tabindex="-1" aria-labelledby="addressModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form id="addressForm">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addressModalLabel">Add/Edit Address</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" id="AddressId" name="MemberAddressId" />
+                    <input type="hidden" id="MemberId" name="MemberId" />
+
+                    <div class="mb-2">
+                        <label>Country</label>
+                        @Html.DropDownListFor(model => model.CountryId, (List<SelectListItem>)ViewBag.Country, new { @class = "form-control", @id = "ddCountryId", @onchange = "jsFunction(this.value)" })
+                    </div>
+                    <div class="mb-2">
+                        <label>City</label>
+                        @Html.DropDownListFor(model => model.CityId, (List<SelectListItem>)ViewBag.City, new { @class = "form-control", @id = "ddCityId" })
+                    </div>
+                    <div class="mb-2">
+                        <label>Address 1</label>
+                        <input type="text" name="AddressLine1" class="form-control" required />
+                    </div>
+                    <div class="mb-2">
+                        <label>Address 2</label>
+                        <input type="text" name="AddressLine2" class="form-control" />
+                    </div>
+                    <div class="mb-2">
+                        <label>Nearby Location</label>
+                        <input type="text" name="NearByAddress" class="form-control" />
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" onclick="saveAddress()">Save Address</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<link href="https://code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css" rel="stylesheet" />
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://code.jquery.com/ui/1.13.2/jquery-ui.min.js"></script>
+
+<script type="text/javascript">
+    function addCustomer() {
+        $("#modal-lg").modal('show');
+    }
+</script>
+
+<script type="text/javascript">
+    function jsFunction(value) {
+        $.ajax({
+            async: true,
+            crossDomain: true,
+            type: "GET",
+
+            url: "/admin/get/city/by/countryId?countryId=" + value,
+            success: function (data) {
+                console.log(data);
+                //var city = data.data.cities;
+                var s = '<option value="-1">Please Select a City</option>';
+                for (var i = 0; i < data.length; i++) {
+                    s += '<option value="' + data[i].CityId + '">' + data[i].CityName + '</option>';
+                }
+                $("#ddCityId").html(s);
+            }
+        });
+    }
+
+    document.getElementById("input").addEventListener("change", function () {
+        var media = URL.createObjectURL(this.files[0]);
+        var video = document.getElementById("video");
+        video.src = media;
+        video.style.display = "block";
+        video.play();
+    });
+
+        @*$(document).ready(function () {
+            $("#ddCityId").val('@Model.CityId');
+    });*@
+</script>
+
+
+<script>
+    function SaveCustomer() {
+        var name = $("#Name").val();
+        var phoneNumber = $("#PhoneNumber").val();
+        var email = $("#Email").val();
+        if (name === "" || phoneNumber === "") {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Validation Error',
+                text: 'Name and Phone Number are required!'
+            });
+            return;
+        }
+        $.ajax({
+            url: '@Url.Action("SaveMember", "OrderRequestProduct", new { area = "Admin" })',
+            type: 'POST',
+            data: {
+                Name: name,
+                PhoneNumber: phoneNumber,
+                Email: email
+            },
+            success: function (response) {
+                if (response.success) {
+                    $("#modal-lg").modal('hide');
+                    $("#memberSearch").val(name);
+                    $("#memberId").val(response.memberId);
+                    loadMemberAddresses(response.memberId);
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Member Added',
+                        text: 'The member has been added successfully.'
+                    });
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Save Failed',
+                        text: response.message || 'Failed to save member. Please try again.'
+                    });
+                }
+            },
+            error: function () {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Server Error',
+                    text: 'An error occurred while saving. Please try later.'
+                });
+            }
+        });
+    }
+</script>
+
+
+
+<script>
+     $(function () {
+    $("#memberSearch").autocomplete({
+        source: function (request, response) {
+            $.ajax({
+                url: '@Url.Action("SearchMember", "OrderRequestProduct", new { area = "Admin" })',
+                type: 'GET',
+                dataType: 'json',
+                data: { term: request.term },
+                success: function (data) {
+                    response($.map(data, function (item) {
+                        return {
+                            label: item.Name,
+                            value: item.Name,
+                            id: item.MemberId
+                        };
+                    }));
+                }
+            });
+        },
+        select: function (event, ui) {
+            const memberId = ui.item.id;
+            $("#memberId").val(memberId);
+            loadMemberAddresses(memberId);
+        },
+        minLength: 2
+    });
+
+
+     });
+
+     @*function loadMemberAddresses(memberId) {
+    $.ajax({
+        url: '@Url.Action("GetMemberAddresses", "OrderRequestProduct", new { area = "Admin" })',
+        type: 'GET',
+        data: { memberId },
+        success: function (addresses) {
+            var html = "";
+            if (addresses.length > 0) {
+                html += "<h5>Select an Address</h5><div class='list-group'>";
+                $.each(addresses, function (index, address) {
+                    var addressText = `${address.AddressLine1}, ${address.AddressLine2}, ${address.NearByAddress}`;
+                    html += `
+                        <label class='list-group-item'>
+                            <input type='radio' name='addressRadio' value='${address.MemberAddressId}' ${index === 0 ? "checked" : ""} />
+                            ${addressText}
+                            <button type='button' class='btn btn-sm btn-link' onclick='editAddress(${JSON.stringify(address)})'>Edit</button>
+                        </label>`;
+                });
+                html += "</div>";
+                $("#MemberAddressId").val(addresses[0].MemberAddressId); // first checked
+            } else {
+                html = "<p>No addresses found for this member.</p><button type='button' class='btn btn-sm btn-primary' onclick='openAddAddressPopup()'>Add Address</button>";
+            }
+            $("#addressContainer").html(html);
+
+            $("input[name='addressRadio']").on('change', function () {
+                $("#MemberAddressId").val($(this).val());
+            });
+        }
+    });
+}*@
+
+
+     function loadMemberAddresses(memberId) {
+    $.ajax({
+        url: '@Url.Action("GetMemberAddresses", "OrderRequestProduct", new { area = "Admin" })',
+        type: 'GET',
+        data: { memberId },
+        success: function (addresses) {
+            var html = "";
+
+            html += "<div class='d-flex justify-content-between align-items-center mb-2'>";
+            html += "<h5>Select an Address</h5>";
+            html += "<button type='button' class='btn btn-sm btn-primary' onclick='openAddAddressPopup()'>Add Address</button>";
+            html += "</div>";
+
+            if (addresses.length > 0) {
+                html += "<div class='list-group'>";
+                $.each(addresses, function (index, address) {
+                    var addressText = `${address.AddressLine1}, ${address.AddressLine2}, ${address.NearByAddress}`;
+                    html += `
+                        <label class='list-group-item'>
+                            <input type='radio' name='addressRadio' value='${address.MemberAddressId}' ${index === 0 ? "checked" : ""} />
+                            ${addressText}
+                            <button type='button' class='btn btn-sm btn-link' onclick='editAddress(${JSON.stringify(address)})'>Edit</button>
+                        </label>`;
+                });
+                html += "</div>";
+
+                // Set first address as selected
+                $("#MemberAddressId").val(addresses[0].MemberAddressId);
+            } else {
+                html += "<p class='text-muted'>No addresses found for this member.</p>";
+            }
+
+            $("#addressContainer").html(html);
+
+            // Radio button change handler
+            $("input[name='addressRadio']").on('change', function () {
+                $("#MemberAddressId").val($(this).val());
+            });
+        },
+        error: function () {
+            $("#addressContainer").html("<p class='text-danger'>Failed to load addresses.</p>");
+        }
+    });
+}
+
+
+function openAddAddressPopup() {
+    $("#addressForm")[0].reset();
+    $("#AddressId").val(0);
+    $("#MemberId").val($("#memberId").val());
+    $("#addressModal").modal("show");
+}
+
+function editAddress(address) {
+    $("#AddressId").val(address.MemberAddressId);
+    $("#MemberId").val(address.MemberId);
+    //$("input[name='CountryId']").val(address.CountryId);
+    //$("input[name='CityId']").val(address.CityId);
+    $("input[name='AddressLine1']").val(address.AddressLine1);
+    $("input[name='AddressLine2']").val(address.AddressLine2);
+    $("input[name='NearByAddress']").val(address.NearByAddress);
+    $("#ddCountryId").val(address.CountryId).trigger('change');
+
+    // After Country dropdown changes and cities are loaded,
+    // set selected CityId
+    setTimeout(function () {
+        $("#ddCityId").val(address.CityId);
+    }, 500); // Delay ensures cities are loaded
+    $("#addressModal").modal("show");
+}
+
+@*$("#addressForm").on("submit", function (e) {
+    e.preventDefault();
+    var formData = $(this).serialize();
+    $.post('@Url.Action("SaveAddress", "OrderRequestProduct", new { area = "Admin" })', formData, function (res) {
+        if (res.success) {
+            $("#addressModal").modal("hide");
+            loadMemberAddresses($("#MemberId").val());
+        } else {
+            alert("Failed to save address");
+        }
+    });
+});*@
+
+    function saveAddress() {
+        console.log("MemberAddressId Before Submit:", $("#AddressId").val());
+        var form = $("#addressForm");
+        var formData = form.serialize();
+        console.log("Serialized Data:", formData); // Debug chec
+
+        $.ajax({
+        url: '@Url.Action("SaveAddress", "OrderRequestProduct", new { area = "Admin" })',
+        type: 'POST',
+        data: formData,
+        success: function (res) {
+            if (res.success) {
+                $("#addressModal").modal("hide");
+                loadMemberAddresses($("#MemberId").val());
+
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Address Saved',
+                    text: 'The address has been saved successfully.'
+                });
+            } else {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Save Failed',
+                    text: 'Failed to save address. Please try again.'
+                });
+            }
+        },
+        error: function () {
+            Swal.fire({
+                icon: 'error',
+                title: 'Server Error',
+                text: 'An error occurred while saving. Please try later.'
+            });
+        }
+    });
+    }
+
+
+</script>
+
+<script>
+    function loadAutocomplete(input) {
+        var fcId = @Html.Raw(Json.Encode(Model.FeatureCategory.FeatureCategoryId));
+
+        $(input).autocomplete({
+            source: function (request, response) {
+                $.ajax({
+                    url: '@Url.Action("SearchProduct", "OrderRequestProduct", new { area = "Admin" })',
+                    type: 'GET',
+                    dataType: 'json',
+                    data: {
+                        term: request.term,
+                        fcId: fcId
+                    },
+                    success: function (data) {
+                        response($.map(data, function (item) {
+                            return {
+                                label: item.ProductName,
+                                value: item.ProductName,
+                                id: item.ProductId,
+                                stock: item.StockQuantity,
+                                price: item.ProductPrice,
+                                image: item.ProductImage // image URL or path
+                            };
+                        }));
+                    }
+                });
+            },
+            select: function (event, ui) {
+                $(input).val(ui.item.label);
+
+                var row = $(input).closest("tr");
+                row.find("input[type='hidden'][name$='.ProductId']").val(ui.item.id);
+                row.find("input[name$='.Product.StockQuantity']").val(ui.item.stock);
+                row.find("input[name$='.GrossPrice']").val(ui.item.price);
+
+                return false;
+            },
+            minLength: 2
+        })
+        .autocomplete("instance")._renderItem = function (ul, item) {
+            return $("<li>")
+                .append(`
+                    <div style="display: flex; align-items: center; padding: 5px;">
+                        <img src="${item.image}" alt="Product" style="width: 40px; height: 40px; object-fit: cover; margin-right: 10px; border: 1px solid #ccc;">
+                        <div>
+                            <div><strong>${item.label}</strong></div>
+                            <div style="font-size: 12px; color: gray;">Price: ${item.price}, Stock: ${item.stock}</div>
+                        </div>
+                    </div>
+                `)
+                .appendTo(ul);
+        };
+    }
+
+
+    function addGrade() {
+        var body = jQuery("#tblSalesInvoice");
+        var count = body.find("tr").length;
+        var tr = body.find("tr").first().clone();
+        var inputs = tr.find(":input");
+        inputs.val("");
+        jQuery.each(inputs, function (i, item) {
+            jQuery("#cnt").val(count);
+            if (i == 3 | i == 4 || i == 5 || i == 6 || i == 7) {
+                jQuery(item).prop("name", jQuery(item).prop("name").replace(/\[[0-9]+\]/, "[" + count + "]"));
+            }
+            else {
+                jQuery(item).prop("name", jQuery(item).prop("name").replace(/\[[0-9]+\]/g, "[" + count + "]"));
+            }
+        });
+        body.append(tr);
+        GrandTotalCalculation();
+    }
+
+    function removeGrade(cntrl) {
+        var body = jQuery("#tblSalesInvoice");
+        if (body.find("tr").length === 1)
+            return;
+
+        jQuery(cntrl).parent().parent().remove();
+
+        var trs = body.find("tr");
+
+        jQuery.each(trs, function (ix, tr) {
+            jQuery.each(jQuery(tr).find("input"), function (i, item) {
+                jQuery(item).prop("name", jQuery(item).prop("name").replace(/\[[0-9]+\]/g, "[" + ix + "]"));
+            });
+        });
+        GrandTotalCalculation();
+
+    }
+
+    $(document).ready(function () {
+        $("#myInput").on("keyup", function () {
+            var value = $(this).val().toLowerCase();
+            $("#tblSalesInvoice tr").filter(function () {
+                $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+            });
+        });
+    });
+
+</script>
+
+<script>
+    function calculateQty_price(cntrl) {
+        var name = cntrl.getAttribute('name');
+        var baseName = name.split('.')[0];
+
+        var qtyName = baseName + ".Quantity";
+        var stockQtyName = baseName + ".Product.StockQuantity";
+        var grossPriceName = baseName + ".GrossPrice";
+        var discountAmountName = baseName + ".DiscountAmount";
+        var totalGrossPriceName = baseName + ".TotalGrossPrice";
+
+        // Raw input
+        var qtyRaw = $("input[name='" + qtyName + "']").val();
+
+        // Disallow any non-numeric input (including +, -, letters)
+        if (!/^\d*\.?\d*$/.test(qtyRaw)) {
+            $("input[name='" + qtyName + "']").val(0);
+
+            Swal.fire({
+                icon: 'warning',
+                title: 'Invalid Input',
+                text: 'Only numeric values are allowed for quantity!',
+                confirmButtonColor: '#3085d6'
+            });
+            return;
+        }
+
+        // Convert to float
+        var qty = parseFloat(qtyRaw) || 0;
+        var stockQty = parseFloat($("input[name='" + stockQtyName + "']").val()) || 0;
+        var grossPrice = parseFloat($("input[name='" + grossPriceName + "']").val()) || 0;
+        var discount = parseFloat($("input[name='" + discountAmountName + "']").val()) || 0;
+
+        // Check for negative or 0 quantity
+        if (qty <= 0) {
+            $("input[name='" + qtyName + "']").val(0);
+            $("input[name='" + totalGrossPriceName + "']").val(0);
+            Swal.fire({
+                icon: 'warning',
+                title: 'Invalid Quantity',
+                text: 'Quantity must be greater than 0!',
+                confirmButtonColor: '#3085d6'
+            });
+            return;
+        }
+
+        // Check if quantity exceeds stock
+        if (qty > stockQty) {
+            $("input[name='" + qtyName + "']").val(0);
+            $("input[name='" + totalGrossPriceName + "']").val(0);
+            Swal.fire({
+                icon: 'warning',
+                title: 'Stock Exceeded',
+                text: 'Quantity cannot exceed available stock!',
+                confirmButtonColor: '#3085d6'
+            });
+            return;
+        }
+
+        // Valid input — calculate total
+        var total = (qty * grossPrice) - discount;
+        $("input[name='" + totalGrossPriceName + "']").val(total.toFixed(2));
+        AllSum();
+    }
+
+    function AllSum() {
+        let counter = 0;
+        var totalUnitPrice = 0;
+        var totalQty = 0;
+        var table = jQuery("#tblSalesInvoice");
+        table.find('tr').each(function () {
+            var $tds = $(this).find('td');
+            var inputs = $tds.find(":input");
+
+            totalQty = parseFloat(inputs[4].value);
+            if (isNaN(totalQty))
+                totalQty += totalQty;
+
+            totalUnitPrice = parseFloat(inputs[7].value);
+            if (isNaN(totalUnitPrice))
+                totalUnitPrice += totalUnitPrice;
+        });
+
+        $("#TotalQty").val(totalQty.toFixed(2))
+        $("#TotalUnit").val(totalUnitPrice.toFixed(2))
+        GrandTotalCalculation();
+    }
+
+    function GrandTotalCalculation() {
+        var count = 0;
+
+        var totalUnitPrice = parseFloat(0);
+        var unitPrice = parseFloat(0);
+
+
+        let counter = 0;
+        var table = jQuery("#tblSalesInvoice");
+        table.find('tr').each(function () {
+            var $tds = $(this).find('td');
+            var inputs = $tds.find(":input");
+
+            counter++;
+            $tds[0].innerHTML = counter;
+
+
+            unitPrice = parseFloat(inputs[7].value);
+            if (isNaN(unitPrice))
+                unitPrice = 0;
+            totalUnitPrice += parseFloat(unitPrice);
+
+        });
+
+        if (parseFloat($("#DeliveryCharge").val()) > 0) {
+            totalUnitPrice = totalUnitPrice + parseFloat($("#DeliveryCharge").val());
+        }
+
+        $("#SubTotalAmount").val(totalUnitPrice.toFixed(2));
+    }
+
+</script>
+
+
+
+

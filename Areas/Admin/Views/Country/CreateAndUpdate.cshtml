@@ -1,0 +1,109 @@
+﻿@model Boulevard.Models.Country
+@{
+    ViewBag.Title = "Create Or Update";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+
+@using (Html.BeginForm("CreateAndUpdate", "Country", FormMethod.Post, new { enctype = "multipart/form-data", @id = "myForm" }))
+{
+
+
+    <!-- Container fluid  -->
+    <!-- ============================================================== -->
+    <div class="page-wrapper">
+        <div class="container-fluid">
+            <!-- ============================================================== -->
+            <!-- Bread crumb and right sidebar toggle -->
+            <!-- ============================================================== -->
+
+            <div class="row page-titles">
+                <div class="col-md-5 col-12 align-self-center">
+                    <h3 class="text-themecolor mb-0">Create Country</h3>
+                </div>
+                <div class="col-md-7 col-12 align-self-center d-none d-md-block">
+                    <ol class="breadcrumb mb-0 p-0 bg-transparent float-right">
+                        <li class="breadcrumb-item active"><a href="@Url.RouteUrl("Admin_Country_Create_And_Update")">Country</a></li>
+                        <li class="breadcrumb-item active">Create Country</li>
+                    </ol>
+                </div>
+            </div>
+            <!-- ============================================================== -->
+            <!-- End Bread crumb and right sidebar toggle -->
+            <!-- ============================================================== -->
+            <!--order list-->
+            <form>
+                <div class="card">
+                    <div class="card-header">
+                        <!--<h4 class="">General</h4>-->
+                        Country Information
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <input type="hidden" name="CountryId" class="form-control" value="@Model.CountryId">
+                            <input type="hidden" name="CreateDate" class="form-control" value="@Model.CreateDate">
+                            <input type="hidden" name="CreateBy" class="form-control" value="@Model.CreateBy">
+                            <input type="hidden" name="CountryKey" class="form-control" value="@Model.CountryKey">
+
+
+                            <div class="col-md-4 col-sm-4">
+                                <div class="form-group">
+                                    <label>Country Name</label>
+                                    <input type="text" name="CountryName" required class="form-control" value="@Model.CountryName">
+                                </div>
+                            </div>
+
+
+                            <div class="col-md-4 col-sm-4">
+                                <div class="form-group">
+                                    <label>Country Name (Arabic)</label>
+                                    <input type="text" name="CountryNameAr" required dir="rtl" class="form-control" value="@Model.CountryNameAr">
+                                </div>
+                            </div>
+
+                            <div class="col-md-4 col-sm-4">
+                                <div class="form-group">
+                                    <label>Status</label>
+                                    <div class="switch">
+                                        <label>
+                                            InActive
+                                            @if (Model.Status == "Active")
+                                            {
+                                                <input type="checkbox" checked="checked" name="Status" value="Active"><span class="lever"></span>
+                                            }
+                                            else
+                                            {
+                                                <input type="checkbox" name="Status" value="Active"><span class="lever"></span>
+                                            }
+                                            <input name="Status" type="hidden" value="Deleted" />
+                                            Active
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                        <div class="card-body">
+                            <div class="form-group mb-0 text-right">
+                                @if (Model.CountryId > 0)
+                                {
+                                    <button type="submit" class="btn btn-warning waves-effect waves-light" id="submit-btn">Reset</button>
+                                }
+                                else
+                                {
+                                    <button type="submit" class="btn btn-success waves-effect waves-light" id="submit-btn">Save</button>
+                                }
+                                <a href="@Url.RouteUrl("Admin_Country")" class="btn btn-dark waves-effect waves-light">
+                                    Close
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+            <!-- ============================================================== -->
+        </div>
+    </div>
+    <!-- ============================================================== -->
+    <!-- End Container fluid  -->
+}
+

@@ -1,0 +1,360 @@
+﻿
+
+@model  Boulevard.Areas.Admin.Data.TempProductCountViewModel
+@{
+    ViewBag.Title = "AddServiceTypeBulk";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+
+    var totalRecord = Model.TotalCount;
+    var doneFirst = (double)0;
+    if (Model.DoneCount > 0 && Model.TotalCount > 0)
+    {
+        doneFirst = Math.Round((double)(Model.DoneCount / Model.TotalCount) * 100);
+    }
+}
+
+@using (Html.BeginForm("AddServiceTypeBulk", "ServiceType", FormMethod.Post, new { enctype = "multipart/form-data", id = "ImporeForm" }))
+{
+    @Html.AntiForgeryToken()
+
+    <!-- Container fluid  -->
+    <!-- ============================================================== -->
+    <div class="page-wrapper">
+        <div class="container-fluid">
+            <!-- ============================================================== -->
+            <!-- Bread crumb and right sidebar toggle -->
+            <!-- ============================================================== -->
+
+
+            <div class="row page-titles">
+                <div class="col-md-5 col-12 align-self-center">
+                    <h3 class="text-themecolor mb-0">Add Temp Service Type</h3>
+                </div>
+                <div class="col-md-7 col-12 align-self-center d-none d-md-block">
+                    <ol class="breadcrumb mb-0 p-0 bg-transparent float-right">
+                        <li class="breadcrumb-item active"><a href="@Url.RouteUrl("Admin_dashboard")">Home</a></li>
+                        <li class="breadcrumb-item active">Add Bulk Service Type</li>
+                    </ol>
+                </div>
+            </div>
+            <!-- ============================================================== -->
+            <!-- End Bread crumb and right sidebar toggle -->
+            <!-- ============================================================== -->
+            <!--order list-->
+            <div class="card">
+
+                <div class="row align-items-center mb-3">
+
+                    <div class="col-sm-7 text-right">
+                        <ol class="breadcrumb">
+                            <li class="breadcrumb-item"><a target="_blank" href="~/Content/ExcelFile/ServiceType.xlsx" class="btn btn-info btn-rounded"><i class="fa fa-download"></i> Download Sample</a></li>
+                        </ol>
+                    </div>
+                </div>
+
+                @if (totalRecord > 0)
+                {
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-sm-2"></div>
+                            <div class="col-sm-8">
+                                <div class="card bg-light-inverse">
+                                    <div class="card-body">
+                                        <div class="form-group">
+                                            <label style="color:red;"><span id="statusDone">@Model.DoneCount</span> of @Model.TotalCount row import successfull.</label>
+
+                                            <div class="progress" style="width:100%;">
+                                                <div id="mainBar" class="progress-bar bg-info progress-bar-striped" aria-valuenow="@doneFirst" aria-valuemin="0" aria-valuemax="100" style="width: @doneFirst%; height:25px;" role="progressbar"></div>
+                                            </div>
+                                            <div id="status" style="text-align: center; color: black; width: 100%;">@doneFirst%</div>
+                                        </div>
+                                        <div class="btn-group btn-block align-content-center">
+                                            <button type="button" id="Reset" onclick="ResetImportList()" class="btn btn-danger btn-rounded">Reset</button>
+                                            @if (doneFirst >= 100)
+                                            {
+                                                @*<button type="button" id="updateNew" onclick="UpdateNewList()" class="btn btn-success btn-rounded">Add New (@Model.TotalNew)</button>
+                                                    <button type="button" id="updateDuplicate" onclick="UpdateDuplicateList()" class="btn btn-warning btn-rounded">Add Duplicate (@Model.TotalDuplicate)</button>*@
+                                                <button type="button" id="updateAll" onclick="UpdateAllList()" class="btn btn-info btn-rounded">Add All (@Model.TotalCount)</button>
+                                            }
+                                            else
+                                            {
+                                                @*<button type="button" id="updateNew" style="display:none;" onclick="UpdateNewList()" class="btn btn-success btn-rounded">Add New (@Model.TotalNew)</button>
+                                                    <button type="button" id="updateDuplicate" style="display:none;" onclick="UpdateDuplicateList()" class="btn btn-warning btn-rounded">Add Duplicate (@Model.TotalDuplicate)</button>*@
+                                                <button type="button" id="updateAll" style="display:none;" onclick="UpdateAllList()" class="btn btn-info btn-rounded">Add All (@Model.TotalCount)</button>
+                                            }
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-sm-2"></div>
+                        </div>
+                    </div>
+                }
+                else
+                {
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-sm-3"></div>
+                            <div class="col-md-6 col-sm-6">
+                                <div class="card bg-light-inverse">
+                                    <div class="card-body">
+                                        @*<div class="form-group">
+                                                <label>Games</label>
+                                                <select name="GamesId" id="GamesId" class="form-control">
+                                                    @foreach (var item in ViewBag.Games)
+                                                    {
+                                                        <option value="@item.Value">@item.Text</option>
+                                                    }
+                                                </select>
+                                            </div>*@
+
+                                        @*<div class="form-group">
+                                                <label>Date</label>
+                                                <select name="GamesRunningDateId" id="GamesRunningDateId" class="form-control">
+                                                    @foreach (var item in ViewBag.BookingDate)
+                                                    {
+                                                        <option value="@item.Value">@item.Text</option>
+                                                    }
+                                                </select>
+                                            </div>*@
+
+                                        <div class="form-group">
+                                            <label>File</label>
+                                            <input type="file" class="form-control dropify" accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel" name="File" required />
+                                        </div>
+                                        <div class="form-group">
+                                            <label>File password (if password protected)</label>
+                                            <input type="text" class="form-control" name="Password" />
+                                            <input type="hidden" class="form-control" name="fCatagoryKey" value="@ViewBag.FCatagoryKey" />
+                                        </div>
+                                        <div class="form-group">
+                                            <div class="btn-group">
+                                                <a href="#" class="btn btn-primary btn-rounded"><i class="fa fa-arrow-circle-left"></i> Back</a>
+                                                <button type="button" onclick="ImportFile()" class="btn btn-success btn-rounded"> <i class="fa fa-upload"></i> Import</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-sm-3"></div>
+                        </div>
+                    </div>
+                }
+            </div>
+            <!-- ============================================================== -->
+        </div>
+    </div>
+    <!-- ============================================================== -->
+    <!-- End Container fluid  -->
+}
+
+@section PageScripts
+                {
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.2/jquery-confirm.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.2/jquery-confirm.min.js"></script>
+    <script type="text/javascript">
+
+                    function ImportFile() {
+                        $("#ImporeForm").submit();
+                    }
+
+                    function ResetImportList() {
+                        const swalWithBootstrapButtons = Swal.mixin({
+                            customClass: {
+                                confirmButton: 'btn btn-success',
+                                cancelButton: 'mr-2 btn btn-danger'
+                            },
+                            buttonsStyling: false,
+                            animation: false,
+                            allowOutsideClick: false
+                        })
+
+                        swalWithBootstrapButtons.fire({
+                            title: 'Are you sure?',
+                            text: "You want to import this!",
+                            type: 'warning',
+                            showCancelButton: true,
+                            confirmButtonText: 'Yes, Reset.',
+                            cancelButtonText: 'No, Cancel.',
+                            reverseButtons: true
+                        }).then((result) => {
+                            if (result.value) {
+                                swalWithBootstrapButtons.fire(
+                                    'Reseted!',
+                                    'Reset successfully.',
+                                    'success',
+                                ).then((sucess) => {
+                                    location.replace("/admin/servicetype-remove-bulk/@Model.fCatagoryKey");
+                                })
+                            }
+                        });
+                    }
+
+                    function UpdateAllList() {
+                        const swalWithBootstrapButtons = Swal.mixin({
+                            customClass: {
+                                confirmButton: 'btn btn-success',
+                                cancelButton: 'mr-2 btn btn-danger'
+                            },
+                            buttonsStyling: false,
+                            animation: false,
+                            allowOutsideClick: false
+                        })
+
+                        swalWithBootstrapButtons.fire({
+                            title: 'Are you sure?',
+                            text: "You want to import this!",
+                            type: 'warning',
+                            showCancelButton: true,
+                            confirmButtonText: 'Yes, Import.',
+                            cancelButtonText: 'No, Cancel.',
+                            reverseButtons: true
+                        }).then((result) => {
+                            if (result.value) {
+                                swalWithBootstrapButtons.fire(
+                                    'Imported!',
+                                    'All rows successfully imported.',
+                                    'success',
+                                ).then((sucess) => {
+                                    location.replace("/admin/servicetype-update-all-bulk/@Model.fCatagoryKey");
+                                })
+                            }
+                        });
+                    }
+
+                    function UpdateNewList() {
+                        const swalWithBootstrapButtons = Swal.mixin({
+                            customClass: {
+                                confirmButton: 'btn btn-success',
+                                cancelButton: 'mr-2 btn btn-danger'
+                            },
+                            buttonsStyling: false,
+                            animation: false,
+                            allowOutsideClick: false
+                        })
+
+                        swalWithBootstrapButtons.fire({
+                            title: 'Are you sure?',
+                            text: "You want to import this!",
+                            type: 'warning',
+                            showCancelButton: true,
+                            confirmButtonText: 'Yes, Import.',
+                            cancelButtonText: 'No, Cancel.',
+                            reverseButtons: true
+                        }).then((result) => {
+                            if (result.value) {
+                                swalWithBootstrapButtons.fire(
+                                    'Imported!',
+                                    'All rows successfully imported.',
+                                    'success',
+                                ).then((sucess) => {
+                                    location.replace("/admin/temp-update-new-service/");
+                                })
+                            }
+                        });
+                    }
+
+                    function UpdateDuplicateList() {
+                        const swalWithBootstrapButtons = Swal.mixin({
+                            customClass: {
+                                confirmButton: 'btn btn-success',
+                                cancelButton: 'mr-2 btn btn-danger'
+                            },
+                            buttonsStyling: false,
+                            animation: false,
+                            allowOutsideClick: false
+                        })
+
+                        swalWithBootstrapButtons.fire({
+                            title: 'Are you sure?',
+                            text: "You want to import this!",
+                            type: 'warning',
+                            showCancelButton: true,
+                            confirmButtonText: 'Yes, Import.',
+                            cancelButtonText: 'No, Cancel.',
+                            reverseButtons: true
+                        }).then((result) => {
+                            if (result.value) {
+                                swalWithBootstrapButtons.fire(
+                                    'Imported!',
+                                    'All rows successfully imported.',
+                                    'success',
+                                ).then((sucess) => {
+                                    location.replace("/admin/temp-update-duplicate/");
+                                })
+                            }
+                        });
+                    }
+
+                    function ImportFileCounter() {
+                        $.ajax({
+                            url: "/admin/temp-excel-count-servicetype",
+                            cache: false,
+                            success: function (record) {
+                                console.log(record);
+                                var done = Math.round((record.doneCount / record.totalCount) * 100);
+                                if (done == 100) {
+                                    $("#status").html('Complete');
+
+                                    $("#updateNew").html('Add New (' + record.totalNew + ')');
+                                    $("#updateDuplicate").html('Add Duplicate (' + record.totalDuplicate + ')');
+                                    $("#updateAll").html('Add All (' + record.totalCount + ')');
+
+                                    $("#updateNew").show();
+                                    $("#updateDuplicate").show();
+                                    $("#updateAll").show();
+                                }
+                                else {
+                                    $("#status").html(done + '%');
+                                }
+
+                                $("#mainBar").css('width', done + '%');
+                                $("#statusDone").html(record.doneCount);
+                            }
+                        });
+                        return false;
+                    }
+
+                    $(document).ready(function () {
+                        if (@Model.DoneCount != @totalRecord) {
+                            var done = Math.round((@Model.DoneCount / @totalRecord) * 100);
+                            if (done == 100) {
+                                $("#status").html('Complete');
+
+                                $("#updateNew").html('Add New (' + @Model.TotalNew + ')');
+                                $("#updateDuplicate").html('Add Duplicate (' + @Model.TotalDuplicate + ')');
+                                $("#updateAll").html('Add All (' + @Model.TotalCount + ')');
+
+                                $("#updateNew").show();
+                                $("#updateDuplicate").show();
+                                $("#updateAll").show();
+                            }
+                            else {
+                                $("#status").html(done + '%');
+                            }
+
+                            $("#mainBar").css('width', done + '%');
+                            $("#statusDone").html(@Model.DoneCount);
+                        }
+                        myVar = setInterval("ImportFileCounter()", 5000);
+                    });
+
+    </script>
+
+    @if (!string.IsNullOrEmpty(ViewBag.Message))
+    {
+        <script type="text/javascript">
+                        showAlert('success', '@ViewBag.Message', 'Message!');
+        </script>
+    }
+
+
+
+}
+
+
+
+
+
+
+

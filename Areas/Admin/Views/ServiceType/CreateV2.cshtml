@@ -1,0 +1,805 @@
+﻿@model Boulevard.Models.ServiceType
+@{
+    ViewBag.Title = "Create";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+    //string parentCheck = "";
+    //string childCheck = "";
+    //string grandChildCheck = "";
+
+    string PageTitle = "", ButtonTitle = "";
+    string buttonColor = "";
+    if (Model.ServiceTypeKey != Guid.Empty)
+    {
+        PageTitle = "Edit";
+        ButtonTitle = "Reset";
+
+        buttonColor = "warning";
+    }
+    else
+    {
+        PageTitle = "Add";
+        ButtonTitle = "Save";
+
+        buttonColor = "success";
+    }
+}
+
+<style>
+    .tox {
+        min-height: 400px !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+    }
+</style>
+<link rel="stylesheet" href="~/Areas/Admin/Content/assets/libs/tinymce/skins/lightgray/content.min.css">
+<link rel="stylesheet" href="~/Areas/Admin/Content/assets/libs/tinymce/skins/lightgray/content.mobile.min.css">
+
+@using (Html.BeginForm("CreateV2", "ServiceType", FormMethod.Post, new { enctype = "multipart/form-data", @id = "serviceCategoryForm" }))
+{
+    <input type="hidden" name="ServiceTypeId" class="form-control" value="@Model.ServiceTypeId">
+    <input type="hidden" name="ServiceTypeKey" class="form-control" value="@Model.ServiceTypeKey">
+    <input type="hidden" name="CreateBy" class="form-control" value="@Model.CreateBy">
+    <input type="hidden" name="CreateDate" class="form-control" value="@Model.CreateDate">
+    <input type="hidden" name="CreateDate" class="form-control" value="@Model.CreateDate">
+    <input type="hidden" name="SelectedCategoryId" id="SelectedCategoryId" class="form-control" value="@Model.SelectedCategoryId">
+    <input type="hidden" name="FeatureCategoryKey" class="form-control" value="@ViewBag.FeatureCategoryKey">
+
+    <div class="page-wrapper">
+        <div class="container-fluid">
+            <div class="row page-titles">
+                <div class="col-md-5 col-12 align-self-center">
+                    @if (ViewBag.FeatureCategoryKey == null)
+                    {
+                        <h3 class="text-themecolor mb-0">Service Type</h3>
+                    }
+                </div>
+                <div class="col-md-7 col-12 align-self-center d-none d-md-block">
+                    <ol class="breadcrumb mb-0 p-0 bg-transparent float-right">
+                    </ol>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-body">
+
+                    <div class="row align-items-center mb-3">
+                        <div class="col-md-5 col-12 align-self-center">
+                            <h3>@PageTitle @ViewBag.FCatagoryName</h3>
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="card-body">
+                        <div class="row">
+                            @if (ViewBag.FeatureCategoryKey != "f4309df5-9121-41ad-831a-994c46b62766" && ViewBag.FeatureCategoryKey != "c286a46b-5b9a-4519-bb10-8d47ec254ffb")
+                            {
+                                <div class="col-xl-4 col-lg-4 col-md-5 col-sm-12 col-12">
+                                    <div class="contact-list">
+                                        <div class="contact_list_box">
+                                            <div class="contact_search_list entity-form-box">
+                                                <div class="form-group mb-4">
+                                                    <div class="category-list tree--js category-left-sidebar">
+                                                        <div class="search-jstree">
+                                                            <div class="input-group p-0">
+                                                                <button type="submit"
+                                                                        class="btn input-group-append table-btn h-auto px-3 d-flex border-right justify-content-center align-items-center">
+                                                                    <i class="ti-search"></i>
+                                                                </button>
+                                                                <input type="text" id="jstree-q" class="form-control search-form-control input-group-text px-0" placeholder="Search Category..." aria-describedby="input-group-append">
+                                                            </div>
+                                                        </div>
+                                                        <div class="" id="jstree">
+                                                            <ul>
+                                                                <li class="item active" data-jstree='{"opened": true,"icon":"fas fa-folder-open"}'>
+                                                                    <a href="javascript:;" class="menu-link" onclick="TreeClick()">
+                                                                        Default <span class="">(@Model.CategoryTree.ToList().Count)</span>
+                                                                    </a>
+
+                                                                    <ul class="inner-menu">
+                                                                        @foreach (var category in Model.CategoryTree)
+                                                                        {
+                                                                            var isActive = Model.ServiceCategories.Any(t => t.CategoryId == category.CategoryId) ? "jstree-clicked" : " ";
+
+                                                                            if (category.ChildCategories.Count > 0)
+                                                                            {
+
+                                                                                <li class="item text-truncate" data-jstree='{"opened":true,"icon":"fas fa-folder-open"}' id="@category.CategoryId">
+                                                                                    <a href="javascript:;" class="menu-link" onclick="TreeClick()">
+                                                                                        @category.CategoryName <span class="">(@category.ChildCategories.Count)</span>
+                                                                                    </a>
+                                                                                    <ul class="inner-menu">
+
+                                                                                        @foreach (var childCategory in category.ChildCategories)
+                                                                                        {
+                                                                                            var isChildActive = Model.ServiceCategories.Any(t => t.CategoryId == childCategory.CategoryId) ? "jstree-clicked" : " ";
+                                                                                            if (childCategory.ChildCategories.Count > 0)
+                                                                                            {
+
+                                                                                                <li class="item" data-jstree='{"opened":true,"icon":"fas fa-folder-open"}' id="@childCategory.CategoryId">
+                                                                                                    <a href="javascript:;" class="menu-link @isChildActive" onclick="TreeClick()">
+                                                                                                        @childCategory.CategoryName <span class="">(@childCategory.ChildCategories.Count)</span>
+                                                                                                    </a>
+                                                                                                    <ul class="inner-menu">
+                                                                                                        @foreach (var grandchild in childCategory.ChildCategories)
+                                                                                                        {
+                                                                                                            var isGrandChildActive = Model.ServiceCategories.Any(t => t.CategoryId == grandchild.CategoryId) ? "jstree-clicked" : " ";
+                                                                                                            <li class="item text-truncate" data-jstree='{"icon":"bi bi-chevron-right"}' id="@grandchild.CategoryId">
+                                                                                                                <a href="javascript:;" class="menu-link @isGrandChildActive" onclick="TreeClick('@grandchild.CategoryKey')">
+                                                                                                                    @grandchild.CategoryName<span class=""></span>
+                                                                                                                </a>
+                                                                                                            </li>
+                                                                                                            isGrandChildActive = "";
+                                                                                                        }
+                                                                                                    </ul>
+                                                                                                </li>
+                                                                                            }
+                                                                                            else
+                                                                                            {
+                                                                                                <li class="item" data-jstree='{"icon":"bi bi-chevron-right"}' id="@childCategory.CategoryId">
+                                                                                                    <a href="javascript:;" onclick="TreeClick()" class="menu-link @isChildActive">
+                                                                                                        @childCategory.CategoryName<span class=""></span>
+                                                                                                    </a>
+                                                                                                </li>
+                                                                                            }
+                                                                                            isChildActive = "";
+                                                                                        }
+                                                                                    </ul>
+                                                                                </li>
+                                                                            }
+                                                                            else
+                                                                            {
+                                                                                <li class="item" data-jstree='{"opened":true,"icon":"fas fa-folder-open"}' id="@category.CategoryId">
+                                                                                    <a href="javascript:;" onclick="TreeClick()" class="menu-link @isActive">
+                                                                                        <i class="mdi mdi-chevron-right"></i>
+                                                                                        @category.CategoryName<span class=""></span>
+                                                                                    </a>
+                                                                                </li>
+                                                                            }
+
+                                                                            isActive = "";
+                                                                        }
+                                                                    </ul>
+                                                                </li>
+                                                            </ul>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                            </div>
+
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+
+                            <div class="col-xl-8 col-lg-8 col-md-7 col-sm-12 col-12">
+                                <div class="right-box-content">
+
+                                    <div class="tenant-list d-block box-of-supplier">
+                                        <div class="tenant-filter-box tab-pane">
+
+                                            @using (Html.BeginForm("CreateV2", "ServiceType", FormMethod.Post, new { enctype = "multipart/form-data", @id = "main-form" }))
+                                            {
+                                                <div class="row">
+                                                    <input type="hidden" name="ServiceTypeId" class="form-control" value="@Model.ServiceTypeId">
+                                                    <input type="hidden" name="ServiceTypeKey" class="form-control" value="@Model.ServiceTypeKey">
+                                                    <input type="hidden" name="Image" class="form-control" value="@Model.Image">
+                                                    <input type="hidden" name="CreateBy" class="form-control" value="@Model.CreateBy">
+                                                    <input type="hidden" name="CreateDate" class="form-control" value="@Model.CreateDate">
+                                                    <input type="hidden" name="FeatureCategoryKey" class="form-control" value="@ViewBag.FeatureCategoryKey">
+
+                                                    <div class="col-lg-4 col-md-6 col-sm-12">
+                                                        <div class="form-group">
+                                                            <label>Name</label>
+                                                            @Html.TextBoxFor(m => m.ServiceTypeName, new { @class = "form-control", required = "required" })
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="col-lg-4 col-md-6 col-sm-12">
+                                                        <div class="form-group">
+                                                            <label>Name (Arabic)</label>
+                                                            @Html.TextBoxFor(m => m.ServiceTypeNameAr, new { @class = "form-control", required = "required", dir = "rtl" })
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="col-lg-4 col-md-6 col-sm-12">
+                                                        <div class="form-group">
+                                                            <label>Service</label>
+                                                            @Html.DropDownList("ServiceId", (IEnumerable<SelectListItem>)ViewBag.service, "Choose Service", new { @class = "form-control", required = "required" })
+                                                        </div>
+                                                    </div>
+                                                    @*<div class="col-lg-4 col-md-6 col-sm-12">
+            <div class="form-group">
+                <label>Persone Quantity</label>
+                @Html.TextBoxFor(m => m.PersoneQuantity, new { @class = "form-control", required = "required" })
+            </div>
+        </div>*@
+
+                                                    <div class="col-lg-4 col-md-6 col-sm-12">
+                                                        <div class="form-group">
+                                                            <label>Rooms Quantity</label>
+                                                            @Html.TextBoxFor(m => m.AdultQuantity, new { @class = "form-control", required = "required" })
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="col-lg-4 col-md-6 col-sm-12">
+                                                        <div class="form-group">
+                                                            <label>Person Quantity</label>
+                                                            @Html.TextBoxFor(m => m.PersoneQuantity, new { @class = "form-control", required = "required" })
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="col-lg-4 col-md-6 col-sm-12">
+                                                        <div class="form-group">
+                                                            <label>ServiceHour</label>
+                                                            @Html.TextBoxFor(m => m.ServiceHour, new { @class = "form-control", required = "required", Type = "number" })
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="col-lg-4 col-md-6 col-sm-12">
+                                                        <div class="form-group">
+                                                            <label>ServiceMin</label>
+                                                            @Html.TextBoxFor(m => m.ServiceMin, new { @class = "form-control", required = "required", Type = "number" })
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="col-lg-4 col-md-6 col-sm-12">
+                                                        <div class="form-group">
+                                                            <label>Bathrooms Quantity</label>
+                                                            @Html.TextBoxFor(m => m.ChildrenQuantity, new { @class = "form-control", required = "required" })
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="col-lg-4 col-md-6 col-sm-12">
+                                                        <div class="form-group">
+                                                            <label>Size</label>
+                                                            @Html.TextBoxFor(m => m.Size, new { @class = "form-control" })
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="col-lg-4 col-md-6 col-sm-12">
+                                                        <div class="form-group">
+                                                            <label>Size (Arabic)</label>
+                                                            @Html.TextBoxFor(m => m.SizeAr, new { @class = "form-control", dir = "rtl" })
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="col-lg-4 col-md-6 col-sm-12">
+                                                        <div class="form-group">
+                                                            <label>Price</label>
+                                                            @Html.TextBoxFor(m => m.Price, new { @class = "form-control", type = "number", required = "required" })
+                                                        </div>
+                                                    </div>
+
+                                                    @*<div class="col-lg-4 col-md-6 col-sm-12">
+            <div class="form-group">
+                <label>Payment Type</label>
+                @Html.TextBoxFor(m => m.PaymentType, new { @class = "form-control" })
+            </div>
+        </div>*@
+
+                                                    <div class="col-md-4 col-sm-4">
+                                                        <div class="form-group">
+                                                            <label>Payment Type</label>
+                                                            <select name="PaymentType" id="PaymentType" class="form-control select-2" required>
+                                                                <option value="">Select Payment Type</option>
+                                                                <option value="Monthly">Monthly</option>
+                                                                <option value="Yearly">Yearly</option>
+                                                            </select>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="col-lg-4 col-md-6 col-sm-12">
+                                                        <div class="form-group">
+                                                            <label>Latitute</label>
+                                                            @Html.TextBoxFor(m => m.Latitute, new { @class = "form-control" })
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="col-lg-4 col-md-6 col-sm-12">
+                                                        <div class="form-group">
+                                                            <label>Logitute</label>
+                                                            @Html.TextBoxFor(m => m.Logitute, new { @class = "form-control" })
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="col-md-4 col-sm-4">
+                                                        <div class="form-group">
+                                                            <label>Status</label>
+                                                            <select class="form-control custom-select select-2" name="Status" id="Status" required>
+                                                                <option value="">Select</option>
+                                                                @if (Model.Status != null)
+                                                                {
+                                                                    if (Model.Status == "Active")
+                                                                    {
+                                                                        <option selected value="Active">Active</option>
+                                                                        <option value="InActive">InActive</option>
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        <option value="Active">Active</option>
+                                                                        <option selected value="InActive">InActive</option>
+                                                                    }
+                                                                }
+                                                                else
+                                                                {
+                                                                    <option value="Active">Active</option>
+                                                                    <option value="InActive">InActive</option>
+                                                                }
+                                                            </select>
+                                                        </div>
+                                                    </div>
+                                                    @if (ViewBag.FeatureCategoryKey == "f4309df5-9121-41ad-831a-994c46b62766" || ViewBag.FeatureCategoryKey == "c286a46b-5b9a-4519-bb10-8d47ec254ffb")
+                                                    {
+
+                                                        <div class="col-lg-6 col-md-6 col-sm-12">
+                                                            <div class="form-group">
+                                                                <label>General Information</label>
+                                                                @Html.TextAreaFor(m => m.Description, new { @class = "form-control", required = "required" })
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="col-lg-6 col-md-6 col-sm-12">
+                                                            <div class="form-group">
+                                                                <label>General Information (Arabic)</label>
+                                                                @Html.TextAreaFor(m => m.DescriptionAr, new { @class = "form-control", required = "required", dir = "rtl" })
+                                                            </div>
+                                                        </div>
+
+
+                                                        <div class="col-12">
+                                                            <div class="form-group mb-3">
+                                                                <label>Service Duration</label>
+                                                                @Html.TextAreaFor(m => m.BigDescription, new { @class = "form-control description", required = "required" })
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="col-12">
+                                                            <div class="form-group mb-3">
+                                                                <label>Service Duration (Arabic)</label>
+                                                                @Html.TextAreaFor(m => m.BigDescriptionAr, new { @class = "form-control description", required = "required", dir = "rtl" })
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="col-12">
+                                                            <div class="form-group mb-3">
+                                                                <label>Service price</label>
+                                                                @Html.TextAreaFor(m => m.ServicePrice, new { @class = "form-control description", required = "required" })
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="col-12">
+                                                            <div class="form-group mb-3">
+                                                                <label>Service price (Arabic)</label>
+                                                                @Html.TextAreaFor(m => m.ServicePriceAr, new { @class = "form-control description", required = "required", dir = "rtl" })
+                                                            </div>
+                                                        </div>
+
+                                                    }
+                                                    else
+                                                    {
+                                                        <div class="col-lg-6 col-md-6 col-sm-12">
+                                                            <div class="form-group">
+                                                                <label>Description</label>
+                                                                @Html.TextAreaFor(m => m.Description, new { @class = "form-control", required = "required" })
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="col-lg-6 col-md-6 col-sm-12">
+                                                            <div class="form-group">
+                                                                <label>Description (Arabic)</label>
+                                                                @Html.TextAreaFor(m => m.DescriptionAr, new { @class = "form-control", required = "required", dir = "rtl" })
+                                                            </div>
+                                                        </div>
+
+
+                                                        <div class="col-12">
+                                                            <div class="form-group mb-3">
+                                                                <label>Big Description</label>
+                                                                @Html.TextAreaFor(m => m.BigDescription, new { @class = "form-control description", required = "required" })
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="col-12">
+                                                            <div class="form-group mb-3">
+                                                                <label>Big Description (Arabic)</label>
+                                                                @Html.TextAreaFor(m => m.BigDescriptionAr, new { @class = "form-control description", required = "required", dir = "rtl" })
+                                                            </div>
+                                                        </div>
+                                                    }
+                                                </div>
+                                                @*<div class="row">
+                                                        <div class="col-lg-4 col-md-6 col-sm-12">
+                                                            <div>
+                                                                <label>Main Image</label>
+                                                                <input type="file" name="Image" accept="image/png, image/jpeg" class="form-control dropify" data-default-file="../../@Model.Image" />
+                                                            </div>
+                                                        </div>
+                                                    </div>*@
+                                                <div class="row col-12" style="padding-top:15px;">
+                                                    <div class="col-lg-4 col-md-6 col-sm-12">
+                                                        <div>
+                                                            <label>Main Image</label>
+                                                            <input type="file" name="Image" accept="image/png, image/jpeg" class="form-control dropify" data-default-file="../../@Model.Image" />
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-lg-4 col-md-6 col-sm-12">
+                                                        <div>
+                                                            <label>Others Image</label>
+                                                            <input type="file" name="images" accept="image/png, image/jpeg" class="form-control dropify" multiple />
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="row">
+                                                        @if (Model.ServiceTypeFiles != null)
+                                                        {
+                                                            foreach (var image in Model.ServiceTypeFiles)
+                                                            {
+                                                                <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+                                                                    <div class="image-holder rounded-lg overflow-hidden" style="cursor: pointer; padding-top:25px">
+                                                                        <img src="@image.FileLocation" class="img-fluid" style="height: 150px;">
+                                                                        <a onclick="DeleteImage(@image.ServiceTypeFileId)" class="remove-image"><i class="mdi mdi-close" style="color:red"></i> </a>
+                                                                    </div>
+                                                                </div>
+                                                            }
+                                                        }
+                                                    </div>
+                                                </div>
+
+                                                <div class="card-body mt-4">
+                                                    <div class="form-group mb-0 text-right">
+
+                                                        <button type="submit" class="btn btn-@buttonColor waves-effect waves-light" id="submit-btn" onclick="SubmitProductForm()">@ButtonTitle</button>
+                                                        @if (ViewBag.FeatureCategoryKey != null)
+                                                        {
+                                                            <a href="@Url.RouteUrl("Admin_ServiceTypeList", new {fCatagoryKey = ViewBag.FeatureCategoryKey})" class="btn btn-dark waves-effect waves-light">
+                                                                Close
+                                                            </a>
+                                                        }
+                                                        else
+                                                        {
+                                                            <a href="@Url.RouteUrl("Admin_ServiceTypeList")" class="btn btn-dark waves-effect waves-light">
+                                                                Close
+                                                            </a>
+                                                        }
+                                                    </div>
+                                                </div>
+
+                                            }
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        @*<div class="card-body">
+                                <div class="form-group mb-0 text-right">
+
+                                    <button type="submit" class="btn btn-@buttonColor waves-effect waves-light" id="submit-btn" onclick="SubmitProductForm()">@ButtonTitle</button>
+                                    @if (ViewBag.FeatureCategoryKey != null)
+                                    {
+                                        <a href="@Url.RouteUrl("Admin_ServiceTypeList", new {fCatagoryKey = ViewBag.FeatureCategoryKey})" class="btn btn-dark waves-effect waves-light">
+                                            Close
+                                        </a>
+                                    }
+                                    else
+                                    {
+                                        <a href="@Url.RouteUrl("Admin_ServiceTypeList")" class="btn btn-dark waves-effect waves-light">
+                                            Close
+                                        </a>
+                                    }
+                                </div>
+                            </div>*@
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@*<script src="~/Areas/Admin/Content/assets/libs/tinymce/jquery.tinymce.min.js"></script>*@
+@*<script src="https://cdn.tiny.cloud/1/no-api-key/tinymce/6/tinymce.min.js" referrerpolicy="origin"></script>*@
+<script src="/Areas/Admin/Content/assets/libs/tinymce/tinymce.min.js"></script>
+@*<script>
+        tinymce.init({
+            selector: "textarea[name='Description'], textarea[name='DescriptionAr']",
+            height: 400,
+            menubar: true
+        });
+    </script>*@
+
+<script>
+
+     $(document).ready(function () {
+         $("#PaymentType").val('@Model.PaymentType');
+ });
+
+    function DeleteImage(id) {
+    Swal.fire({
+      title: "Are you sure?",
+      text: "You won't be able to revert this!",
+        icon: "question",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, delete it!"
+      }).then((result) => {
+          if (result.isConfirmed) {
+             $.ajax({
+                 url: "@Url.Action("DeleteImage", "ServiceType")",
+                 data: { ImageId: id },
+                 type: "GET",
+                 success: function (response) {
+                     location.reload();
+                 },
+                 error: function (jqXHR, textStatus, errorThrown) {
+                     console.log(textStatus, errorThrown);
+                 }
+             });
+          }
+    });
+}
+</script>
+@if (ViewBag.FeatureCategoryKey == "f4309df5-9121-41ad-831a-994c46b62766" || ViewBag.FeatureCategoryKey == "c286a46b-5b9a-4519-bb10-8d47ec254ffb")
+{
+    <script>
+        function SubmitProductForm() {
+            debugger
+
+
+            $("#serviceCategoryForm").submit();
+        }
+    </script>
+
+
+}
+else
+{
+<script>
+    function SubmitProductForm() {
+        debugger
+
+        var allId = '';
+        var selected = $('#jstree').jstree(true).get_selected('full', true);
+        $.each(selected, function (index, value) {
+            allId += value.id + ',';
+        });
+        $("#SelectedCategoryId").val(allId.slice(0, -1));
+        $("#serviceCategoryForm").submit();
+
+    }
+</script>
+}
+
+
+<script>
+    $(document).ready(function () {
+        $("#jstree-q").on("keyup", function () {
+            var value = $(this).val().toLowerCase();
+            $("#jstree li").filter(function () {
+                $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+            });
+        });
+});
+</script>
+<script>
+    $(function () {
+        $("#jstree").jstree({
+            "checkbox": {
+                "keep_selected_style": false
+            },
+            "plugins": ["dnd", "search", "checkbox"]
+        });
+    var to = false;
+    $('#jstree-q').keyup(function () {
+        if (to) {clearTimeout(to); }
+    to = setTimeout(function () {
+            var v = $('#jstree-q').val();
+    $('#jstree').jstree(true).search(v);
+        }, 250);
+    });
+});
+</script>
+
+
+
+@*<script>
+
+
+
+        var mentionsFetchFunction = function (query, success) {
+            var users = [
+                "Terry Green", "Edward Carroll", "Virginia Turner", "Alexander Schneider", "Gary Vasquez", "Randy Howell",
+                "Katherine Moore", "Betty Washington", "Grace Chapman", "Christina Nguyen", "Danielle Rose", "Thomas Freeman",
+                "Thomas Armstrong", "Vincent Lee", "Brittany Kelley", "Brenda Wheeler", "Amy Price", "Hannah Harvey",
+                "Bobby Howard", "Frank Fox", "Diane Hopkins", "Johnny Hawkins", "Sean Alexander", "Emma Roberts", "Thomas Snyder",
+                "Thomas Allen", "Rebecca Ross", "Amy Boyd", "Kenneth Watkins", "Sarah Tucker", "Lawrence Burke", "Emma Carr",
+                "Zachary Mason", "John Scott", "Michelle Davis", "Nicholas Cole", "Gerald Nelson", "Emily Smith", "Christian Stephens",
+                "Grace Carr", "Arthur Watkins", "Frances Baker", "Katherine Cook", "Roger Wallace", "Pamela Arnold", "Linda Barnes",
+                "Jacob Warren", "Billy Ramirez", "Pamela Walsh", "Paul Wade", "Katherine Campbell", "Jeffrey Berry", "Patrick Bowman",
+                "Dennis Alvarez", "Crystal Lucas", "Howard Mendoza", "Patricia Wallace", "Peter Stone", "Tiffany Lane", "Joe Perkins",
+                "Gloria Reynolds", "Willie Fernandez", "Doris Harper", "Heather Sandoval", "Danielle Franklin", "Ann Ellis",
+                "Christopher Hernandez", "Pamela Perry", "Matthew Henderson", "Jesse Mitchell", "Olivia Reed", "David Clark", "Juan Taylor",
+                "Michael Garrett", "Gerald Guerrero", "Jerry Coleman", "Joyce Vasquez", "Jane Bryant", "Sean West", "Deborah Bradley",
+                "Phillip Castillo", "Martha Coleman", "Ryan Santos", "Harold Hanson", "Frances Hoffman", "Heather Fisher", "Martha Martin",
+                "George Gray", "Rachel Herrera", "Billy Hart", "Kelly Campbell", "Kelly Marshall", "Doris Simmons", "Julie George",
+                "Raymond Burke", "Ruth Hart", "Jack Schmidt", "Billy Schmidt", "Ruth Wagner", "Zachary Estrada", "Olivia Griffin", "Ann Hayes",
+                "Julia Weaver", "Anna Nelson", "Willie Anderson", "Anna Schneider", "Debra Torres", "Jordan Holmes", "Thomas Dean",
+                "Maria Burton", "Terry Long", "Danielle McDonald", "Kyle Flores", "Cheryl Garcia", "Judy Delgado", "Karen Elliott",
+                "Vincent Ortiz", "Ann Wright", "Ann Ramos", "Roy Jensen", "Keith Cunningham", "Mary Campbell", "Jesse Ortiz", "Joseph Mendoza",
+                "Nathan Bishop", "Lori Valdez", "Tammy Jacobs", "Mary West", "Juan Mitchell", "Thomas Adams", "Christian Martinez", "James Ramos",
+                "Deborah Ross", "Eric Holmes", "Thomas Diaz", "Sharon Morales", "Kathryn Hamilton", "Helen Edwards", "Betty Powell",
+                "Harry Campbell", "Raymond Perkins", "Melissa Wallace", "Danielle Hicks", "Harold Brewer", "Jack Burns", "Anna Robinson",
+                "Dorothy Nguyen", "Jane Dean", "Janice Hunter", "Ryan Moore", "Brian Riley", "Brittany Bradley", "Phillip Ortega", "William Fisher",
+                "Jennifer Schultz", "Samantha Perez", "Linda Carr", "Ann Brown", "Shirley Kim", "Jeremy Alvarez", "Dylan Oliver", "Roy Gomez",
+                "Ethan Brewer", "Ruth Lucas", "Marilyn Myers", "Danielle Wright", "Jose Meyer", "Bobby Brown", "Angela Crawford", "Brandon Willis",
+                "Kyle McDonald", "Aaron Valdez", "Kevin Webb", "Ashley Gordon", "Karen Jenkins", "Johnny Santos", "Ashley Henderson", "Amy Walters",
+                "Amber Rodriguez", "Thomas Ross", "Dorothy Wells", "Jennifer Murphy", "Douglas Phillips", "Helen Johnston", "Nathan Hawkins",
+                "Roger Mitchell", "Michael Young", "Eugene Cruz", "Kevin Snyder", "Frank Ryan", "Tiffany Peters", "Beverly Garza", "Maria Wright",
+                "Shirley Jensen", "Carolyn Munoz", "Kathleen Day", "Ethan Meyer", "Rachel Fields", "Joan Bell", "Ashley Sims", "Sara Fields",
+                "Elizabeth Willis", "Ralph Torres", "Charles Lopez", "Aaron Green", "Arthur Hanson", "Betty Snyder", "Jose Romero", "Linda Martinez",
+                "Zachary Tran", "Sean Matthews", "Eric Elliott", "Kimberly Welch", "Jason Bennett", "Nicole Patel", "Emily Guzman", "Lori Snyder",
+                "Sandra White", "Christina Lawson", "Jacob Campbell", "Ruth Foster", "Mark McDonald", "Carol Williams", "Alice Washington",
+                "Brandon Ross", "Judy Burns", "Zachary Hawkins", "Julie Chavez", "Randy Duncan", "Lisa Robinson", "Jacqueline Reynolds", "Paul Weaver",
+                "Edward Gilbert", "Deborah Butler", "Frances Fox", "Joshua Schmidt", "Ashley Oliver", "Martha Chavez", "Heather Hudson",
+                "Lauren Collins", "Catherine Marshall", "Katherine Wells", "Robert Munoz", "Pamela Nelson", "Dylan Bowman", "Virginia Snyder",
+                "Janet Ruiz", "Ralph Burton", "Jose Bryant", "Russell Medina", "Brittany Snyder", "Richard Cruz", "Matthew Jimenez", "Danielle Graham",
+                "Steven Guerrero", "Benjamin Matthews", "Janet Mendoza", "Harry Brewer", "Scott Cooper", "Alexander Keller", "Virginia Gordon",
+                "Randy Scott", "Kimberly Olson", "Helen Lynch", "Ronald Garcia", "Joseph Willis", "Philip Walker", "Tiffany Harris", "Brittany Weber",
+                "Gregory Harris", "Sean Owens", "Wayne Meyer", "Roy McCoy", "Keith Lucas", "Christian Watkins", "Christopher Porter", "Sandra Lopez",
+                "Harry Ward", "Julie Sims", "Albert Keller", "Lori Ortiz", "Virginia Henry", "Samuel Green", "Judith Cole", "Ethan Castillo", "Angela Ellis",
+                "Amy Reid", "Jason Brewer", "Aaron Clark", "Aaron Elliott", "Doris Herrera", "Howard Castro", "Kenneth Davis", "Austin Spencer",
+                "Jonathan Marshall", "Phillip Nelson", "Julia Guzman", "Robert Hansen", "Kevin Anderson", "Gerald Arnold", "Austin Castro", "Zachary Moore",
+                "Joseph Cooper", "Barbara Black", "Albert Mendez", "Marie Lane", "Jacob Nichols", "Virginia Marshall", "Aaron Miller", "Linda Harvey",
+                "Christopher Morris", "Emma Fields", "Scott Guzman", "Olivia Alexander", "Kelly Garrett", "Jesse Hanson", "Henry Wong", "Billy Vasquez",
+                "Larry Ramirez", "Bryan Brooks", "Alan Berry", "Nicole Powell", "Stephen Bowman", "Eric Hughes", "Elizabeth Obrien", "Timothy Ramos",
+                "Michelle Russell", "Denise Ruiz", "Sean Carter", "Amanda Barnett", "Kathy Black", "Terry Gutierrez", "John Jensen", "Grace Sanchez",
+                "Tiffany Harvey", "Jacqueline Sims", "Wayne Lee", "Roy Foster", "Joyce Hart", "Joseph Russell", "Harold Washington", "Beverly Cox",
+                "Nicole Morales", "Anna Carpenter", "Jesse Ray", "Ann Snyder", "Mark Diaz", "Elizabeth Harper", "Andrew Guerrero", "Cheryl Silva",
+                "Michelle Hudson", "Jeffrey Santos", "Victoria Vasquez", "Matthew Meyer", "Jacob Murray", "Jose Munoz", "Edward Howell", "Vincent Hunter",
+                "Daniel Walters", "Samantha Obrien", "Laura Elliott", "Richard Olson", "Daniel Graham", "Carol Lee", "Grace Sullivan", "Nancy Rodriguez",
+                "Tyler Tran", "Crystal Shaw", "Madison Allen", "Ralph Sims", "Joe Jenkins", "Dennis Ray", "Arthur Davidson", "Victoria Allen", "Arthur Jackson",
+                "Joan Thomas", "Daniel Hopkins", "Gloria Hicks", "Danielle Price", "Craig Keller", "Alan Morgan", "Gregory Silva", "Samantha Kelly",
+                "Rachel Williamson", "Bruce Garrett", "Jacob Smith", "Kathleen Nichols", "Sarah Long", "Carol Pearson", "Virginia Mendez", "Judy Valdez",
+                "Jason Garza", "Brenda Fowler", "Karen Edwards", "Alexander Anderson", "Pamela Wallace", "Ruth Howell", "Walter Hernandez", "George Lucas",
+                "Samantha Long", "Margaret Garza", "Kathleen Schultz", "Frances Guerrero", "Amber Meyer", "Rachel Morales", "Teresa Curtis", "Heather Bell",
+                "Grace Johnson", "Melissa King", "Zachary Cook", "Carol Schultz", "Jane Beck", "Karen Stone", "Roger Brooks", "Carolyn Fuller", "Nicholas Coleman",
+                "William Bishop", "Christine May", "Linda George", "Jean Meyer", "Cheryl Armstrong", "Danielle Welch", "Amanda Graham", "Janice Carter",
+                "Catherine Brooks", "Lawrence Gonzalez", "Amy Russell", "Eugene Jimenez", "Joseph Carlson", "Peter McCoy", "Jerry Washington", "Carolyn Obrien",
+                "Mark Walker", "Stephanie Hoffman", "Julie Pena", "Karen Curtis", "Bryan Cruz", "Madison Shaw", "Rachel Graham", "Susan Simpson", "Andrea Harrison",
+                "Bryan Miller", "Vincent McDonald", "Jesse McCoy", "Christine Ramos", "Dorothy Riley", "Karen Warren", "Ashley Weber", "Judith Robinson",
+                "Alan Mendez", "Donna Medina", "Helen Lane", "Douglas Clark", "Brenda Romero", "Doris Wells", "Patrick Howell", "Doris Lawrence", "Harry Jacobs",
+                "Phillip Rose", "Deborah Patel", "Bryan Day", "Rachel Butler", "Paul Butler", "Judy Knight", "Willie Wallace", "Phillip Anderson", "Emma Black",
+                "Lisa Lynch", "Kimberly Freeman", "Ronald West", "Kathleen Harris", "Martha Ruiz", "Phillip Moreno", "Robert Vargas", "Jesse Diaz", "Christine Weber",
+                "Karen Stanley", "Theresa Edwards", "Kathryn Chavez", "Sarah Rios", "Danielle Wong", "Kathy Carr", "Joan Diaz", "Albert Walters",
+                "Denise Kim", "Katherine Pearson", "Diana Richardson", "Harry Ford", "Eric Mills", "Sean Hicks", "Joe Brown", "Judith Morgan", "Harry Hunter",
+                "Matthew Bryant", "Tyler Rose", "Mildred Delgado", "Emma Peters", "Walter Delgado", "Lauren Gilbert", "Christopher Romero"
+            ];
+
+            users = users.map(function (fullName) {
+                var userName = fullName.replace(/ /g, '').toLowerCase();
+
+                return {
+                    id: userName,
+                    name: userName,
+                    fullName: fullName
+                }
+            });
+
+            users = users.filter(function (user) {
+                return user.name.indexOf(query.term) === 0
+            });
+
+            success(users)
+        };
+
+        var demoBaseConfig = {
+            selector: "textarea[name='Description'], textarea[name='DescriptionAr']",
+            width: 755,
+            height: 500,
+            resize: false,
+            autosave_ask_before_unload: false,
+            mentions_fetch: mentionsFetchFunction,
+            powerpaste_allow_local_images: true,
+            plugins: [
+                "a11ychecker advcode advlist anchor autolink codesample colorpicker fullscreen help image imagetools",
+                " lists link media noneditable powerpaste preview",
+                " searchreplace table template textcolor tinymcespellchecker visualblocks wordcount"
+            ], /* removed:  charmap insertdatetime print */
+            external_plugins: {
+                mentions: "//www.tiny.cloud/pro-demo/mentions/plugin.min.js",
+                moxiemanager: "//www.tiny.cloud/pro-demo/moxiemanager/plugin.min.js"
+            },
+            templates: [
+                {
+                    title: "Non-editable Example",
+                    description: "Non-editable example.",
+                    content: table
+                },
+                {
+                    title: "Simple Table Example",
+                    description: "Simple Table example.",
+                    content: table2
+                }
+            ],
+            toolbar:
+                "insertfile a11ycheck undo redo | bold italic | forecolor backcolor | template codesample | alignleft aligncenter alignright alignjustify | bullist numlist | link image",
+            content_css: [
+                "//fonts.googleapis.com/css?family=Lato:300,300i,400,400i",
+                "//www.tiny.cloud/css/content-standard.min.css"
+            ],
+            spellchecker_dialog: true,
+            spellchecker_whitelist: ['Ephox', 'Moxiecode']
+        };
+
+        var table = '<p>This table uses features of the non-editable plugin to make the text in the<br /><strong>top row</strong> and <strong>left column</strong> uneditable.</p>' +
+            '    <table style="width: 60%; border-collapse: collapse;" border="1"> ' +
+            '        <caption class="mceNonEditable">Ephox Sales Analysis</caption> ' +
+            '       <tbody> ' +
+            '          <tr class="mceNonEditable"> ' +
+            '                <th style="width: 40%;">&nbsp;</th><th style="width: 15%;">Q1</th> ' +
+            '                <th style="width: 15%;">Q2</th><th style="width: 15%;">Q3</th> ' +
+            '                <th style="width: 15%;">Q4</th> ' +
+            '            </tr> ' +
+            '            <tr> ' +
+            '                <td class="mceNonEditable">East Region</td> ' +
+            '                <td>100</td> <td>110</td> <td>115</td> <td>130</td> ' +
+            '            </tr> ' +
+            '            <tr> ' +
+            '                <td class="mceNonEditable">Central Region</td> ' +
+            '                <td>100</td> <td>110</td> <td>115</td> <td>130</td> ' +
+            '            </tr> ' +
+            '            <tr> ' +
+            '                <td class="mceNonEditable">West Region</td> ' +
+            '                <td>100</td> <td>110</td> <td>115</td> <td>130</td> ' +
+            '            </tr> ' +
+            '        </tbody> ' +
+            '    </table>';
+
+        var table2 = '<div> ' +
+            '        <p>' +
+            '            Templates are a great way to help content authors get started creating content.  You can define the HTML for the template and ' +
+            '            then when the author inserts the template they have a great start towards creating content! ' +
+            '        </p> ' +
+            '        <p> ' +
+            '            In this example we create a simple table for providing product details for a product page on your web site.  The headings are ' +
+            '            made non-editable by loading the non-editable plugin and placing the correct class on the appropriate table cells. ' +
+            '        </p> ' +
+            '        <table style="width:90%; border-collapse: collapse;" border="1"> ' +
+            '        <tbody> ' +
+            '        <tr style="height: 30px;"> ' +
+            '            <th class="mceNonEditable" style="width:40%; text-align: left;">Product Name:</td><td style="width:60%;">{insert name here}</td> ' +
+            '        </tr> ' +
+            '        <tr style="height: 30px;"> ' +
+            '            <th class="mceNonEditable" style="width:40%; text-align: left;">Product Description:</td><td style="width:60%;">{insert description here}</td> ' +
+            '        </tr> ' +
+            '        <tr style="height: 30px;"> ' +
+            '            <th class="mceNonEditable" style="width:40%; text-align: left;">Product Price:</td><td style="width:60%;">{insert price here}</td> ' +
+            '        </tr> ' +
+            '        </tbody> ' +
+            '        </table> ' +
+            '    </div> ';
+
+        tinymce.init(demoBaseConfig);
+
+
+
+        //tinymce.init({
+        //    selector: '#mytextarea',
+        //    plugins: 'advlist autolink lists link image charmap print preview hr anchor pagebreak',
+        //    toolbar:
+        //        'undo redo | formatselect | bold italic backcolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent| link image | print preview media fullpage | forecolor backcolor emoticons | table | code',
+
+        //});
+    </script>*@
+
+@*<script>
+        tinymce.init({
+            selector: "textarea[name='Description'], textarea[name='DescriptionAr']",
+            height: 400,
+            plugins: "lists link image table code",
+            toolbar: "undo redo | bold italic | alignleft aligncenter alignright | bullist numlist | code"
+        });
+    </script>*@
+
+

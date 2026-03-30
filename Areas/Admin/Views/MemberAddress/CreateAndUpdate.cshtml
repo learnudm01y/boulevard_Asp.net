@@ -1,0 +1,187 @@
+﻿@model Boulevard.Models.MemberAddress
+@{
+    ViewBag.Title = "Create Or Update";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+
+@using (Html.BeginForm("CreateAndUpdate", "MemberAddress", FormMethod.Post, new { enctype = "multipart/form-data", @id = "myForm" }))
+{
+
+
+    <!-- Container fluid  -->
+    <!-- ============================================================== -->
+    <div class="page-wrapper">
+        <div class="container-fluid">
+            <!-- ============================================================== -->
+            <!-- Bread crumb and right sidebar toggle -->
+            <!-- ============================================================== -->
+
+            <div class="row page-titles">
+                <div class="col-md-5 col-12 align-self-center">
+                    <h3 class="text-themecolor mb-0">Create Member Address</h3>
+                </div>
+                <div class="col-md-7 col-12 align-self-center d-none d-md-block">
+                    <ol class="breadcrumb mb-0 p-0 bg-transparent float-right">
+                        @*<li class="breadcrumb-item active"><a href="@Url.RouteUrl("Admin_Member_Address")">Member Address</a></li>*@
+                        <li class="breadcrumb-item active">Create Member Address</li>
+                    </ol>
+                </div>
+            </div>
+            <!-- ============================================================== -->
+            <!-- End Bread crumb and right sidebar toggle -->
+            <!-- ============================================================== -->
+            <!--order list-->
+            <form>
+                <div class="card">
+                    <div class="card-header">
+                        <!--<h4 class="">General</h4>-->
+                        Member Address Information
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <input type="hidden" name="MemberAddressId" class="form-control" value="@Model.MemberAddressId">
+                            <input type="hidden" name="MemberId" class="form-control" value="@ViewBag.MemberId">
+                            <input type="hidden" name="CreateDate" class="form-control" value="@Model.CreateDate">
+                            <input type="hidden" name="CreateBy" class="form-control" value="@Model.CreateBy">
+                            <input type="hidden" name="MemberAddressKey" class="form-control" value="@Model.MemberAddressKey">
+
+
+                            <div class="col-md-4 col-sm-4">
+                                <div class="form-group">
+                                    <label>Country Name</label>
+                                    @Html.DropDownListFor(model => model.CountryId, (List<SelectListItem>)ViewBag.Country, new { @class = "form-control select-2", @id = "ddCountryId", @onchange = "jsFunction(this.value)" })
+                                </div>
+                            </div>
+
+                            <div class="col-md-4 col-sm-4">
+                                <div class="form-group">
+                                    <label>City Name</label>
+                                    <!--<select class="form-control custom-select select-2" name="CityId" id="ddCityId" required>-->
+                                        @*<option value="">Select</option>
+                                            @foreach (var city in ViewBag.City)
+                                            {
+                                                <option value="@city.CityId">@city.CityName</option>
+                                            }*@
+                                    <!--</select>-->
+                                    @Html.DropDownListFor(model => model.CityId, (List<SelectListItem>)ViewBag.City, new { @class = "form-control select-2", @id = "ddCityId" })
+                                </div>
+                            </div>
+
+                            <div class="col-md-4 col-sm-4">
+                                <div class="form-group">
+                                    <label>Address Line 1</label>
+                                    <input type="text" name="AddressLine1" required class="form-control" value="@Model.AddressLine1">
+                                </div>
+                            </div>
+
+                            <div class="col-md-4 col-sm-4">
+                                <div class="form-group">
+                                    <label>Address Line 2</label>
+                                    <input type="text" name="AddressLine2" required class="form-control" value="@Model.AddressLine2">
+                                </div>
+                            </div>
+
+                            <div class="col-md-4 col-sm-4">
+                                <div class="form-group">
+                                    <label>Near By Address</label>
+                                    <input type="text" name="NearByAddress" required class="form-control" value="@Model.NearByAddress">
+                                </div>
+                            </div>
+
+                            <div class="col-md-4 col-sm-4">
+                                <div class="form-group">
+                                    <label>longitude</label>
+                                    <input type="number" name="longitude" required class="form-control" value="@Model.longitude">
+                                </div>
+                            </div>
+
+                            <div class="col-md-4 col-sm-4">
+                                <div class="form-group">
+                                    <label>latitude</label>
+                                    <input type="number" name="latitude" required class="form-control" value="@Model.latitude">
+                                </div>
+                            </div>
+
+
+                            <div class="col-md-4 col-sm-4">
+                                <div class="form-group">
+                                    <label>Status</label>
+                                    <div class="switch">
+                                        <label>
+                                            InActive
+                                            @if (Model.Status == "Active")
+                                            {
+                                                <input type="checkbox" checked="checked" name="Status" value="Active"><span class="lever"></span>
+                                            }
+                                            else
+                                            {
+                                                <input type="checkbox" name="Status" value="Active"><span class="lever"></span>
+                                            }
+                                            <input name="Status" type="hidden" value="Deleted" />
+                                            Active
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                        <div class="card-body">
+                            <div class="form-group mb-0 text-right">
+                                @if (Model.MemberAddressId > 0)
+                                {
+                                    <button type="submit" class="btn btn-warning waves-effect waves-light" id="submit-btn">Reset</button>
+                                }
+                                else
+                                {
+                                    <button type="submit" class="btn btn-success waves-effect waves-light" id="submit-btn">Save</button>
+                                }
+                                @*<a href="@Url.RouteUrl("Admin_Member_Address")" class="btn btn-dark waves-effect waves-light">
+                                        Close
+                                    </a>*@
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+            <!-- ============================================================== -->
+        </div>
+    </div>
+    <!-- ============================================================== -->
+    <!-- End Container fluid  -->
+}
+
+
+<script type="text/javascript">
+    function jsFunction(value) {
+        $.ajax({
+            async: true,
+            crossDomain: true,
+            type: "GET",
+
+            url: "/admin/get/city/by/countryId?countryId=" + value,
+            success: function (data) {
+                console.log(data);
+                //var city = data.data.cities;
+                var s = '<option value="-1">Please Select a City</option>';
+                for (var i = 0; i < data.length; i++) {
+                    s += '<option value="' + data[i].CityId + '">' + data[i].CityName + '</option>';
+                }
+                $("#ddCityId").html(s);
+            }
+        });
+    }
+
+    document.getElementById("input").addEventListener("change", function () {
+        var media = URL.createObjectURL(this.files[0]);
+        var video = document.getElementById("video");
+        video.src = media;
+        video.style.display = "block";
+        video.play();
+    });
+
+        $(document).ready(function () {
+
+            $("#ddCityId").val('@Model.CityId');
+
+    });
+</script>

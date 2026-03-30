@@ -1,0 +1,480 @@
+﻿@model Boulevard.Models.Service
+@{
+    ViewBag.Title = "Create";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+    string activeChk = "";
+    string PageTitle = "", ButtonTitle = "";
+    string buttonColor = "";
+    if (Model.ServiceId != 0)
+    {
+        PageTitle = "Edit";
+        ButtonTitle = "Reset";
+        buttonColor = "warning";
+    }
+    else
+    {
+        PageTitle = "Add";
+        ButtonTitle = "Save";
+        buttonColor = "success";
+    }
+}
+
+
+
+@using (Html.BeginForm("Create", "Service", FormMethod.Post, new { enctype = "multipart/form-data", @id = "myForm" }))
+{
+
+
+    <div class="page-wrapper">
+        <div class="container-fluid">
+            <div class="row page-titles">
+                <div class="col-md-5 col-12 align-self-center">
+                    @if (ViewBag.FeatureCategoryKey == null)
+                    {
+                        <h3 class="text-themecolor mb-0">Hotel Info</h3>
+                    }
+                    else
+                    {
+                        <h3 class="text-themecolor mb-0">@ViewBag.FCatagoryName Info</h3>
+                    }
+                </div>
+                <div class="col-md-7 col-12 align-self-center d-none d-md-block">
+                    <ol class="breadcrumb mb-0 p-0 bg-transparent float-right">
+                    </ol>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-body">
+
+                    <div class="row align-items-center mb-3">
+                        <div class="col-md-5 col-12 align-self-center">
+                            <h3>@ViewBag.FCatagoryName @PageTitle</h3>
+                        </div>
+                        <div class="col-md-7 col-12 align-self-center d-none d-md-block">
+                            <ol class="breadcrumb mb-0 p-0 bg-transparent float-right">
+                                @if (ViewBag.FeatureCategoryKey == null)
+                                {
+                                    <li class="breadcrumb-item active"><a href="@Url.RouteUrl("Admin_ServiceList")">Service</a></li>
+                                }
+                                else
+                                {
+                                    <li class="breadcrumb-item active"><a href="@Url.RouteUrl("Admin_ServiceList", new { fCatagoryKey = ViewBag.FCatagoryKey })">@ViewBag.FCatagoryName</a></li>
+                                }
+                                <li class="breadcrumb-item active">@PageTitle @ViewBag.FCatagoryName</li>
+                            </ol>
+                        </div>
+
+                    </div>
+                    <hr>
+
+                    <div class="card-body">
+                        <div class="row">
+                            <input type="hidden" name="Model.ServiceId" class="form-control" value="@Model.ServiceId">
+                            <input type="hidden" name="Model.ServiceKey" class="form-control" value="@Model.ServiceKey">
+                            <input type="hidden" name="Model.CreateBy" class="form-control" value="@Model.CreateBy">
+                            <input type="hidden" name="Model.CreateDate" class="form-control" value="@Model.CreateDate">
+                            <input type="hidden" name="Model.Ratings" class="form-control" value="@Model.Ratings">
+                            <input type="hidden" name="Model.FeatureCategoryKey" class="form-control" value="@ViewBag.FeatureCategoryKey">
+                            <div class="col-lg-4 col-md-6 col-sm-12">
+                                <div class="form-group">
+                                    <label>Name</label>
+                                    <input name="Model.Name" class="form-control" value="@Model.Name" required />
+
+                                </div>
+                            </div>
+
+                            <div class="col-lg-4 col-md-6 col-sm-12">
+                                <div class="form-group">
+                                    <label>Name (Arabic)</label>
+                                    <input name="Model.NameAr" class="form-control" dir="rtl" value="@Model.NameAr" required />
+
+                                </div>
+                            </div>
+                            @if (ViewBag.FeatureCategoryKey == "f4309df5-9121-41ad-831a-994c46b62766" || ViewBag.FeatureCategoryKey == "c286a46b-5b9a-4519-bb10-8d47ec254ffb")
+
+                            {
+                                <div class="col-md-4 col-sm-4">
+                                    <div class="form-group">
+                                        <label>Status</label>
+                                        <select class="form-control custom-select select-2" name="Model.Status" id="Status" required>
+                                            <option value="">Select</option>
+                                            @if (Model.Status != null)
+                                            {
+                                                if (Model.Status == "Active")
+                                                {
+                                                    <option selected value="Active">Active</option>
+                                                    <option value="InActive">InActive</option>
+                                                }
+                                                else
+                                                {
+                                                    <option value="Active">Active</option>
+                                                    <option selected value="InActive">InActive</option>
+                                                }
+                                            }
+                                            else
+                                            {
+                                                <option value="Active">Active</option>
+                                                <option value="InActive">InActive</option>
+                                            }
+                                        </select>
+                                    </div>
+                                </div>
+
+
+                                <div class="col-lg-4 col-md-6 col-sm-12">
+                                    <div class="form-group">
+                                        <label>Agencies</label>
+                                        <select name="Model.CategoryId" class="form-control" required>
+                                            <option value="">Choose Agencies</option>
+                                            @foreach (var item in ViewBag.Catagory as IEnumerable<SelectListItem>)
+                                            {
+                                                <option value="@item.Value" selected="@(item.Value == Model.CategoryId.ToString() ? "selected" : null)">
+                                                    @item.Text
+                                                </option>
+                                            }
+                                        </select>
+                                    </div>
+                                </div>
+
+                            }
+                            else
+                            {
+                                if (ViewBag.FeatureCategoryKey == null)
+                                {
+                                    <div class="col-lg-4 col-md-6 col-sm-12">
+                                        <div class="form-group">
+                                            <label>Property Type</label>
+                                            <select name="Model.PropertyType" id="PropertyType" Value="@Model.PropertyType" class="form-control">
+                                                @if (Model.ServiceId != 0)
+                                                {
+                                                    if (Model.PropertyType == "Hotel")
+                                                    {
+                                                        <option value="Hotel" selected>Hotel</option>
+                                                        <option value="Apartment">Apartment</option>
+
+                                                    }
+                                                    else
+                                                    {
+                                                        <option value="Hotel">Hotel</option>
+                                                        <option value="Apartment" selected>Apartment</option>
+                                                    }
+                                                }
+                                                else
+                                                {
+                                                    <option value="Hotel">Hotel</option>
+                                                    <option value="Apartment">Apartment</option>
+
+                                                }
+                                            </select>
+                                        </div>
+                                    </div>
+                                }
+
+                                if (ViewBag.FeatureCategoryKey != "dd501b2d-fe22-4c31-b340-1b4237fab5cc" || ViewBag.FeatureCategoryKey != "DD501B2D-FE22-4C31-B340-1B4237FAB5CC")
+                                {
+                                    <div class="col-lg-4 col-md-6 col-sm-12">
+                                        <div class="form-group">
+                                            <label>Service Hour</label>
+                                            <input name="Model.ServiceHour" class="form-control" value="@Model.ServiceHour" type="number" required />
+
+                                        </div>
+                                    </div>
+
+                                    <div class="col-lg-4 col-md-6 col-sm-12">
+                                        <div class="form-group">
+                                            <label>Service Minute</label>
+                                            <input name="Model.ServiceMin" class="form-control" value="@Model.ServiceMin" type="number" required />
+
+                                        </div>
+                                    </div>
+                                }
+                                <div class="col-lg-4 col-md-6 col-sm-12">
+
+                                    <div class="form-group">
+                                        <label>Spoken Languages</label>
+                                        <input name="Model.SpokenLanguages" class="form-control" required value="@Model.SpokenLanguages" />
+                                    </div>
+
+                                </div>
+
+
+                                if (ViewBag.FeatureCategoryKey != "dd501b2d-fe22-4c31-b340-1b4237fab5cc")
+                                {
+                                    <div class="col-lg-4 col-md-6 col-sm-12">
+                                        <div class="form-group">
+                                            <label>CheckIn Time</label>
+                                            <input name="Model.CheckInTime" class="form-control" type="time" required value="@Model.CheckInTime" />
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-4 col-md-6 col-sm-12">
+                                        <div class="form-group">
+                                            <label>CheckOut Time</label>
+                                            <input name="Model.CheckOutTime" class="form-control" type="time" required value="@Model.CheckOutTime" />
+                                        </div>
+                                    </div>
+                                }
+
+                                @*<div class="col-lg-4 col-md-6 col-sm-12">
+                <div class="form-group">
+                    <label>Ratings</label>
+                    @Html.TextBoxFor(m => m.Ratings, new { @class = "form-control", @type = "number", @min = 1, @max = 5, required = "required", @Value = 5 })
+
+                </div>
+            </div>*@
+                                @*<div class="col-md-4 col-sm-4">
+                <div class="form-group">
+                    <label>Catagory</label>
+                    @Html.DropDownListFor(model => model.CategoryId, (List<SelectListItem>)ViewBag.Catagory, new { @class = "form-control select-2" })
+                </div>
+            </div>*@
+                                <div class="col-md-4 col-sm-4">
+                                    <div class="form-group">
+                                        <label>Country Name</label>
+                                        @*@Html.DropDownListFor(model => model.CountryId, (List<SelectListItem>)ViewBag.Country, new { @class = "form-control select-2", @id = "ddCountryId", @onchange = "jsFunction(this.value)" })*@
+                                        <select name="Model.CountryId" class="form-control select-2" id="ddCountryId" onchange="jsFunction(this.value)">
+                                            <option value="">Select Country</option>
+                                            @foreach (var item in ViewBag.Country as List<SelectListItem>)
+                                            {
+                                                <option value="@item.Value" selected="@(item.Value == Model.CountryId.ToString() ? "selected" : null)">
+                                                    @item.Text
+                                                </option>
+                                            }
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-4 col-sm-4">
+                                    <div class="form-group">
+                                        <label>City Name</label>
+                                        @*@Html.DropDownListFor(model => model.CityId, (List<SelectListItem>)ViewBag.City, new { @class = "form-control", @id = "CityId" })*@
+
+                                        <select name="Model.CityId" class="form-control" id="CityId">
+                                            <option value="">Please Select a City</option>
+                                            @foreach (var item in ViewBag.City as List<SelectListItem>)
+                                            {
+                                                <option value="@item.Value" selected="@(item.Value == Model.CityId.ToString() ? "selected" : null)">
+                                                    @item.Text
+                                                </option>
+                                            }
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-lg-4 col-md-6 col-sm-12">
+                                    <div class="form-group">
+                                        <label>Latitute</label>
+                                        <input name="Model.Latitute" class="form-control" value="@Model.Latitute" />
+
+                                    </div>
+                                </div>
+                                <div class="col-lg-4 col-md-6 col-sm-12">
+                                    <div class="form-group">
+                                        <label>Logitute</label>
+                                        <input name="Model.Logitute" class="form-control" value="@Model.Logitute" />
+
+                                    </div>
+                                </div>
+                                <div class="col-md-4 col-sm-4">
+                                    <div class="form-group">
+                                        <label>Status</label>
+                                        <select class="form-control custom-select select-2" name="Model.Status" id="Status" required>
+                                            <option value="">Select</option>
+                                            @if (Model.Status != null)
+                                            {
+                                                if (Model.Status == "Active")
+                                                {
+                                                    <option selected value="Active">Active</option>
+                                                    <option value="InActive">InActive</option>
+                                                }
+                                                else
+                                                {
+                                                    <option value="Active">Active</option>
+                                                    <option selected value="InActive">InActive</option>
+                                                }
+                                            }
+                                            else
+                                            {
+                                                <option value="Active">Active</option>
+                                                <option value="InActive">InActive</option>
+                                            }
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-lg-4 col-md-6 col-sm-12">
+                                    <div class="form-group">
+                                        <label>Address</label>
+                                        <textarea type="text" name="Model.Address" class="form-control" required>@Model.Address</textarea>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-12">
+                                        <div class="form-group">
+                                            <label>Details*</label>
+                                            <textarea type="text" name="Model.Description" class="form-control description">@Model.Description</textarea>
+                                        </div>
+                                    </div>
+                                    <div class="col-12">
+                                        <div class="form-group">
+                                            <label>Details (Arabic)*</label>
+                                            <textarea type="text" name="Model.DescriptionAr" dir="rtl" class="form-control description">@Model.DescriptionAr</textarea>
+                                        </div>
+                                    </div>
+                                    <div class="col-12">
+                                        <div class="form-group">
+                                            <label>AboutUs*</label>
+                                            <textarea type="text" name="Model.AboutUs" class="form-control description">@Model.AboutUs</textarea>
+                                        </div>
+                                    </div>
+                                    <div class="col-12">
+                                        <div class="form-group">
+                                            <label>AboutUs (Arabic)*</label>
+                                            <textarea type="text" name="Model.AboutUsAr" dir="rtl" class="form-control description">@Model.AboutUsAr</textarea>
+                                        </div>
+                                    </div>
+                                    <div class="col-12">
+                                        <div class="form-group">
+                                            <label>Scope Of Service*</label>
+                                            <textarea type="text" name="Model.ScopeOfService" class="form-control description">@Model.ScopeOfService</textarea>
+                                        </div>
+                                    </div>
+                                    <div class="col-12">
+                                        <div class="form-group">
+                                            <label>Scope Of Service (Arabic)*</label>
+                                            <textarea type="text" name="Model.ScopeOfServiceAr" dir="rtl" class="form-control description">@Model.ScopeOfServiceAr</textarea>
+                                        </div>
+                                    </div>
+                                </div>
+                                if (ViewBag.FeatureCategoryKey == "2cdcebcf-ba2c-4c2c-9c53-f32c06233ffd" || ViewBag.FeatureCategoryKey == "2CDCEBCF-BA2C-4C2C-9C53-F32C06233FFD")
+                                {
+                                    <div class="col-12" style="margin-top:10px;">
+                                        @if (Model.Airports != null && Model.Airports.Count > 0)
+                                        {
+                                            <div class="form-group">
+                                                <label>Airports</label>
+                                                @for (int i = 0; i < Model.Airports.Count; i++)
+                                                {
+                                                    <input name="Model.Airports[@i].AirportId" value="@Model.Airports[i].AirportId" hidden />
+                                                    <div class="checkbox" style="margin-left:40px;">
+                                                        <label>
+                                                            <input type="checkbox" name="Model.Airports[@i].IsSelected" value="true" @(Model.Airports[i].IsSelected ? "checked" : "") />
+                                                            @Model.Airports[i].AirportName
+                                                        </label>
+                                                    </div>
+                                                }
+                                            </div>
+
+                                        }
+                                        @*else
+                    {
+                        <p>No airports available.</p>
+                    }*@
+                                    </div>
+                                }
+                                <div class="col-lg-4 col-md-6 col-sm-12">
+                                    <div>
+                                        <label>Image</label>
+                                        <input type="file" name="Images" accept="image/png, image/jpeg" class="form-control dropify" multiple />
+                                    </div>
+                                </div>
+
+
+                                <div class="row">
+                                    @foreach (var image in Model.ServiceImages)
+                                    {
+                                        <div class="col-12 col-md-6 col-lg-6">
+                                            <div class="image-holder rounded-lg overflow-hidden" style="cursor: pointer; padding-top:25px">
+                                                <img src="@image.Image" class="img-fluid" style="height: 150px;">
+                                                <a onclick="DeleteImage('@image.ServiceImageId')" class="remove-image"><i class="mdi mdi-close" style="color:red"></i> </a>
+                                            </div>
+                                        </div>
+                                    }
+                                </div>
+                            }
+                        </div>
+
+
+
+
+
+                            <div class="card-body">
+                                <div class="form-group mb-0 text-right">
+
+                                    <button type="submit" class="btn btn-@buttonColor waves-effect waves-light" id="submit-btn">@ButtonTitle</button>
+                                    @if (ViewBag.FeatureCategoryKey != null)
+                                    {
+                                        <a href="@Url.RouteUrl("Admin_ServiceList", new {fCatagoryKey = ViewBag.FeatureCategoryKey})" class="btn btn-dark waves-effect waves-light">
+                                            Close
+                                        </a>
+                                    }
+                                    else
+                                    {
+                                        <a href="@Url.RouteUrl("Admin_ServiceList")" class="btn btn-dark waves-effect waves-light">
+                                            Close
+                                        </a>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+}
+<script src="~/assets/libs/jquery/dist/jquery.min.js"></script>
+
+<script>
+
+
+    function jsFunction(value) {
+        $.ajax({
+            async: true,
+            crossDomain: true,
+            type: "GET",
+            url: "/admin/get/city/by/countryId?countryId=" + value,
+            success: function (data) {
+                console.log(data);
+                var s = '<option value="">Please Select a City</option>';
+                for (var i = 0; i < data.length; i++) {
+                    s += '<option value="' + data[i].CityId + '">' + data[i].CityName + '</option>';
+                }
+                $("#CityId").html(s);
+            }
+        });
+    }
+
+
+
+
+
+
+    function DeleteImage(id) {
+    Swal.fire({
+      title: "Are you sure?",
+      text: "You won't be able to revert this!",
+        icon: "question",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, delete it!"
+      }).then((result) => {
+          if (result.isConfirmed) {
+             $.ajax({
+                 url: "@Url.Action("DeleteImage", "Service")",
+                 data: { ImageId: id },
+                 type: "GET",
+                 success: function (response) {
+                     location.reload();
+                 },
+                 error: function (jqXHR, textStatus, errorThrown) {
+                     console.log(textStatus, errorThrown);
+                 }
+             });
+          }
+    });
+}
+
+
+
+</script>

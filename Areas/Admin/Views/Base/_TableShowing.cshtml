@@ -1,0 +1,35 @@
+﻿<div class="data-info d-flex justify-content-between align-items-center mb-2">
+    <div>
+        <p style="padding-left: 20px;">Items <span id="ShowingFrom"></span>-<span id="ShowingTo"></span> of <span id="TotalRecord"></span> total </p>
+    </div>
+
+    @*<div style="padding-right: 20px;">
+        <span class="mr-2">Show</span>
+        <select class="form-control select-small" id="PageSize" name="PageSize">
+            <option value="5">5</option>
+            <option value="10">10</option>
+            <option value="25">25</option>
+            <option value="50">50</option>
+            <option value="100">100</option>
+        </select>
+
+        <span class="ml-2"> per page</span>
+    </div>*@
+</div>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#PageSize").change(function () {
+            var pageSize = $("#PageSize").val();
+            $.ajax({
+                url: "/admin/base-page-size-cookie/?Page_Size=" + pageSize,
+                type: "GET",
+                success: function (response) {
+                    $("#Page").val('1');
+                    $("#frmFilterPagingSize").submit();
+                },
+                error: function (jqXHR, textStatus, errorThrown) { }
+            });
+        });
+    });
+</script>

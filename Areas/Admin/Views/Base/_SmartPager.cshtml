@@ -1,0 +1,53 @@
+﻿@model List<int>
+@{
+    int maxPage = 0;
+}
+
+<div class="">
+    @*bg-white text-right m-t-10*@
+    <input type="hidden" id="Page" name="Page" value="1" />
+    <ul class="pagination mb-0 justify-content-center">
+        <li class="paginate_button page-item previous">
+            <a href="javascript:void(0);" onclick="GoPreviousPage()" class="page-link">Previous</a>
+        </li>
+        @foreach(var Page in Model)
+        {
+            maxPage = Page;
+            <li class="paginate_button page-item" id="Pager-@Page">
+                <a href="javascript:void(0);" onclick="GoToPage(@Page)" class="page-link">@Page</a>
+            </li>
+        }
+        <li class="paginate_button page-item next">
+            <a href="javascript:void(0);" onclick="GoNextPage()" class="page-link">Next</a>
+        </li>
+    </ul>
+</div>
+
+<script type="text/javascript">
+    function GoPreviousPage() {
+        var pageNo = parseInt($("#Page").val());
+        var prePageNo = pageNo - 1;
+        if (prePageNo > 0) {
+            $("#Page").val(prePageNo);
+            $("#frmFilterPagingSize").submit();
+        }
+    }
+
+    function GoNextPage() {
+        var pageNo = parseInt($("#Page").val());
+        var nextPageNo = pageNo + 1;
+        if (nextPageNo <= @maxPage) {
+            $("#Page").val(nextPageNo);
+            $("#frmFilterPagingSize").submit();
+        }
+    }
+
+    function GoToPage(index) {
+        var pageNo = parseInt($("#Page").val());
+        if (pageNo != index) {
+            $("#Page").val(index);
+            $("#frmFilterPagingSize").submit();
+        }
+    }
+</script>
+

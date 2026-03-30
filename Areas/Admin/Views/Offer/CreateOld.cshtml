@@ -1,0 +1,282 @@
+﻿@model Boulevard.Models.OfferInformation
+@{
+    ViewBag.Title = "Create Or Update";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+<link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+@using (Html.BeginForm("Create", "Offer", FormMethod.Post, new { enctype = "multipart/form-data", @id = "myForm" }))
+{
+
+
+    <!-- Container fluid  -->
+    <!-- ============================================================== -->
+    <div class="page-wrapper">
+        <div class="container-fluid">
+            <!-- ============================================================== -->
+            <!-- Bread crumb and right sidebar toggle -->
+            <!-- ============================================================== -->
+
+            <div class="row page-titles">
+                <div class="col-md-5 col-12 align-self-center">
+                    <h3 class="text-themecolor mb-0">Offer Information</h3>
+                </div>
+                <div class="col-md-7 col-12 align-self-center d-none d-md-block">
+                    <ol class="breadcrumb mb-0 p-0 bg-transparent float-right">
+                        <li class="breadcrumb-item active"><a href="#">City</a></li>
+                        @if (Model.OfferInformationKey == Guid.Empty)
+                        {
+                            <li class="breadcrumb-item active">Create Offer</li>
+                        }
+                        else
+                        {
+                            <li class="breadcrumb-item active">Update Offer</li>
+                        }
+                    </ol>
+                </div>
+            </div>
+            <!-- ============================================================== -->
+            <!-- End Bread crumb and right sidebar toggle -->
+            <!-- ============================================================== -->
+            <!--order list-->
+            <form>
+                <div class="card">
+                    <div class="card-header">
+                        <!--<h4 class="">General</h4>-->
+                        Offer Information
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <input type="hidden" name="OfferInformationKey" class="form-control" value="@Model.OfferInformationKey">
+                            <input type="hidden" name="FeatureCategoryId" class="form-control" value="@Model.FeatureCategoryId">
+                            <input type="hidden" name="CreateDate" class="form-control" value="@Model.CreateDate">
+                            <input type="hidden" name="CreateBy" class="form-control" value="@Model.CreateBy">
+
+
+                            <div class="col-md-6 col-sm-6">
+                                <div class="form-group">
+                                    <label>Title</label>
+                                    <input type="text" name="Title" required class="form-control" value="@Model.Title">
+                                </div>
+                            </div>
+                            <div class="col-md-6 col-sm-6">
+                                <div class="form-group">
+                                    <label>Description</label>
+                                    <input type="text" name="Description" required class="form-control" value="@Model.Description">
+                                </div>
+                            </div>
+
+                            <div class="col-md-12 col-sm-12">
+                                <div class="form-group">
+                                    <div class="form-check form-check-inline">
+                                        <input type="radio" checked="checked" name="IsBrand">
+                                        <span class="checkmark"></span>
+
+                                        IsBrand
+                                    </div>
+                                    <div class="form-check form-check-inline">
+                                        <input type="radio" name="IsCategory">
+                                        <span class="checkmark"></span>
+
+                                        IsCategory
+                                    </div>
+                                    <div class="form-check form-check-inline">
+                                        <input type="radio" name="IsProduct">
+                                        <span class="checkmark"></span>
+
+                                        @*<input class="form-check-input" type="radio" name="IsProduct" id="IsProduct" value="IsProduct">*@
+                                        IsProduct
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-4 col-sm-4">
+                                <div class="form-group">
+                                    <label>Status</label>
+                                    <div class="switch">
+                                        <label>
+                                            InActive
+                                            @if (Model.Status == "Active")
+                                            {
+                                                <input type="checkbox" checked="checked" name="Status" value="Active"><span class="lever"></span>
+                                            }
+                                            else
+                                            {
+                                                <input type="checkbox" name="Status" value="Active"><span class="lever"></span>
+                                            }
+                                            <input name="Status" type="hidden" value="Deleted" />
+                                            Active
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="col-12">
+                            <label for="option1">
+                                <input type="checkbox" id="option1" name="options" onclick="onlyOne(1)" /> Is Brand
+                            </label>
+                            <label for="option2">
+                                <input type="checkbox" id="option2" name="options" onclick="onlyOne(2)" /> Is Category
+                            </label>
+                            <label for="option3">
+                                <input type="checkbox" id="option3" name="options" onclick="onlyOne(3)" /> Is Product
+                            </label>
+                            <label for="option3">
+                                <input type="checkbox" id="option4" name="options" onclick="onlyOne(this)" /> Is Product
+                            </label>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="row" id="IsBanner">
+                            <label>Banner Information</label>
+                            <div class="row">
+                                <div class="col-md-6 col-sm-6">
+                                    <div class="form-group">
+                                        <label>Title</label>
+                                        <input type="text" name="Title" required class="form-control" value="@Model.Title">
+                                    </div>
+                                </div>
+                                <div class="col-md-6 col-sm-6">
+                                    <div class="form-group">
+                                        <label>Description</label>
+                                        <input type="text" name="Description" required class="form-control" value="@Model.Description">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row" id="IsCategory">
+                            <label>Category Information</label>
+                            <div class="row">
+                                <div class="col-md-6 col-sm-6">
+                                    <div class="form-group">
+                                        <label>Title</label>
+                                        <input type="text" name="Title" required class="form-control" value="@Model.Title">
+                                    </div>
+                                </div>
+                                <div class="col-md-6 col-sm-6">
+                                    <div class="form-group">
+                                        <label>Description</label>
+                                        <input type="text" name="Description" required class="form-control" value="@Model.Description">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row" id="IsProduct">
+                            <label>Product Information</label>
+                            <div class="row">
+                                <div class="col-md-6 col-sm-6">
+                                    <div class="form-group">
+                                        <label>Title</label>
+                                        <input type="text" name="Title" required class="form-control" value="@Model.Title">
+                                    </div>
+                                </div>
+                                <div class="col-md-6 col-sm-6">
+                                    <div class="form-group">
+                                        <label>Description</label>
+                                        <input type="text" name="Description" required class="form-control" value="@Model.Description">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row" id="IsService">
+                            <label>Service Information</label>
+                            <div class="row">
+                                <div class="col-md-6 col-sm-6">
+                                    <div class="form-group">
+                                        <label>Title</label>
+                                        <input type="text" name="Title" required class="form-control" value="@Model.Title">
+                                    </div>
+                                </div>
+                                <div class="col-md-6 col-sm-6">
+                                    <div class="form-group">
+                                        <label>Description</label>
+                                        <input type="text" name="Description" required class="form-control" value="@Model.Description">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="form-group mb-0 text-right">
+                            @if (Model.OfferInformationKey == Guid.Empty)
+                            {
+                                <button type="submit" class="btn btn-warning waves-effect waves-light" id="submit-btn">Reset</button>
+                            }
+                            else
+                            {
+                                <button type="submit" class="btn btn-success waves-effect waves-light" id="submit-btn">Save</button>
+                            }
+                            <a href="@Url.RouteUrl("Admin_Country")" class="btn btn-dark waves-effect waves-light">
+                                Close
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </form>
+            <!-- ============================================================== -->
+        </div>
+    </div>
+    <!-- ============================================================== -->
+    <!-- End Container fluid  -->
+}
+
+<script type="text/javascript">
+
+    function onlyOne(checkbox) {
+        var checkboxes = document.getElementsByClass('options');
+        checkboxes.forEach((item) => {
+            if (item !== checkbox) item.checked = false;
+        });
+    }
+
+    const checkbox1 = document.getElementById('option1')
+    if (checkbox1.checked) {
+        $("#IsBanner").show()
+        $("#IsCategory").hide()
+        $("#IsProduct").hide()
+        $("#IsService").hide()
+    }
+    const checkbox2 = document.getElementById('option2')
+    if (checkbox2.checked) {
+        $("#IsBanner").hide()
+        $("#IsCategory").show()
+        $("#IsProduct").hide()
+        $("#IsService").hide()
+    }
+    const checkbox3 = document.getElementById('option3')
+    if (checkbox3.checked) {
+        $("#IsBanner").hide()
+        $("#IsCategory").hide()
+        $("#IsProduct").show()
+        $("#IsService").hide()
+    }
+    const checkbox4 = document.getElementById('option4')
+    if (checkbox4.checked) {
+        $("#IsBanner").hide()
+        $("#IsCategory").hide()
+        $("#IsProduct").hide()
+        $("#IsService").show()
+    }
+
+
+    // the selector will match all input controls of type :checkbox
+    // and attach a click event handler
+    $("input:checkbox").on('click', function () {
+        // in the handler, 'this' refers to the box clicked on
+        var $box = $(this);
+        if ($box.is(":checked")) {
+            // the name of the box is retrieved using the .attr() method
+            // as it is assumed and expected to be immutable
+            var group = "input:checkbox[name='" + $box.attr("name") + "']";
+            // the checked state of the group/box on the other hand will change
+            // and the current value is retrieved using .prop() method
+            $(group).prop("checked", false);
+            $box.prop("checked", true);
+        } else {
+            $box.prop("checked", false);
+        }
+    });
+</script>
+

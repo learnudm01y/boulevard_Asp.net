@@ -1,0 +1,637 @@
+﻿
+@{
+    Layout = null;
+}
+
+<style>
+    #main-wrapper[data-layout=vertical] .left-sidebar[data-sidebarbg=skin6] .sidebar-nav ul .sidebar-item > .sidebar-link {
+        gap: 5px;
+    }
+    #main-wrapper[data-layout=vertical] .left-sidebar[data-sidebarbg=skin6] .sidebar-nav ul .sidebar-item > .sidebar-link img {
+        max-width: 18px;
+        height: 100%;
+        width: 100%;
+    }
+</style>
+
+<aside class="left-sidebar" data-sidebarbg="skin6">
+    <!-- Sidebar scroll-->
+    <div class="scroll-sidebar">
+        <!-- Sidebar navigation-->
+        <nav class="sidebar-nav">
+            <ul id="sidebarnav">
+
+                <li class="sidebar-item">
+                    <a class="sidebar-link  waves-effect waves-dark"
+                       href="@Url.RouteUrl("Admin_Dashboard")" aria-expanded="false">
+                        <img src="~/Areas/Admin/Content/assets/images/menu_icon/Dashboard.png" alt="dashboard" class="img-fluid" />
+                        <span class="hide-menu">Dashboard</span>
+                    </a>
+                </li>
+                @* Nafiz Section start*@
+
+
+                <li class="sidebar-item">
+                    <a class="sidebar-link  waves-effect waves-dark" href="javascript:void(0)"
+                       aria-expanded="false">
+                        <img src="~/Areas/Admin/Content/assets/images/menu_icon/Order_and_Booking_List.png" alt="Order_and_Booking_List" class="img-fluid" />
+                    <span class="hide-menu">Order and Booking List</span></a>
+                    <ul aria-expanded="false" class="collapse first-level">
+                        <li class="sidebar-item">
+                            <a class="sidebar-link  waves-effect waves-dark"
+                               href="@Url.RouteUrl("Admin_Order_Request_Product_List", new {fCatagoryKey = "3b317e3f-cb2f-4fdd-b9c8-3f2186695771"})" aria-expanded="false"><i data-feather="crosshair" class="feather-icon"></i><span class="hide-menu">Grocery Order List</span></a>
+                        </li>
+
+                        <li class="sidebar-item">
+                            <a class="sidebar-link  waves-effect waves-dark"
+                               href="@Url.RouteUrl("Admin_Order_Request_Product_List", new {fCatagoryKey = "88d5d23e-470f-409a-bb6b-def7ab1346fa"})" aria-expanded="false"><i data-feather="crosshair" class="feather-icon"></i><span class="hide-menu">Dessert and Flower Order List</span></a>
+                        </li>
+
+                        @*<li class="sidebar-item">
+                                <a class="sidebar-link  waves-effect waves-dark"
+                                   href="@Url.RouteUrl("Admin_Order_Request_Service_List")" aria-expanded="false"><i data-feather="crosshair" class="feather-icon"></i><span class="hide-menu">Hotel Booking List</span></a>
+                            </li>*@
+
+                        <li class="sidebar-item">
+                            <a class="sidebar-link  waves-effect waves-dark"
+                               href="@Url.RouteUrl("Admin_Order_Request_Service_List", new {fCatagoryKey = "6440039B-6E5A-4E65-A0E4-F38B69C46C8C"})" aria-expanded="false"><i data-feather="crosshair" class="feather-icon"></i><span class="hide-menu">Hotel Booking List</span></a>
+                        </li>
+                        
+                        <li class="sidebar-item">
+                            <a class="sidebar-link  waves-effect waves-dark"
+                               href="@Url.RouteUrl("Admin_Order_Request_Service_List", new {fCatagoryKey = "2CDCEBCF-BA2C-4C2C-9C53-F32C06233FFD"})" aria-expanded="false"><i data-feather="crosshair" class="feather-icon"></i><span class="hide-menu">Flight Booking List</span></a>
+                        </li>
+                        
+                        <li class="sidebar-item">
+                            <a class="sidebar-link  waves-effect waves-dark"
+                               href="@Url.RouteUrl("Admin_Order_Request_Service_List", new {fCatagoryKey = "DD501B2D-FE22-4C31-B340-1B4237FAB5CC"})" aria-expanded="false"><i data-feather="crosshair" class="feather-icon"></i><span class="hide-menu">Real State List</span></a>
+                        </li>
+                        
+                        <li class="sidebar-item">
+                            <a class="sidebar-link  waves-effect waves-dark"
+                               href="@Url.RouteUrl("Admin_Order_Request_Service_List", new {fCatagoryKey = "b3e3e680-c8ef-4ab2-a4ac-d75bb48a3647"})" aria-expanded="false"><i data-feather="crosshair" class="feather-icon"></i><span class="hide-menu">Motor Service Booking List</span></a>
+                        </li>
+
+                        <li class="sidebar-item">
+                            <a class="sidebar-link  waves-effect waves-dark"
+                               href="@Url.RouteUrl("Admin_Order_Request_Service_List", new {fCatagoryKey = "25d8c418-2d26-4159-9d7f-970e3b933b42"})" aria-expanded="false"><i data-feather="crosshair" class="feather-icon"></i><span class="hide-menu">Salon Service Booking List</span></a>
+                        </li>
+
+                        <li class="sidebar-item">
+                            <a class="sidebar-link  waves-effect waves-dark"
+                               href="@Url.RouteUrl("Admin_Order_Request_Service_List", new {fCatagoryKey = "bbc98e2d-941b-44c6-8122-0e12a2645b87"})" aria-expanded="false"><i data-feather="crosshair" class="feather-icon"></i><span class="hide-menu">Medical Service Booking List</span></a>
+                        </li>
+
+                        <li class="sidebar-item">
+                            <a class="sidebar-link  waves-effect waves-dark"
+                               href="@Url.RouteUrl("Admin_Order_Request_Service_List", new {fCatagoryKey = "f4309df5-9121-41ad-831a-994c46b62766"})" aria-expanded="false"><i data-feather="crosshair" class="feather-icon"></i><span class="hide-menu">Typing Service Booking List</span></a>
+                        </li>
+                        <li class="sidebar-item">
+                            <a class="sidebar-link  waves-effect waves-dark"
+                               href="@Url.RouteUrl("Admin_Order_Request_Service_List", new {fCatagoryKey = "c286a46b-5b9a-4519-bb10-8d47ec254ffb"})" aria-expanded="false"><i data-feather="crosshair" class="feather-icon"></i><span class="hide-menu">Insurance Service Booking List</span></a>
+                        </li>
+
+
+                    </ul>
+
+
+                </li>
+
+                @* Nafiz Section Ends*@
+
+                <li class="sidebar-item">
+                    <a class="sidebar-link  waves-effect waves-dark" href="javascript:void(0)"
+                       aria-expanded="false">
+                        <img src="~/Areas/Admin/Content/assets/images/menu_icon/Grocery.png" alt="Grocery" class="img-fluid" />
+                        <span class="hide-menu">Grocery</span>
+                    </a>
+                    <ul aria-expanded="false" class="collapse first-level">
+                        <li class="sidebar-item">
+                            <a class="sidebar-link  waves-effect waves-dark"
+                               href="@Url.RouteUrl("Admin_ProductList", new {fCatagoryKey = "3b317e3f-cb2f-4fdd-b9c8-3f2186695771"})" aria-expanded="false"><i data-feather="disc" class="feather-icon"></i><span class="hide-menu">Grocery List</span></a>
+                        </li>
+                        <li class="sidebar-item">
+                            <a class="sidebar-link  waves-effect waves-dark"
+                               href="@Url.RouteUrl("Admin_CategoryList", new {fCatagoryKey = "3b317e3f-cb2f-4fdd-b9c8-3f2186695771"})" aria-expanded="false"><i data-feather="disc" class="feather-icon"></i><span class="hide-menu">Grocery Category</span></a>
+                        </li>
+                        <li class="sidebar-item">
+                            <a class="sidebar-link  waves-effect waves-dark"
+                               href="@Url.RouteUrl("Admin_BrandList", new {fCatagoryKey = "3b317e3f-cb2f-4fdd-b9c8-3f2186695771"})" aria-expanded="false"><i data-feather="disc" class="feather-icon"></i><span class="hide-menu">Grocery Brand</span></a>
+                        </li>
+                        <li class="sidebar-item">
+                            <a class="sidebar-link  waves-effect waves-dark"
+                               href="@Url.RouteUrl("Admin_WebHtml", new {fCatagoryKey = "3b317e3f-cb2f-4fdd-b9c8-3f2186695771"})" aria-expanded="false"><i data-feather="disc" class="feather-icon"></i><span class="hide-menu">Grocery Banner</span></a>
+                        </li>
+                        <li class="sidebar-item">
+                            <a class="sidebar-link  waves-effect waves-dark"
+                               href="@Url.RouteUrl("Admin_Common_Product_Tag_List", new {fCatagoryKey = "3b317e3f-cb2f-4fdd-b9c8-3f2186695771"})" aria-expanded="false"><i data-feather="disc" class="feather-icon"></i><span class="hide-menu">Grocery Product Tag</span></a>
+                        </li>
+                        <li class="sidebar-item">
+                            <a class="sidebar-link  waves-effect waves-dark"
+                               href="@Url.RouteUrl("Admin_OfferList", new {fCatagoryKey = "3b317e3f-cb2f-4fdd-b9c8-3f2186695771"})" aria-expanded="false"><i data-feather="disc" class="feather-icon"></i><span class="hide-menu">Grocery Product Offers</span></a>
+                        </li>
+
+
+                    </ul>
+
+
+                </li>
+
+                <li class="sidebar-item">
+                    <a class="sidebar-link  waves-effect waves-dark" href="javascript:void(0)"
+                       aria-expanded="false">
+                        <img src="~/Areas/Admin/Content/assets/images/menu_icon/Chocolate_Flawer.png" alt="Chocolate_Flawer" class="img-fluid" />
+                        <span class="hide-menu">Dessert  & Flower</span>
+                    </a>
+                    <ul aria-expanded="false" class="collapse first-level">
+                        <li class="sidebar-item">
+                            <a class="sidebar-link  waves-effect waves-dark"
+                               href="@Url.RouteUrl("Admin_ProductList", new {fCatagoryKey = "88d5d23e-470f-409a-bb6b-def7ab1346fa"})" aria-expanded="false"><i data-feather="disc" class="feather-icon"></i><span class="hide-menu">Dessert  & Flower List</span></a>
+                        </li>
+                        <li class="sidebar-item">
+                            <a class="sidebar-link  waves-effect waves-dark"
+                               href="@Url.RouteUrl("Admin_CategoryList", new {fCatagoryKey = "88d5d23e-470f-409a-bb6b-def7ab1346fa"})" aria-expanded="false"><i data-feather="disc" class="feather-icon"></i><span class="hide-menu">Dessert  & Flower Category</span></a>
+                        </li>
+                        <li class="sidebar-item">
+                            <a class="sidebar-link  waves-effect waves-dark"
+                               href="@Url.RouteUrl("Admin_BrandList", new {fCatagoryKey = "88d5d23e-470f-409a-bb6b-def7ab1346fa"})" aria-expanded="false"><i data-feather="disc" class="feather-icon"></i><span class="hide-menu">Dessert  & Flower Brand</span></a>
+                        </li>
+                        <li class="sidebar-item">
+                            <a class="sidebar-link  waves-effect waves-dark"
+                               href="@Url.RouteUrl("Admin_WebHtml", new {fCatagoryKey = "88d5d23e-470f-409a-bb6b-def7ab1346fa"})" aria-expanded="false"><i data-feather="disc" class="feather-icon"></i><span class="hide-menu">Dessert  & Flower Banner</span></a>
+                        </li>
+                        <li class="sidebar-item">
+                            <a class="sidebar-link  waves-effect waves-dark"
+                               href="@Url.RouteUrl("Admin_Common_Product_Tag_List", new {fCatagoryKey = "88d5d23e-470f-409a-bb6b-def7ab1346fa"})" aria-expanded="false"><i data-feather="disc" class="feather-icon"></i><span class="hide-menu">Dessert  & Flower Product Tag</span></a>
+                        </li>
+                        <li class="sidebar-item">
+                            <a class="sidebar-link  waves-effect waves-dark"
+                               href="@Url.RouteUrl("Admin_OfferList", new {fCatagoryKey = "88d5d23e-470f-409a-bb6b-def7ab1346fa"})" aria-expanded="false"><i data-feather="disc" class="feather-icon"></i><span class="hide-menu">Dessert  & Flower Product Offers</span></a>
+                        </li>
+
+                    </ul>
+
+                </li>
+                <!------Raisul-------->
+                @*Askar Part Start*@
+                @*<li class="sidebar-item">
+                    <a class="sidebar-link  waves-effect waves-dark" href="javascript:void(0)"
+                       aria-expanded="false">
+                        <img src="~/Areas/Admin/Content/assets/images/menu_icon/Hotel_Booking.png" alt="Hotel_Booking" class="img-fluid" />
+
+                        <span class="hide-menu">Hotel Booking</span>
+                    </a>
+                    <ul aria-expanded="false" class="collapse first-level">
+                        <li class="sidebar-item">
+                            <a class="sidebar-link  waves-effect waves-dark"
+                               href="@Url.RouteUrl("Admin_ServiceList", new {fCatagoryKey = "6440039B-6E5A-4E65-A0E4-F38B69C46C8C"})" aria-expanded="false"><i data-feather="disc" class="feather-icon"></i><span class="hide-menu">Hotels</span></a>
+                        </li>
+                        <li class="sidebar-item">
+                            <a class="sidebar-link  waves-effect waves-dark"
+                               href="@Url.RouteUrl("Admin_ServiceTypeList", new {fCatagoryKey = "6440039B-6E5A-4E65-A0E4-F38B69C46C8C"})" aria-expanded="false"><i data-feather="disc" class="feather-icon"></i><span class="hide-menu">Rooms</span></a>
+                        </li>
+                        <li class="sidebar-item">
+                            <a class="sidebar-link  waves-effect waves-dark"
+                               href="@Url.RouteUrl("Admin_CategoryList", new {fCatagoryKey = "6440039B-6E5A-4E65-A0E4-F38B69C46C8C"})" aria-expanded="false"><i data-feather="disc" class="feather-icon"></i><span class="hide-menu">Hotel Catagory</span></a>
+                        </li>
+                        <li class="sidebar-item">
+                            <a class="sidebar-link  waves-effect waves-dark"
+                               href="@Url.RouteUrl("Admin_ServiceAmenityList", new {fCatagoryKey = "6440039B-6E5A-4E65-A0E4-F38B69C46C8C"})" aria-expanded="false"><i data-feather="disc" class="feather-icon"></i><span class="hide-menu">Hotel Amenity</span></a>
+                        </li>
+                        <li class="sidebar-item">
+                            <a class="sidebar-link  waves-effect waves-dark"
+                               href="@Url.RouteUrl("Admin_Package_List", new {fCatagoryKey = "6440039B-6E5A-4E65-A0E4-F38B69C46C8C"})" aria-expanded="false"><i data-feather="disc" class="feather-icon"></i><span class="hide-menu">Hotel Packages</span></a>
+                        </li>
+                        <li class="sidebar-item">
+                            <a class="sidebar-link  waves-effect waves-dark"
+                               href="@Url.RouteUrl("Admin_ServiceFacilitiesList", new {fCatagoryKey = "6440039B-6E5A-4E65-A0E4-F38B69C46C8C"})" aria-expanded="false"><i data-feather="disc" class="feather-icon"></i><span class="hide-menu">Hotel Package Facilities</span></a>
+                        </li>
+                        <li class="sidebar-item">
+                            <a class="sidebar-link  waves-effect waves-dark"
+                               href="@Url.RouteUrl("Admin_ServiceLandmarkList")" aria-expanded="false"><i data-feather="disc" class="feather-icon"></i><span class="hide-menu">Hotel Landmark</span></a>
+                        </li>
+
+                        <li class="sidebar-item">
+                            <a class="sidebar-link  waves-effect waves-dark"
+                               href="@Url.RouteUrl("Admin_OfferList", new {fCatagoryKey = "6440039B-6E5A-4E65-A0E4-F38B69C46C8C"})" aria-expanded="false"><i data-feather="disc" class="feather-icon"></i><span class="hide-menu">Offers</span></a>
+                        </li>
+
+                    </ul>
+
+
+                </li>*@
+                
+                <!--<li class="sidebar-item">
+                    <a class="sidebar-link  waves-effect waves-dark" href="javascript:void(0)"
+                       aria-expanded="false">
+                        <img src="~/Areas/Admin/Content/assets/images/menu_icon/Flight_Booking.png" />
+                        <span class="hide-menu">Flight Booking</span>
+                    </a>
+                    <ul aria-expanded="false" class="collapse first-level">
+                        <li class="sidebar-item">
+                            <a class="sidebar-link  waves-effect waves-dark"
+                               href="@Url.RouteUrl("Admin_ServiceList", new {fCatagoryKey = "2CDCEBCF-BA2C-4C2C-9C53-F32C06233FFD"})" aria-expanded="false"><i data-feather="disc" class="feather-icon"></i><span class="hide-menu">Flights</span></a>
+                        </li>
+                        <li class="sidebar-item">
+                            <a class="sidebar-link  waves-effect waves-dark"
+                               href="@Url.RouteUrl("Admin_ServiceTypeList", new {fCatagoryKey = "2CDCEBCF-BA2C-4C2C-9C53-F32C06233FFD"})" aria-expanded="false"><i data-feather="disc" class="feather-icon"></i><span class="hide-menu">Flight booking Type</span></a>
+                        </li>
+                        <li class="sidebar-item">
+                            <a class="sidebar-link  waves-effect waves-dark"
+                               href="@Url.RouteUrl("Admin_CategoryList", new {fCatagoryKey = "2CDCEBCF-BA2C-4C2C-9C53-F32C06233FFD"})" aria-expanded="false"><i data-feather="disc" class="feather-icon"></i><span class="hide-menu">Flight booking Catagory</span></a>
+                        </li>
+                        <li class="sidebar-item">
+                            <a class="sidebar-link  waves-effect waves-dark"
+                               href="@Url.RouteUrl("Admin_ServiceAmenityList", new {fCatagoryKey = "2CDCEBCF-BA2C-4C2C-9C53-F32C06233FFD"})" aria-expanded="false"><i data-feather="disc" class="feather-icon"></i><span class="hide-menu">Flight booking Amenity</span></a>
+                        </li>
+                        <li class="sidebar-item">
+                            <a class="sidebar-link  waves-effect waves-dark"
+                               href="@Url.RouteUrl("Admin_Airport_List")" aria-expanded="false"><i data-feather="disc" class="feather-icon"></i><span class="hide-menu">Airport</span></a>
+                        </li>
+                        <li class="sidebar-item">
+                            <a class="sidebar-link  waves-effect waves-dark"
+                               href="@Url.RouteUrl("Admin_ServiceFacilitiesList", new {fCatagoryKey = "2CDCEBCF-BA2C-4C2C-9C53-F32C06233FFD"})" aria-expanded="false"><i data-feather="disc" class="feather-icon"></i><span class="hide-menu">Flight booking Package Facilities</span></a>
+                        </li>
+                        <li class="sidebar-item">
+                            <a class="sidebar-link  waves-effect waves-dark"
+                               href="@Url.RouteUrl("Admin_Package_List", new {fCatagoryKey = "2CDCEBCF-BA2C-4C2C-9C53-F32C06233FFD"})" aria-expanded="false"><i data-feather="disc" class="feather-icon"></i><span class="hide-menu">Flight booking Packages</span></a>
+                        </li>-->
+                        @*<li class="sidebar-item">
+                            <a class="sidebar-link  waves-effect waves-dark"
+                               href="@Url.RouteUrl("Admin_ServiceLandmarkList")" aria-expanded="false"><i data-feather="disc" class="feather-icon"></i><span class="hide-menu">Flight booking Landmark</span></a>
+                        </li>*@
+
+                        <!--<li class="sidebar-item">
+                            <a class="sidebar-link  waves-effect waves-dark"
+                               href="@Url.RouteUrl("Admin_OfferList", new {fCatagoryKey = "2CDCEBCF-BA2C-4C2C-9C53-F32C06233FFD"})" aria-expanded="false"><i data-feather="disc" class="feather-icon"></i><span class="hide-menu">Offers</span></a>
+                        </li>
+
+                    </ul>
+
+
+                </li>-->
+                
+                <li class="sidebar-item">
+                    <a class="sidebar-link  waves-effect waves-dark" href="javascript:void(0)"
+                       aria-expanded="false">
+                        <img src="~/Areas/Admin/Content/assets/images/menu_icon/Real_Estate_Booking.png" />
+                        <span class="hide-menu">Real Estate Booking</span>
+                    </a>
+                    <ul aria-expanded="false" class="collapse first-level">
+                        <li class="sidebar-item">
+                            <a class="sidebar-link  waves-effect waves-dark"
+                               href="@Url.RouteUrl("Admin_CategoryList", new {fCatagoryKey = "DD501B2D-FE22-4C31-B340-1B4237FAB5CC"})" aria-expanded="false"><i data-feather="disc" class="feather-icon"></i><span class="hide-menu">Real Estates Catagory</span></a>
+                        </li>
+                        @*<li class="sidebar-item">
+                            <a class="sidebar-link  waves-effect waves-dark"
+                               href="@Url.RouteUrl("Admin_ServiceList", new {fCatagoryKey = "DD501B2D-FE22-4C31-B340-1B4237FAB5CC"})" aria-expanded="false"><i data-feather="disc" class="feather-icon"></i><span class="hide-menu">Real Estates</span></a>
+                        </li>*@
+                        <li class="sidebar-item">
+                            <a class="sidebar-link  waves-effect waves-dark"
+                               href="@Url.RouteUrl("Admin_ServiceTypeListV2", new {fCatagoryKey = "DD501B2D-FE22-4C31-B340-1B4237FAB5CC"})" aria-expanded="false"><i data-feather="disc" class="feather-icon"></i><span class="hide-menu">Real Estates Type</span></a>
+                        </li>
+                        @*<li class="sidebar-item">
+                            <a class="sidebar-link  waves-effect waves-dark"
+                               href="@Url.RouteUrl("Admin_ServiceAmenityList")" aria-expanded="false"><i data-feather="disc" class="feather-icon"></i><span class="hide-menu">Real Estate Amenity</span></a>
+                        </li>*@
+                        <li class="sidebar-item">
+                            <a class="sidebar-link  waves-effect waves-dark"
+                               href="@Url.RouteUrl("Admin_Service_Type_Amenity")" aria-expanded="false"><i data-feather="disc" class="feather-icon"></i><span class="hide-menu">Real Estate Type Amenity</span></a>
+                        </li>
+                        <li class="sidebar-item">
+                            <a class="sidebar-link  waves-effect waves-dark"
+                               href="@Url.RouteUrl("Admin_ServiceLandmarkList")" aria-expanded="false"><i data-feather="disc" class="feather-icon"></i><span class="hide-menu">Real Estate Landmark</span></a>
+                        </li>
+                        <li class="sidebar-item">
+                            <a class="sidebar-link  waves-effect waves-dark"
+                               href="@Url.RouteUrl("Admin_Property_Information")" aria-expanded="false"><i data-feather="disc" class="feather-icon"></i><span class="hide-menu">Property Information</span></a>
+                        </li>
+
+                        <li class="sidebar-item">
+                            <a class="sidebar-link  waves-effect waves-dark"
+                               href="@Url.RouteUrl("Admin_OfferList", new {fCatagoryKey = "DD501B2D-FE22-4C31-B340-1B4237FAB5CC"})" aria-expanded="false"><i data-feather="disc" class="feather-icon"></i><span class="hide-menu">Real Estates Offers</span></a>
+                        </li>
+                        <li class="sidebar-item">
+                            <a class="sidebar-link  waves-effect waves-dark"
+                               href="@Url.RouteUrl("Admin_WebHtml", new {fCatagoryKey = "DD501B2D-FE22-4C31-B340-1B4237FAB5CC"})" aria-expanded="false"><i data-feather="disc" class="feather-icon"></i><span class="hide-menu">Real Estates Banner</span></a>
+                        </li>
+
+                    </ul>
+
+
+                </li>
+
+                <li class="sidebar-item">
+                    <a class="sidebar-link  waves-effect waves-dark" href="javascript:void(0)"
+                       aria-expanded="false">
+                        <img src="~/Areas/Admin/Content/assets/images/menu_icon/Motors.png" />
+                        <span class="hide-menu">Motors</span>
+                    </a>
+                    <ul aria-expanded="false" class="collapse first-level">
+                        @*<li class="sidebar-item">
+                                <a class="sidebar-link  waves-effect waves-dark"
+                                   href="@Url.RouteUrl("Admin_ServiceListMotorTest")" aria-expanded="false"><i data-feather="disc" class="feather-icon"></i><span class="hide-menu">Motor Servce</span></a>
+                            </li>*@
+                        <li class="sidebar-item">
+                            <a class="sidebar-link  waves-effect waves-dark"
+                               href="@Url.RouteUrl("Admin_ServiceTypeList", new {fCatagoryKey = "b3e3e680-c8ef-4ab2-a4ac-d75bb48a3647"})" aria-expanded="false"><i data-feather="disc" class="feather-icon"></i><span class="hide-menu">Motors Service Type</span></a>
+                        </li>
+                        @*<li class="sidebar-item">
+                            <a class="sidebar-link  waves-effect waves-dark"
+                               href="@Url.RouteUrl("Admin_ServiceAmenityListMotorTest")" aria-expanded="false"><i data-feather="disc" class="feather-icon"></i><span class="hide-menu">Motors Service Category</span></a>
+                        </li>*@
+                        <li class="sidebar-item">
+                            <a class="sidebar-link  waves-effect waves-dark"
+                               href="@Url.RouteUrl("Admin_WebHtml", new {fCatagoryKey = "b3e3e680-c8ef-4ab2-a4ac-d75bb48a3647"})" aria-expanded="false"><i data-feather="disc" class="feather-icon"></i><span class="hide-menu">Motors Service Banner</span></a>
+                        </li>
+                        <li class="sidebar-item">
+                            <a class="sidebar-link  waves-effect waves-dark"
+                               href="@Url.RouteUrl("Admin_CategoryList", new {fCatagoryKey = "b3e3e680-c8ef-4ab2-a4ac-d75bb48a3647"})" aria-expanded="false"><i data-feather="disc" class="feather-icon"></i><span class="hide-menu">Motors Catagory</span></a>
+                        </li>
+                        <li class="sidebar-item">
+                            <a class="sidebar-link  waves-effect waves-dark"
+                               href="@Url.RouteUrl("Admin_BrandList", new {fCatagoryKey = "b3e3e680-c8ef-4ab2-a4ac-d75bb48a3647"})" aria-expanded="false"><i data-feather="disc" class="feather-icon"></i><span class="hide-menu">Vehical Brand</span></a>
+                        </li>
+                        @*<li class="sidebar-item">
+                            <a class="sidebar-link  waves-effect waves-dark"
+                               href="@Url.RouteUrl("Admin_ServiceList", new {fCatagoryKey = "b3e3e680-c8ef-4ab2-a4ac-d75bb48a3647"})" aria-expanded="false"><i data-feather="disc" class="feather-icon"></i><span class="hide-menu">Motor Service</span></a>
+                        </li>*@
+                        <li class="sidebar-item">
+                            <a class="sidebar-link  waves-effect waves-dark"
+                               href="@Url.RouteUrl("Admin_VehicalModelList")" aria-expanded="false"><i data-feather="disc" class="feather-icon"></i><span class="hide-menu">Vehical Model</span></a>
+                        </li>
+
+                        <li class="sidebar-item">
+                            <a class="sidebar-link  waves-effect waves-dark"
+                               href="@Url.RouteUrl("Admin_OfferList", new {fCatagoryKey = "b3e3e680-c8ef-4ab2-a4ac-d75bb48a3647"})" aria-expanded="false"><i data-feather="disc" class="feather-icon"></i><span class="hide-menu">Motors Service Offers</span></a>
+                        </li>
+                        <li class="sidebar-item">
+                            <a class="sidebar-link  waves-effect waves-dark"
+                               href="@Url.RouteUrl("Admin_FaqService_List", new {fCatagoryKey = "b3e3e680-c8ef-4ab2-a4ac-d75bb48a3647"})" aria-expanded="false"><i data-feather="settings" class="feather-icon"></i><span class="hide-menu">Motors FAQ</span></a>
+                        </li>
+                    </ul>
+                </li>
+                <li class="sidebar-item">
+                    <a class="sidebar-link  waves-effect waves-dark" href="javascript:void(0)"
+                       aria-expanded="false">
+                        <img src="~/Areas/Admin/Content/assets/images/menu_icon/Salon.png" />
+                        <span class="hide-menu">Salon</span>
+                    </a>
+                    <ul aria-expanded="false" class="collapse first-level">
+                        @*<li class="sidebar-item">
+                            <a class="sidebar-link  waves-effect waves-dark"
+                               href="@Url.RouteUrl("Admin_ServiceList", new {fCatagoryKey = "25d8c418-2d26-4159-9d7f-970e3b933b42"})" aria-expanded="false"><i data-feather="disc" class="feather-icon"></i><span class="hide-menu">Salon Servce List</span></a>
+                        </li>*@
+                        <li class="sidebar-item">
+                            <a class="sidebar-link  waves-effect waves-dark"
+                               href="@Url.RouteUrl("Admin_ServiceTypeList", new {fCatagoryKey = "25d8c418-2d26-4159-9d7f-970e3b933b42"})" aria-expanded="false"><i data-feather="disc" class="feather-icon"></i><span class="hide-menu">Salon Service Type</span></a>
+                        </li>
+                        <li class="sidebar-item">
+                            <a class="sidebar-link  waves-effect waves-dark"
+                               href="@Url.RouteUrl("Admin_CategoryList", new {fCatagoryKey = "25d8c418-2d26-4159-9d7f-970e3b933b42"})" aria-expanded="false"><i data-feather="disc" class="feather-icon"></i><span class="hide-menu">Salon Service Category</span></a>
+                        </li>
+                        <li class="sidebar-item">
+                            <a class="sidebar-link  waves-effect waves-dark"
+                               href="@Url.RouteUrl("Admin_WebHtml", new {fCatagoryKey = "25d8c418-2d26-4159-9d7f-970e3b933b42"})" aria-expanded="false"><i data-feather="disc" class="feather-icon"></i><span class="hide-menu">Salon Service Banner</span></a>
+                        </li>
+                        <li class="sidebar-item">
+                            <a class="sidebar-link  waves-effect waves-dark"
+                               href="@Url.RouteUrl("Admin_OfferList", new {fCatagoryKey = "25d8c418-2d26-4159-9d7f-970e3b933b42"})" aria-expanded="false"><i data-feather="disc" class="feather-icon"></i><span class="hide-menu">Salon Service Offers</span></a>
+                        <li class="sidebar-item">
+                            <a class="sidebar-link  waves-effect waves-dark"
+                               href="@Url.RouteUrl("Admin_FaqService_List", new {fCatagoryKey = "25d8c418-2d26-4159-9d7f-970e3b933b42"})" aria-expanded="false"><i data-feather="settings" class="feather-icon"></i><span class="hide-menu">Salon FAQ</span></a>
+                        </li>
+                
+            </ul>
+            </li>
+
+            <li class="sidebar-item">
+                <a class="sidebar-link  waves-effect waves-dark" href="javascript:void(0)"
+                   aria-expanded="false">
+                    <img src="~/Areas/Admin/Content/assets/images/menu_icon/Medical.png" />
+                    <span class="hide-menu">Medical</span>
+                </a>
+                <ul aria-expanded="false" class="collapse first-level">
+                    @*<li class="sidebar-item">
+                        <a class="sidebar-link  waves-effect waves-dark"
+                           href="@Url.RouteUrl("Admin_ServiceList", new {fCatagoryKey = "bbc98e2d-941b-44c6-8122-0e12a2645b87"})" aria-expanded="false"><i data-feather="disc" class="feather-icon"></i><span class="hide-menu">Medical Servce List</span></a>
+                    </li>*@
+                    <li class="sidebar-item">
+                        <a class="sidebar-link  waves-effect waves-dark"
+                           href="@Url.RouteUrl("Admin_ServiceTypeList", new {fCatagoryKey = "bbc98e2d-941b-44c6-8122-0e12a2645b87"})" aria-expanded="false"><i data-feather="disc" class="feather-icon"></i><span class="hide-menu">Medical Service Type</span></a>
+                    </li>
+                    <li class="sidebar-item">
+                        <a class="sidebar-link  waves-effect waves-dark"
+                           href="@Url.RouteUrl("Admin_CategoryList", new {fCatagoryKey = "bbc98e2d-941b-44c6-8122-0e12a2645b87"})" aria-expanded="false"><i data-feather="disc" class="feather-icon"></i><span class="hide-menu">Medical Service Category</span></a>
+                    </li>
+                    <li class="sidebar-item">
+                        <a class="sidebar-link  waves-effect waves-dark"
+                           href="@Url.RouteUrl("Admin_WebHtml", new {fCatagoryKey = "bbc98e2d-941b-44c6-8122-0e12a2645b87"})" aria-expanded="false"><i data-feather="disc" class="feather-icon"></i><span class="hide-menu">Medical Service Banner</span></a>
+                    </li>
+                    <li class="sidebar-item">
+                        <a class="sidebar-link  waves-effect waves-dark"
+                           href="@Url.RouteUrl("Admin_OfferList", new {fCatagoryKey = "bbc98e2d-941b-44c6-8122-0e12a2645b87"})" aria-expanded="false"><i data-feather="disc" class="feather-icon"></i><span class="hide-menu">Medical Service Offers</span></a>
+                    </li>
+                    <li class="sidebar-item">
+                        <a class="sidebar-link  waves-effect waves-dark"
+                           href="@Url.RouteUrl("Admin_FaqService_List", new {fCatagoryKey = "bbc98e2d-941b-44c6-8122-0e12a2645b87"})" aria-expanded="false"><i data-feather="settings" class="feather-icon"></i><span class="hide-menu">Medical FAQ</span></a>
+                    </li>
+                </ul>
+            </li>
+
+            <li class="sidebar-item">
+                <a class="sidebar-link  waves-effect waves-dark" href="javascript:void(0)"
+                   aria-expanded="false">
+                    <img src="~/Areas/Admin/Content/assets/images/menu_icon/Typing.png" />
+                    <span class="hide-menu">Typing</span>
+                </a>
+                <ul aria-expanded="false" class="collapse first-level">
+                    <li class="sidebar-item">
+                        <a class="sidebar-link  waves-effect waves-dark"
+                           href="@Url.RouteUrl("Admin_ServiceList", new {fCatagoryKey = "f4309df5-9121-41ad-831a-994c46b62766"})" aria-expanded="false"><i data-feather="disc" class="feather-icon"></i><span class="hide-menu">Typing Parent Service List</span></a>
+                    </li>
+                    <li class="sidebar-item">
+                        <a class="sidebar-link  waves-effect waves-dark"
+                           href="@Url.RouteUrl("Admin_ServiceListIndexForChildService", new {fCatagoryKey = "f4309df5-9121-41ad-831a-994c46b62766"})" aria-expanded="false"><i data-feather="disc" class="feather-icon"></i><span class="hide-menu">Typing Sub Service List</span></a>
+                    </li>
+                    
+                    <li class="sidebar-item">
+                        <a class="sidebar-link  waves-effect waves-dark"
+                           href="@Url.RouteUrl("Admin_ServiceTypeList", new {fCatagoryKey = "f4309df5-9121-41ad-831a-994c46b62766"})" aria-expanded="false"><i data-feather="disc" class="feather-icon"></i><span class="hide-menu">Typing Sub Sub Service List</span></a>
+                    </li>
+                    <li class="sidebar-item">
+                        <a class="sidebar-link  waves-effect waves-dark"
+                           href="@Url.RouteUrl("Admin_CategoryList", new {fCatagoryKey = "f4309df5-9121-41ad-831a-994c46b62766"})" aria-expanded="false"><i data-feather="disc" class="feather-icon"></i><span class="hide-menu">Typing Agencies</span></a>
+                    </li>
+                    <li class="sidebar-item">
+                        <a class="sidebar-link  waves-effect waves-dark"
+                           href="@Url.RouteUrl("Admin_WebHtml", new {fCatagoryKey = "f4309df5-9121-41ad-831a-994c46b62766"})" aria-expanded="false"><i data-feather="disc" class="feather-icon"></i><span class="hide-menu">Typing Banner</span></a>
+                    </li>
+                    @*<li class="sidebar-item">
+                        <a class="sidebar-link  waves-effect waves-dark"
+                           href="@Url.RouteUrl("Admin_OfferList", new {fCatagoryKey = "f4309df5-9121-41ad-831a-994c46b62766"})" aria-expanded="false"><i data-feather="disc" class="feather-icon"></i><span class="hide-menu">Typing Offers</span></a>
+                    </li>
+                    <li class="sidebar-item">
+                        <a class="sidebar-link  waves-effect waves-dark"
+                           href="@Url.RouteUrl("Admin_FaqService_List", new {fCatagoryKey = "f4309df5-9121-41ad-831a-994c46b62766"})" aria-expanded="false"><i data-feather="settings" class="feather-icon"></i><span class="hide-menu">Typing FAQ</span></a>
+                    </li>*@
+                </ul>
+            </li>
+
+            <li class="sidebar-item">
+                <a class="sidebar-link  waves-effect waves-dark" href="javascript:void(0)"
+                   aria-expanded="false">
+                    <img src="~/Areas/Admin/Content/assets/images/menu_icon/Insurance.png" />
+                    <span class="hide-menu">Insurance</span>
+                </a>
+                <ul aria-expanded="false" class="collapse first-level">
+                    <li class="sidebar-item">
+                        <a class="sidebar-link  waves-effect waves-dark"
+                           href="@Url.RouteUrl("Admin_ServiceList", new {fCatagoryKey = "c286a46b-5b9a-4519-bb10-8d47ec254ffb"})" aria-expanded="false"><i data-feather="disc" class="feather-icon"></i><span class="hide-menu">Insurance Parent Service List</span></a>
+                    </li>
+                    <li class="sidebar-item">
+                        <a class="sidebar-link  waves-effect waves-dark"
+                           href="@Url.RouteUrl("Admin_ServiceListIndexForChildService", new {fCatagoryKey = "c286a46b-5b9a-4519-bb10-8d47ec254ffb"})" aria-expanded="false"><i data-feather="disc" class="feather-icon"></i><span class="hide-menu">Insurance Sub Service List</span></a>
+                    </li>
+                    <li class="sidebar-item">
+                        <a class="sidebar-link  waves-effect waves-dark"
+                           href="@Url.RouteUrl("Admin_ServiceTypeList", new {fCatagoryKey = "c286a46b-5b9a-4519-bb10-8d47ec254ffb"})" aria-expanded="false"><i data-feather="disc" class="feather-icon"></i><span class="hide-menu">Insurance Sub Sub Service List</span></a>
+                    </li>
+
+                    <li class="sidebar-item">
+                        <a class="sidebar-link  waves-effect waves-dark"
+                           href="@Url.RouteUrl("Admin_CategoryList", new {fCatagoryKey = "c286a46b-5b9a-4519-bb10-8d47ec254ffb"})" aria-expanded="false"><i data-feather="disc" class="feather-icon"></i><span class="hide-menu">Insurance Category</span></a>
+                    </li>
+                    <li class="sidebar-item">
+                        <a class="sidebar-link  waves-effect waves-dark"
+                           href="@Url.RouteUrl("Admin_WebHtml", new {fCatagoryKey = "c286a46b-5b9a-4519-bb10-8d47ec254ffb"})" aria-expanded="false"><i data-feather="disc" class="feather-icon"></i><span class="hide-menu">Insurance Banner</span></a>
+                    </li>
+                    @*<li class="sidebar-item">
+            <a class="sidebar-link  waves-effect waves-dark"
+               href="@Url.RouteUrl("Admin_OfferList", new {fCatagoryKey = "c286a46b-5b9a-4519-bb10-8d47ec254ffb"})" aria-expanded="false"><i data-feather="disc" class="feather-icon"></i><span class="hide-menu">Insurance Offers</span></a>
+        </li>
+        <li class="sidebar-item">
+            <a class="sidebar-link  waves-effect waves-dark"
+               href="@Url.RouteUrl("Admin_FaqService_List", new {fCatagoryKey = "c286a46b-5b9a-4519-bb10-8d47ec254ffb"})" aria-expanded="false"><i data-feather="settings" class="feather-icon"></i><span class="hide-menu">Insurance FAQ</span></a>
+        </li>*@
+                </ul>
+            </li>
+
+            @*<li class="sidebar-item">
+                <a class="sidebar-link  waves-effect waves-dark"
+                   href="@Url.RouteUrl("Admin_CategoryList")" aria-expanded="false">
+                    <img src="~/Areas/Admin/Content/assets/images/menu_icon/Category.png" />
+                    <span class="hide-menu">Category</span>
+                </a>
+            </li>*@
+            @*Askar Part End*@
+
+            @* its privious*@
+
+            @*<li class="sidebar-item">
+                    <a class="sidebar-link  waves-effect waves-dark"
+                       href="@Url.RouteUrl("Admin_ProductList")" aria-expanded="false"><i data-feather="tv" class="feather-icon"></i><span class="hide-menu">Product</span></a>
+                </li>
+                <li class="sidebar-item">
+                    <a class="sidebar-link  waves-effect waves-dark"
+                       href="@Url.RouteUrl("Admin_BrandList")" aria-expanded="false"><i data-feather="slack" class="feather-icon"></i><span class="hide-menu">Brand</span></a>
+                </li>
+                <li class="sidebar-item">
+                    <a class="sidebar-link  waves-effect waves-dark"
+                       href="@Url.RouteUrl("Admin_CategoryList")" aria-expanded="false"><i data-feather="layers" class="feather-icon"></i><span class="hide-menu">Category</span></a>
+                </li>
+                <li class="sidebar-item">
+                    <a class="sidebar-link  waves-effect waves-dark"
+                       href="@Url.RouteUrl("Admin_FeatureCategoryList")" aria-expanded="false"><i data-feather="aperture" class="feather-icon"></i><span class="hide-menu">Feature Category</span></a>
+                </li>
+                <li class="sidebar-item">
+                    <a class="sidebar-link  waves-effect waves-dark"
+                       href="@Url.RouteUrl("Admin_Member")" aria-expanded="false"><i data-feather="user" class="feather-icon"></i><span class="hide-menu">Member List</span></a>
+                </li>
+                <li class="sidebar-item">
+                    <a class="sidebar-link  waves-effect waves-dark"
+                       href="@Url.RouteUrl("Admin_Order_Request_Product_List")" aria-expanded="false"><i data-feather="truck" class="feather-icon"></i><span class="hide-menu">Order List</span></a>
+                </li>
+                <li class="sidebar-item">
+                    <a class="sidebar-link  waves-effect waves-dark"
+                       href="@Url.RouteUrl("Admin_Order_Request_Service_List")" aria-expanded="false"><i data-feather="truck" class="feather-icon"></i><span class="hide-menu">Order Service</span></a>
+                </li>*@
+            <li class="sidebar-item">
+                <a class="sidebar-link  waves-effect waves-dark"
+                   href="@Url.RouteUrl("Admin_Member")" aria-expanded="false">
+                    <img src="~/Areas/Admin/Content/assets/images/menu_icon/Members.png" />
+                    <span class="hide-menu">Members</span>
+                </a>
+            </li>
+            <li class="sidebar-item">
+                <a class="sidebar-link  waves-effect waves-dark"
+                   href="@Url.RouteUrl("Admin_Customer_Enquery_List")" aria-expanded="false">
+                    <img src="~/Areas/Admin/Content/assets/images/menu_icon/Customer_Enquery.png" />
+                    <span class="hide-menu">Customer Enquiry</span>
+                </a>
+            </li>
+            <li class="sidebar-item">
+                <a class="sidebar-link  waves-effect waves-dark"
+                   href="@Url.RouteUrl("Admin_FaqService_List_All")" aria-expanded="false">
+                    <img src="~/Areas/Admin/Content/assets/images/menu_icon/FAQ.png" />
+                    <span class="hide-menu">FAQ</span>
+                </a>
+            </li>
+            <li class="sidebar-item">
+                <a class="sidebar-link  waves-effect waves-dark"
+                   href="@Url.RouteUrl("Admin_Reportandhelp")" aria-expanded="false">
+                    <img src="~/Areas/Admin/Content/assets/images/menu_icon/user_report.png" />
+                    <span class="hide-menu">User Report</span>
+                </a>
+            </li>
+            <li class="sidebar-item">
+                <a class="sidebar-link  waves-effect waves-dark" href="javascript:void(0)"
+                   aria-expanded="false">
+                    <img src="~/Areas/Admin/Content/assets/images/menu_icon/Member_Ship.png" />
+                    <span class="hide-menu">Member Ship</span>
+                </a>
+                <ul aria-expanded="false" class="collapse first-level">
+                    <li class="sidebar-item">
+                        <a class="sidebar-link  waves-effect waves-dark"
+                           href="@Url.RouteUrl("Admin_MemberShip_List")" aria-expanded="false"><i data-feather="settings" class="feather-icon"></i><span class="hide-menu">Member Ship</span></a>
+                    </li>
+                    <li class="sidebar-item">
+                        <a class="sidebar-link  waves-effect waves-dark"
+                           href="@Url.RouteUrl("Admin_MemberShipDiscountCategory_List")" aria-expanded="false"><i data-feather="disc" class="feather-icon"></i><span class="hide-menu">MemberShip Discount Category</span></a>
+                    </li>
+                </ul>
+            </li>
+            <li class="sidebar-item">
+                <a class="sidebar-link  waves-effect waves-dark"
+                   href="@Url.RouteUrl("Admin_Setting")" aria-expanded="false">
+                    <img src="~/Areas/Admin/Content/assets/images/menu_icon/Setting.png" />
+                    <span class="hide-menu">Setting</span>
+                </a>
+            </li>
+            <li class="sidebar-item">
+                <a class="sidebar-link  waves-effect waves-dark"
+                   href="@Url.RouteUrl("Admin_RoleList")" aria-expanded="false">
+                    <img src="~/Areas/Admin/Content/assets/images/menu_icon/Role.png" />
+                    <span class="hide-menu">Role</span>
+                </a>
+            </li>
+            <li class="sidebar-item">
+                <a class="sidebar-link  waves-effect waves-dark"
+                   href="@Url.RouteUrl("Admin_UserList")" aria-expanded="false">
+                    <img src="~/Areas/Admin/Content/assets/images/menu_icon/user.png" />
+                    <span class="hide-menu">User</span>
+                </a>
+            </li>
+            <li class="sidebar-item">
+                <a class="sidebar-link waves-effect waves-dark sidebar-link"
+                   href="@Url.RouteUrl("Admin_logout")" aria-expanded="false">
+                    <img src="~/Areas/Admin/Content/assets/images/menu_icon/Log_out.png" />
+                    <span class="hide-menu">Log Out</span>
+                </a>
+            </li>
+            </ul>
+        </nav>
+        <!-- End Sidebar navigation -->
+    </div>
+    <!-- End Sidebar scroll-->
+</aside>

@@ -1,0 +1,774 @@
+﻿@model Boulevard.Models.OfferInformation
+@{
+    ViewBag.Title = "Create Or Update";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+    string activeChk = "";
+    string PageTitle = "", ButtonTitle = "";
+    string buttonColor = "";
+    if (Model.OfferInformationId != 0)
+    {
+        PageTitle = "Edit";
+        ButtonTitle = "Reset";
+        buttonColor = "warning";
+    }
+    else
+    {
+        PageTitle = "Add";
+        ButtonTitle = "Save";
+        buttonColor = "success";
+    }
+}
+
+
+
+@using (Html.BeginForm("Create", "Offer", FormMethod.Post, new { enctype = "multipart/form-data", @id = "myForm" }))
+{
+
+
+    <div class="page-wrapper">
+        <div class="container-fluid">
+            <div class="row page-titles">
+                <div class="col-md-5 col-12 align-self-center">
+                    @*@if (ViewBag.FeatureCategoryKey != null)
+                        {
+                            <h3 class="text-themecolor mb-0">@ViewBag.FCatagoryName Service Type Info</h3>
+                        }
+                        else
+                        {
+                            <h3 class="text-themecolor mb-0">Service Type Info</h3>
+                        }*@
+                </div>
+                <div class="col-md-7 col-12 align-self-center d-none d-md-block">
+                    <ol class="breadcrumb mb-0 p-0 bg-transparent float-right">
+                    </ol>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-body pb-0">
+                    <div class="row align-items-center">
+                        <div class="col-md-5 col-12 align-self-center">
+                            <h3>@PageTitle @ViewBag.FCatagoryName Offer</h3>
+                        </div>
+                        <div class="col-md-7 col-12 align-self-center d-none d-md-block">
+                            <ol class="breadcrumb mb-0 p-0 bg-transparent float-right">
+                                @*@if (ViewBag.FeatureCategoryKey != null)
+                                    {
+                                        <li class="breadcrumb-item active"><a href="@Url.RouteUrl("Admin_ServiceTypeList", new {fCatagoryKey = ViewBag.FeatureCategoryKey})">@ViewBag.FCatagoryName Service Type</a></li>
+                                    }
+                                    else
+                                    {
+                                        <li class="breadcrumb-item active"><a href="@Url.RouteUrl("Admin_ServiceTypeList")">Brand</a></li>
+                                    }*@
+                                @*<li class="breadcrumb-item active">Create Or Edit</li>*@
+                            </ol>
+                        </div>
+
+                    </div>
+
+                </div>
+                <hr>
+                <div class="card-body pt-0">
+                    <div class="row">
+                        <input type="hidden" name="OfferInformationKey" class="form-control" value="@Model.OfferInformationKey">
+                        <input type="hidden" name="FeatureCategoryId" class="form-control" value="@Model.FeatureCategoryId">
+                        <input type="hidden" name="CreateDate" class="form-control" value="@Model.CreateDate">
+                        <input type="hidden" name="CreateBy" class="form-control" value="@Model.CreateBy">
+                        <input type="hidden" name="FeatureType" class="form-control" value="@Model.FeatureType">
+                        <input type="hidden" name="FeatureCategoryKey" class="form-control" value="@ViewBag.FeatureCategoryKey">
+
+                        <div class="col-lg-6 col-md-6 col-sm-12">
+                            <div class="form-group">
+                                <label>Title</label>
+                                @Html.TextBoxFor(m => m.Title, new { @class = "form-control", required = "required" })
+                            </div>
+                        </div>
+                        <div class="col-lg-6 col-md-6 col-sm-12">
+                            <div class="form-group">
+                                <label>Title (Arabic)</label>
+                                @Html.TextBoxFor(m => m.TitleAr, new { @class = "form-control", required = "required", dir = "rtl" })
+                            </div>
+                        </div>
+
+                        <div class="col-lg-6 col-md-6 col-sm-12">
+                            <div class="form-group">
+                                <label>Description</label>
+                                @Html.TextBoxFor(m => m.Description, new { @class = "form-control", required = "required" })
+                            </div>
+                        </div>
+                        <div class="col-lg-6 col-md-6 col-sm-12">
+                            <div class="form-group">
+                                <label>Description (Arabic)</label>
+                                @Html.TextBoxFor(m => m.DescriptionAr, new { @class = "form-control", required = "required", dir = "rtl" })
+                            </div>
+                        </div>
+                        @*<div class="col-lg-6 col-md-6 col-sm-12">
+                                <div class="form-group">
+                                    <label>IsTimeLimit</label>
+                                    <div class="switch">
+                                        <label>
+                                            <strong style="color:red">NO</strong>
+                                            @if (Model.IsTimeLimit == true)
+                                            {
+                                                <input type="checkbox" checked="checked" name="IsTimeLimit" value="true"><span class="lever"></span>
+                                            }
+                                            else
+                                            {
+                                                <input type="checkbox" name="IsTimeLimit" value="true"><span class="lever"></span>
+                                            }
+                                            <input name="IsTimeLimit" type="hidden" value="false" />
+                                            <strong style="color:green">YES</strong>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>*@
+                        <div class="col-lg-6 col-md-6 col-sm-12">
+                            <div class="form-group">
+                                <label>IsTrending</label>
+                                <div class="switch">
+                                    <label>
+                                        <strong style="color:red">NO</strong>
+                                        @if (Model.IsTrending == true)
+                                        {
+                                            <input type="checkbox" checked="checked" name="IsTrending" value="true"><span class="lever"></span>
+                                        }
+                                        else
+                                        {
+                                            <input type="checkbox" name="IsTrending" value="true"><span class="lever"></span>
+                                        }
+                                        <input name="IsTrending" type="hidden" value="false" />
+                                        <strong style="color:green">YES</strong>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-lg-6 col-md-6 col-sm-12">
+                            <div class="form-group">
+                                <label>Status</label>
+                                <select class="form-control custom-select select-2" name="Status" id="Status" required>
+                                    <option value="">Select</option>
+                                    @if (Model.Status != null)
+                                    {
+                                        if (Model.Status == "Active")
+                                        {
+                                            <option selected value="Active">Active</option>
+                                            <option value="InActive">InActive</option>
+                                        }
+                                        else
+                                        {
+                                            <option value="Active">Active</option>
+                                            <option selected value="InActive">InActive</option>
+                                        }
+                                    }
+                                    else
+                                    {
+                                        <option value="Active">Active</option>
+                                        <option value="InActive">InActive</option>
+                                    }
+                                </select>
+                            </div>
+                        </div>
+                        <div class="row col-12">
+                            <div class="col-lg-6 col-md-6 col-sm-12">
+                                <div class="form-group">
+                                    <label>Discount Type</label>
+                                    <select class="form-control custom-select select-2" name="DiscountType" id="DiscountType" required>
+                                        @*<option value="">Select Discount Type</option>*@
+                                        @if (Model.DiscountType != null)
+                                        {
+                                            if (Model.DiscountType == "Percentage")
+                                            {
+                                                <option selected value="Percentage">Percentage</option>
+                                                <option value="Amount">Amount</option>
+                                            }
+                                            else
+                                            {
+                                                <option value="Percentage">Percentage</option>
+                                                <option selected value="Amount">Amount</option>
+                                            }
+                                        }
+                                        else
+                                        {
+                                            <option value="Percentage">Percentage</option>
+                                            <option value="Amount">Amount</option>
+                                        }
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-lg-6 col-md-6 col-sm-12">
+                                <div class="form-group">
+                                    <label>Discount Type (Arabic)</label>
+                                    <select class="form-control custom-select select-2" name="DiscountTypeAr" id="DiscountTypeAr" required>
+                                        @*<option value="">Select Discount Type</option>*@
+                                        @if (Model.DiscountTypeAr != null)
+                                        {
+                                            if (Model.DiscountTypeAr == "نسبة مئوية")
+                                            {
+                                                <option selected value="نسبة مئوية">نسبة مئوية</option>
+                                                <option value="كمية">كمية</option>
+                                            }
+                                            else
+                                            {
+                                                <option value="نسبة مئوية">نسبة مئوية</option>
+                                                <option selected value="كمية">كمية</option>
+                                            }
+                                        }
+                                        else
+                                        {
+                                            <option value="نسبة مئوية">نسبة مئوية</option>
+                                            <option value="كمية">كمية</option>
+                                        }
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-lg-6 col-md-6 col-sm-12">
+                                <div class="form-group">
+                                    <label>Discount Amount</label>
+                                    @Html.TextBoxFor(m => m.DiscountAmount, new { @class = "form-control", required = "required" })
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row col-12">
+                            <div class="col-md-4 col-sm-4">
+                                <div class="form-group">
+                                    <label>Image</label>
+                                    <input type="file" name="Image" class="form-control dropify" data-default-file="../../@Model.BannerImage">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <div style="width: auto; border: 1px solid #e5e5e5; padding: 1rem; margin: 0; border-radius: 6px;">
+                        <div class="page-titles">
+                            <h3><strong>Offer Details</strong></h3>
+                        </div>
+                        <div class="card-body" style="width: auto; border: 1px solid #e5e5e5; border-radius: 6px; padding: 1rem; margin: 0; ">
+                            <div class="col-12">
+                                @if (Model.IsBrand == true)
+                                {
+                                    <label for="option1" id="option1" style="padding-right:150px; font-size:21px">
+                                        <input type="checkbox" id="option" name="IsBrandchk" checked value="@Model.IsBrand" onclick="checkCheckbox(1)" />  Brands
+                                        <input name="IsBrand" type="hidden" id="Brandchkhiden" value="@Model.IsBrand" />
+                                    </label>
+                                }
+                                else
+                                {
+                                    <label for="option1" id="option1" style="padding-right: 150px; font-size: 21px ">
+                                        <input type="checkbox" id="option" name="IsBrandchk" value="@Model.IsBrand" onclick="checkCheckbox(1)" /> Brands
+                                        <input name="IsBrand" type="hidden" id="Brandchkhiden" value="@Model.IsBrand" />
+                                    </label>
+                                }
+                                @if (Model.IsCategory == true)
+                                {
+                                    <label for="option2" id="option2" style="padding-right: 150px; font-size: 21px ">
+                                        <input type="checkbox" id="option" name="IsCategoryChk" checked value="@Model.IsCategory" onclick="checkCheckbox(2)" /> Categories
+                                        <input name="IsCategory" type="hidden" id="Categorychkhiden" value="false" />
+                                    </label>
+                                }
+                                else
+                                {
+                                    <label for="option2" id="option2" style="padding-right: 150px; font-size: 21px ">
+                                        <input type="checkbox" id="option" name="IsCategoryChk" value="@Model.IsCategory" onclick="checkCheckbox(2)" /> Categories
+                                        <input name="IsCategory" type="hidden" id="Categorychkhiden" value="false" />
+                                    </label>
+                                }
+                                @if (ViewBag.FeatureType == "Product")
+                                {
+                                    if (Model.IsProduct == true)
+                                    {
+                                        <label for="option3" id="option3" style="padding-right: 150px; font-size: 21px">
+                                            <input type="checkbox" id="option" name="IsProductChk" checked value="@Model.IsProduct" onclick="checkCheckbox(3)" /> Products
+                                            <input name="IsProduct" type="hidden" id="Productchkhiden" value="false" />
+                                        </label>
+                                    }
+                                    else
+                                    {
+                                        <label for="option3" id="option3" style="padding-right: 150px; font-size: 21px">
+                                            <input type="checkbox" id="option" name="IsProductChk" value="@Model.IsProduct" onclick="checkCheckbox(3)" /> Products
+                                            <input name="IsProduct" type="hidden" id="Productchkhiden" value="false" />
+                                        </label>
+                                    }
+                                }
+                                @if (ViewBag.FeatureType == "Service")
+                                {
+                                    if (Model.IsService == true)
+                                    {
+                                        <label for="option4" id="option4" style="padding-right: 150px; font-size: 21px">
+                                            <input type="checkbox" id="option" name="IsServiceChk" checked value="@Model.IsService" onclick="checkCheckbox(4)" /> Services
+                                            <input name="IsService" type="hidden" id="Servicechkhiden" value="false" />
+                                        </label>
+                                    }
+                                    else
+                                    {
+                                        <label for="option4" id="option4" style="padding-right: 150px; font-size: 21px">
+                                            <input type="checkbox" id="option" name="IsServiceChk" value="@Model.IsService" onclick="checkCheckbox(4)" /> Services
+                                            <input name="IsService" type="hidden" id="Servicechkhiden" value="false" />
+                                        </label>
+                                    }
+                                }
+                            </div>
+                        </div>
+
+                        <div class="card-body" style="padding: 1rem 0;">
+                            <div class="card" id="IsBrand">
+                                <div class="card-header">
+                                    <span style="color:blue">Brands List</span>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="table-responsive">
+
+                                            <table id="zero_config" class="table table-striped table-bordered" cellspacing="0" width="100%">
+                                                <thead>
+                                                    <tr>
+                                                        <th style="display:none">IsSelected</th>
+                                                        <th>
+                                                            <input type="checkbox" id="check-all" class="check-All"> All
+                                                        </th>
+                                                        <th>Brand Name</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    @{
+                                                        int indexBrand = 0;
+                                                    }
+                                                    @if (Model.Brands != null)
+                                                    {
+                                                        foreach (var node in Model.Brands.OrderBy(s => s.IsSelected))
+                                                        {
+                                                            <tr>
+                                                                <td style="display:none">@node.IsSelected</td>
+                                                                <td>
+                                                                    @if (node.IsSelected == true)
+                                                                    {
+                                                                        <input type="checkbox" class="chkCheckBoxId select-@node.BrandId" checked
+                                                                               name="Brands[@indexBrand].IsSelected"
+                                                                               id="select-@node.BrandId"
+                                                                               value="true" @(node.IsSelected ? "checked" : "") />
+                                                                        <input type="hidden" name="Brands[@indexBrand].BrandId" value="@node.BrandId" />
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        <input type="checkbox" class="chkCheckBoxId select-@node.BrandId"
+                                                                               name="Brands[@indexBrand].IsSelected"
+                                                                               id="select-@node.BrandId"
+                                                                               value="true" @(node.IsSelected ? "checked" : "") />
+                                                                        <input type="hidden" name="Brands[@indexBrand].BrandId" value="@node.BrandId" />
+                                                                    }
+                                                                </td>
+                                                                <td>@node.Title</td>
+                                                            </tr>
+                                                            indexBrand++;
+                                                        }
+                                                    }
+                                                </tbody>
+
+                                            </table>
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="card" id="IsCategory">
+                                <div class="card-header">
+                                    <span style="color:blue">Categories List</span>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="table-responsive">
+
+                                            <table id="zero_config3" class="table table-striped table-bordered" cellspacing="0" width="100%">
+                                                <thead>
+                                                    <tr>
+                                                        <th style="display:none">IsSelected</th>
+                                                        <th>
+                                                            <input type="checkbox" id="check-all" class="check-All"> All
+                                                        </th>
+                                                        <th>Category Name</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    @{
+                                                        int indexCategory = 0;
+                                                    }
+                                                    @if (Model.Categories != null)
+                                                    {
+                                                        foreach (var node in Model.Categories.OrderBy(s => s.IsSelected))
+                                                        {
+                                                            <tr>
+                                                                <td style="display:none">@node.IsSelected</td>
+                                                                <td>
+                                                                    @if (node.IsSelected == true)
+                                                                    {
+                                                                        <input type="checkbox" class="chkCheckBoxId select-@node.CategoryId" checked
+                                                                               name="Categories[@indexCategory].IsSelected"
+                                                                               id="select-@node.CategoryId"
+                                                                               value="true" @(node.IsSelected ? "checked" : "") />
+                                                                        <input type="hidden" name="Categories[@indexCategory].CategoryId" value="@node.CategoryId" />
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        <input type="checkbox" class="chkCheckBoxId select-@node.CategoryId"
+                                                                               name="Categories[@indexCategory].IsSelected"
+                                                                               id="select-@node.CategoryId"
+                                                                               value="true" @(node.IsSelected ? "checked" : "") />
+                                                                        <input type="hidden" name="Categories[@indexCategory].CategoryId" value="@node.CategoryId" />
+                                                                    }
+                                                                </td>
+                                                                <td>@node.CategoryName</td>
+
+                                                            </tr>
+                                                            indexCategory++;
+                                                        }
+                                                    }
+                                                </tbody>
+                                            </table>
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="card" id="IsProduct">
+                                <div class="card-header">
+                                    <span style="color:blue">Products List</span>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row">
+                                        <input hidden id="productIds" name="productIds" />
+                                        <div class="table-responsive">
+
+                                            <table id="zero_config4" class="table table-striped table-bordered" cellspacing="0" width="100%">
+                                                <thead>
+                                                    <tr>
+                                                        <th style="display:none">IsSelected</th>
+                                                        <th>
+                                                            <input type="checkbox" id="check-all" class="check-All"> All
+                                                        </th>
+                                                        <th>Product Name</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    @{
+                                                        int indexProduct = 0;
+                                                    }
+                                                    @if (Model.ProductList != null)
+                                                    {
+                                                        foreach (var node in Model.ProductList.OrderBy(s => s.IsSelected))
+                                                        {
+                                                            <tr>
+                                                                <td style="display:none">@node.IsSelected</td>
+                                                                <td>
+                                                                    @if (node.IsSelected == true)
+                                                                    {
+                                                                        <input type="checkbox" class="chkCheckBoxId select-@node.ProductId" checked
+                                                                               name="ProductList[@indexProduct].IsSelected"
+                                                                               id="select-@node.ProductId"
+                                                                               value="true" @(node.IsSelected ? "checked" : "") />
+                                                                        <input type="hidden" name="ProductList[@indexProduct].ProductId" value="@node.ProductId" />
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        <input type="checkbox" class="chkCheckBoxId select-@node.ProductId"
+                                                                               name="ProductList[@indexProduct].IsSelected"
+                                                                               id="select-@node.ProductId"
+                                                                               value="true" @(node.IsSelected ? "checked" : "") />
+                                                                        <input type="hidden" name="ProductList[@indexProduct].ProductId" value="@node.ProductId" />
+                                                                    }
+                                                                </td>
+                                                                <td>@node.ProductName</td>
+                                                            </tr>
+                                                            indexProduct++;
+                                                        }
+                                                    }
+                                                </tbody>
+                                            </table>
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="card" id="IsService">
+                                <div class="card-header">
+                                    <span style="color:blue">Services List</span>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="table-responsive">
+
+                                            <table id="zero_config5" class="table table-striped table-bordered" cellspacing="0" width="100%">
+                                                <thead>
+                                                    <tr>
+                                                        <th style="display:none">IsSelected</th>
+                                                        <th>
+                                                            <input type="checkbox" id="check-all" class="check-All"> All
+                                                        </th>
+                                                        <th>Service Name</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    @{
+                                                        int indexService = 0;
+                                                    }
+                                                    @if (Model.ServiceTypeList != null)
+                                                    {
+                                                        foreach (var node in Model.ServiceTypeList.OrderBy(s=>s.IsSelected))
+                                                        {
+                                                            <tr>
+                                                                <td style="display:none">@node.IsSelected</td>
+                                                                <td>
+                                                                    @if (node.IsSelected == true)
+                                                                    {
+                                                                        <input type="checkbox" class="chkCheckBoxId select-@node.ServiceTypeId" checked
+                                                                               name="ServiceTypeList[@indexService].IsSelected"
+                                                                               id="select-@node.ServiceTypeId"
+                                                                               value="true" @(node.IsSelected ? "checked" : "") />
+                                                                        <input type="hidden" name="ServiceTypeList[@indexService].ServiceTypeId" value="@node.ServiceTypeId" />
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        <input type="checkbox" class="chkCheckBoxId select-@node.ServiceTypeId"
+                                                                               name="ServiceTypeList[@indexService].IsSelected"
+                                                                               id="select-@node.ServiceTypeId"
+                                                                               value="true" @(node.IsSelected ? "checked" : "") />
+                                                                        <input type="hidden" name="ServiceTypeList[@indexService].ServiceTypeId" value="@node.ServiceTypeId" />
+                                                                    }
+                                                                </td>
+                                                                <td>@node.ServiceTypeName</td>
+
+                                                            </tr>
+                                                            indexService++;
+                                                        }
+                                                    }
+                                                </tbody>
+                                            </table>
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    <div class="card-body">
+                        <div class="form-group mb-0 text-right">
+
+                            <button type="submit" class="btn btn-@buttonColor waves-effect waves-light" id="submit-btn">@ButtonTitle</button>
+                            @if (ViewBag.FeatureCategoryKey != null)
+                            {
+                                <a href="@Url.RouteUrl("Admin_ServiceTypeList", new {fCatagoryKey = ViewBag.FeatureCategoryKey})" class="btn btn-dark waves-effect waves-light">
+                                    Close
+                                </a>
+                            }
+                            else
+                            {
+                                <a href="@Url.RouteUrl("Admin_ServiceTypeList")" class="btn btn-dark waves-effect waves-light">
+                                    Close
+                                </a>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+
+<script type="text/javascript">
+
+    $(document).ready(function () {
+        $("#IsBrand").hide()
+        $("#IsCategory").hide()
+        $("#IsProduct").hide()
+        $("#IsService").hide()
+
+        var productType = '@Model.IsProduct';
+        var brandType = '@Model.IsBrand';
+        var categoryType = '@Model.IsCategory';
+        var serviceType = '@Model.IsService';
+
+        var offerInfoId = '@Model.OfferInformationId';
+        if (parseInt(offerInfoId) <= 0) {
+            $("#option1").show()
+            $("#option2").show()
+            $("#option3").show()
+            $("#option4").show()
+        }
+        else {
+            if (brandType == "True") {
+                $("#option1").show()
+                $("#option2").hide()
+                $("#option3").hide()
+                $("#option4").hide()
+            }
+            if (categoryType == "True") {
+                $("#option1").hide()
+                $("#option2").show()
+                $("#option3").hide()
+                $("#option4").hide()
+            }
+            if (productType == "True") {
+                $("#option1").hide()
+                $("#option2").hide()
+                $("#option3").show()
+                $("#option4").hide()
+            }
+            if (serviceType == "True") {
+                $("#option1").hide()
+                $("#option2").hide()
+                $("#option3").hide()
+                $("#option4").show()
+            }
+        }
+
+
+
+        if (productType == "True" && brandType == "False" && categoryType == "False" && serviceType == "False") {
+            $("#IsBrand").hide()
+            $("#IsCategory").hide()
+            $("#IsProduct").show()
+            $("#IsService").hide()
+
+            $("#Brandchkhiden").val("false");
+            $("#Categorychkhiden").val("false");
+            $("#Productchkhiden").val("true");
+            $("#Servicechkhiden").val("false");
+        }
+        if (productType == "False" && brandType == "True" && categoryType == "False" && serviceType == "False") {
+            $("#IsBrand").show()
+            $("#IsCategory").hide()
+            $("#IsProduct").hide()
+            $("#IsService").hide()
+
+            $("#Brandchkhiden").val("true");
+            $("#Categorychkhiden").val("false");
+            $("#Productchkhiden").val("false");
+            $("#Servicechkhiden").val("false");
+        }
+        if (productType == "False" && brandType == "False" && categoryType == "True" && serviceType == "False") {
+            $("#IsBrand").hide()
+            $("#IsCategory").show()
+            $("#IsProduct").hide()
+            $("#IsService").hide()
+
+            $("#Brandchkhiden").val("false");
+            $("#Categorychkhiden").val("true");
+            $("#Productchkhiden").val("false");
+            $("#Servicechkhiden").val("false");
+        }
+        if (productType == "False" && brandType == "False" && categoryType == "False" && serviceType == "True") {
+            $("#IsBrand").hide()
+            $("#IsCategory").hide()
+            $("#IsProduct").hide()
+            $("#IsService").show()
+
+            $("#Brandchkhiden").val("false");
+            $("#Categorychkhiden").val("false");
+            $("#Productchkhiden").val("false");
+            $("#Servicechkhiden").val("true");
+        }
+    });
+
+    function checkCheckbox(id) {
+        //const checkbox = document.getElementById('myCheckbox');
+        //checkbox.checked = true;
+
+        if (id == 1) {
+            $("#IsBrand").show()
+            $("#IsCategory").hide()
+            $("#IsProduct").hide()
+            $("#IsService").hide()
+            //alert($("#Brandchkhiden").val());
+            $("#Brandchkhiden").val("true");
+            $("#Categorychkhiden").val("false");
+            $("#Productchkhiden").val("false");
+            $("#Servicechkhiden").val("false");
+
+        }
+        if (id == 2) {
+            $("#IsBrand").hide()
+            $("#IsCategory").show()
+            $("#IsProduct").hide()
+            $("#IsService").hide()
+
+            $("#Brandchkhiden").val("false");
+            $("#Categorychkhiden").val("true");
+            $("#Productchkhiden").val("false");
+            $("#Servicechkhiden").val("false");
+        }
+        if (id == 3) {
+            $("#IsBrand").hide()
+            $("#IsCategory").hide()
+            $("#IsProduct").show()
+            $("#IsService").hide()
+
+            $("#Brandchkhiden").val("false");
+            $("#Categorychkhiden").val("false");
+            $("#Productchkhiden").val("true");
+            $("#Servicechkhiden").val("false");
+        }
+        if (id == 4) {
+            $("#IsBrand").hide()
+            $("#IsCategory").hide()
+            $("#IsProduct").hide()
+            $("#IsService").show()
+
+            $("#Brandchkhiden").val("false");
+            $("#Categorychkhiden").val("false");
+            $("#Productchkhiden").val("false");
+            $("#Servicechkhiden").val("true");
+        }
+    }
+
+    // the selector will match all input controls of type :checkbox
+    // and attach a click event handler
+    $("input:checkbox").on('click', function () {
+        // in the handler, 'this' refers to the box clicked on
+        var $box = $(this);
+        if ($box.is(":checked")) {
+            // the name of the box is retrieved using the .attr() method
+            // as it is assumed and expected to be immutable
+            var group = "input:checkbox[id='" + $box.attr("id") + "']";
+            // the checked state of the group/box on the other hand will change
+            // and the current value is retrieved using .prop() method
+            $(group).prop("checked", false);
+            $box.prop("checked", true);
+        } else {
+            $box.prop("checked", false);
+        }
+    });
+
+    $(document).ready(function () {
+        $('.check-All').on('change', function () {
+            var checkedAll = $('.chkCheckBoxId');
+            if (this.checked) {
+                checkedAll.each(function (i, item) {
+                    $('.select-' + item.value).prop('checked', true);
+                });
+            }
+            else {
+                checkedAll.each(function (i, item) {
+                    $('.select-' + item.value).prop('checked', false);
+                });
+            }
+        });
+
+
+    });
+
+    $('#zero_config_1').DataTable();
+    $('#zero_config_2').DataTable();
+    $('#zero_config_3').DataTable();
+    $('#zero_config_4').DataTable();
+    $('#zero_config_5').DataTable();
+</script>
+
+
+

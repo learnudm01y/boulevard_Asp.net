@@ -1,0 +1,122 @@
+﻿@model Boulevard.Models.City
+@{
+    ViewBag.Title = "Create Or Update";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+
+@using (Html.BeginForm("CreateAndUpdate", "City", FormMethod.Post, new { enctype = "multipart/form-data", @id = "myForm" }))
+{
+
+
+    <!-- Container fluid  -->
+    <!-- ============================================================== -->
+    <div class="page-wrapper">
+        <div class="container-fluid">
+            <!-- ============================================================== -->
+            <!-- Bread crumb and right sidebar toggle -->
+            <!-- ============================================================== -->
+
+            <div class="row page-titles">
+                <div class="col-md-5 col-12 align-self-center">
+                    <h3 class="text-themecolor mb-0">City</h3>
+                </div>
+                <div class="col-md-7 col-12 align-self-center d-none d-md-block">
+                    <ol class="breadcrumb mb-0 p-0 bg-transparent float-right">
+                        <li class="breadcrumb-item active"><a href="@Url.RouteUrl("Admin_City_Create_And_Update")">City</a></li>
+                        @if (Model.CityId == 0)
+                        {
+                            <li class="breadcrumb-item active">Create City</li>
+                        }
+                        else
+                        {
+                            <li class="breadcrumb-item active">Update City</li>
+                        }
+                    </ol>
+                </div>
+            </div>
+            <!-- ============================================================== -->
+            <!-- End Bread crumb and right sidebar toggle -->
+            <!-- ============================================================== -->
+            <!--order list-->
+            <form>
+                <div class="card">
+                    <div class="card-header">
+                        <!--<h4 class="">General</h4>-->
+                        City Information
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <input type="hidden" name="CityId" class="form-control" value="@Model.CityId">
+                            <input type="hidden" name="CreateDate" class="form-control" value="@Model.CreateDate">
+                            <input type="hidden" name="CreateBy" class="form-control" value="@Model.CreateBy">
+                            <input type="hidden" name="CityKey" class="form-control" value="@Model.CityKey">
+
+
+                            <div class="col-md-4 col-sm-4">
+                                <div class="form-group">
+                                    <label>Country Name</label>
+                                    @Html.DropDownListFor(model => model.CountryId, (List<SelectListItem>)ViewBag.Country, new { @class = "form-control select-2", @id = "CountryId" })
+                                </div>
+                            </div>
+
+                            <div class="col-md-4 col-sm-4">
+                                <div class="form-group">
+                                    <label>City Name</label>
+                                    <input type="text" name="CityName" required class="form-control" value="@Model.CityName">
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-4 col-sm-4">
+                                <div class="form-group">
+                                    <label>City Name (Arabic)</label>
+                                    <input type="text" name="CityNameAr" required class="form-control" dir="rtl" value="@Model.CityNameAr">
+                                </div>
+                            </div>
+
+                            <div class="col-md-4 col-sm-4">
+                                <div class="form-group">
+                                    <label>Status</label>
+                                    <div class="switch">
+                                        <label>
+                                            InActive
+                                            @if (Model.Status == "Active")
+                                            {
+                                                <input type="checkbox" checked="checked" name="Status" value="Active"><span class="lever"></span>
+                                            }
+                                            else
+                                            {
+                                                <input type="checkbox" name="Status" value="Active"><span class="lever"></span>
+                                            }
+                                            <input name="Status" type="hidden" value="Deleted" />
+                                            Active
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                        <div class="card-body">
+                            <div class="form-group mb-0 text-right">
+                                @if (Model.CityId > 0)
+                                {
+                                    <button type="submit" class="btn btn-warning waves-effect waves-light" id="submit-btn">Reset</button>
+                                }
+                                else
+                                {
+                                    <button type="submit" class="btn btn-success waves-effect waves-light" id="submit-btn">Save</button>
+                                }
+                                <a href="@Url.RouteUrl("Admin_Country")" class="btn btn-dark waves-effect waves-light">
+                                    Close
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+            <!-- ============================================================== -->
+        </div>
+    </div>
+    <!-- ============================================================== -->
+    <!-- End Container fluid  -->
+}
+

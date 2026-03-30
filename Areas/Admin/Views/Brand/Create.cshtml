@@ -1,0 +1,206 @@
+﻿@model Boulevard.Models.Brand
+@{
+    ViewBag.Title = "Create";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+    string activeChk = "";
+    string PageTitle = "", ButtonTitle = "";
+    string buttonColor = "";
+    if (Model.BrandKey != Guid.Empty)
+    {
+        PageTitle = "Edit";
+        ButtonTitle = "Reset";
+        buttonColor = "warning";
+    }
+    else
+    {
+        PageTitle = "Add";
+        ButtonTitle = "Save";
+        buttonColor = "success";
+    }
+}
+
+
+
+@using (Html.BeginForm("Create", "Brand", FormMethod.Post, new { enctype = "multipart/form-data", @id = "myForm" }))
+{
+
+
+    <div class="page-wrapper">
+        <div class="container-fluid">
+            <div class="row page-titles">
+                <div class="col-md-5 col-12 align-self-center">
+                    @if (ViewBag.FeatureCategoryKey != null)
+                    {
+                        <h3 class="text-themecolor mb-0">@ViewBag.FCatagoryName Brand</h3>
+                    }
+                    else
+                    {
+                        <h3 class="text-themecolor mb-0">Brand</h3>
+                    }
+                </div>
+                <div class="col-md-7 col-12 align-self-center d-none d-md-block">
+                    <ol class="breadcrumb mb-0 p-0 bg-transparent float-right">
+                    </ol>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-body">
+
+                    <div class="row align-items-center mb-3">
+                        <div class="col-md-5 col-12 align-self-center">
+                            <h3>@PageTitle @ViewBag.FCatagoryName</h3>
+                        </div>
+                        <div class="col-md-7 col-12 align-self-center d-none d-md-block">
+                            <ol class="breadcrumb mb-0 p-0 bg-transparent float-right">
+                                @if (ViewBag.FeatureCategoryKey != null)
+                                {
+                                    <li class="breadcrumb-item active"><a href="@Url.RouteUrl("Admin_BrandList", new {fCatagoryKey = ViewBag.FeatureCategoryKey})">Vehical Brand</a></li>
+                                }
+                                else
+                                {
+                                    <li class="breadcrumb-item active"><a href="@Url.RouteUrl("Admin_BrandList")">Brand</a></li>
+                                }
+                                <li class="breadcrumb-item active">Create Or Edit</li>
+                            </ol>
+                        </div>
+
+                    </div>
+                    <hr>
+
+                    <div class="card-body">
+                        <div class="row">
+                            <input type="hidden" name="BrandId" class="form-control" value="@Model.BrandId">
+                            <input type="hidden" name="BrandKey" class="form-control" value="@Model.BrandKey">
+                            <input type="hidden" name="CreateBy" class="form-control" value="@Model.CreateBy">
+                            <input type="hidden" name="CreateDate" class="form-control" value="@Model.CreateDate">
+                            <input type="hidden" name="Image" class="form-control" value="@Model.Image">
+                            <input type="hidden" name="FeatureCategoryKey" class="form-control" value="@ViewBag.FeatureCategoryKey">
+                            <div class="col-lg-6 col-md-6 col-sm-12">
+                                <div class="form-group">
+                                    <label>Title</label>
+                                    @Html.TextBoxFor(m => m.Title, new { @class = "form-control", required = "required" })
+                                </div>
+                            </div>
+                            <div class="col-lg-6 col-md-6 col-sm-12">
+                                <div class="form-group">
+                                    <label>Title (Arabic)</label>
+                                    @Html.TextBoxFor(m => m.TitleAr, new { @class = "form-control", required = "required", dir = "rtl" })
+                                </div>
+                            </div>
+                            @if (ViewBag.FeatureCategoryKey == null)
+                            {
+                                <div class="col-lg-6 col-md-6 col-sm-12">
+                                    <div class="form-group">
+                                        <label>Feature Category</label>
+                                        @Html.DropDownList("FeatureCategoryId", (IEnumerable<SelectListItem>)ViewBag.featureCategory, "Choose Category", new { @class = "form-control", required = "required" })
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                        <div class="row">
+                            @*<div class="col-lg-12 col-md-12 col-sm-12">
+                                    <div class="form-group">
+                                        <label>Details</label>
+                                        @Html.TextAreaFor(m => m.Details, new { @class = "form-control", required = "required" })
+                                    </div>
+                                </div>*@
+                            <div class="col-md-12">
+                                <label>Details</label>
+                                <textarea class="form-control description" rows="10" id="textarea" placeholder="Enter ..." name="Details">@Model.Details</textarea>
+                            </div>
+                            <div class="col-md-12" style="padding-top:20px;">
+                                <label>Details(Arabic)</label>
+                                <textarea class="form-control description" rows="10" id="textarea" placeholder="Enter ..." name="DetailsAr">@Model.DetailsAr</textarea>
+                            </div>
+
+                        </div>
+                        <div class="row">
+                            <div class="col-lg-4 col-md-6 col-sm-12">
+                                <div class="form-group">
+                                    <label>Image</label>
+                                    <input type="file" name="Image" accept="image/png, image/jpeg" class="form-control dropify" data-default-file="../../@Model.Image">
+                                </div>
+                            </div>
+                            <div class="col-lg-4 col-md-6 col-sm-12">
+                                <div class="form-group">
+                                    <label>Medium Image</label>
+                                    <input type="file" name="mediumImage" accept="image/png, image/jpeg" class="form-control dropify" data-default-file="../../@Model.MediumImage">
+                                </div>
+                            </div>
+                            <div class="col-lg-4 col-md-6 col-sm-12">
+                                <div class="form-group">
+                                    <label>Large Image</label>
+                                    <input type="file" name="largeImage" accept="image/png, image/jpeg" class="form-control dropify" data-default-file="../../@Model.LargeImage">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-4 col-sm-4">
+                                <div class="form-group">
+                                    <label>Is Feature</label>
+                                    <div class="switch">
+                                        <label>
+                                            YES
+                                            @if (Model.IsFeature == true)
+                                            {
+                                                <input type="checkbox" checked="checked" name="IsFeature" value="true"><span class="lever"></span>
+                                            }
+                                            else
+                                            {
+                                                <input type="checkbox" name="IsFeature" value="true"><span class="lever"></span>
+                                            }
+                                            <input name="IsFeature" type="hidden" value="false" />
+                                            NO
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4 col-sm-4">
+                                <div class="form-group">
+                                    <label>Is Trending</label>
+                                    <div class="switch">
+                                        <label>
+                                            YES
+                                            @if (Model.IsTrenbding == true)
+                                            {
+                                                <input type="checkbox" checked="checked" name="IsTrenbding" value="true"><span class="lever"></span>
+                                            }
+                                            else
+                                            {
+                                                <input type="checkbox" name="IsTrenbding" value="true"><span class="lever"></span>
+                                            }
+                                            <input name="IsTrenbding" type="hidden" value="false" />
+                                            NO
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div class="form-group mb-0 text-right">
+
+                                <button type="submit" class="btn btn-@buttonColor waves-effect waves-light" id="submit-btn">@ButtonTitle</button>
+                                @if (ViewBag.FeatureCategoryKey != null)
+                                {
+                                    <a href="@Url.RouteUrl("Admin_BrandList", new {fCatagoryKey = ViewBag.FeatureCategoryKey})" class="btn btn-dark waves-effect waves-light">
+                                        Close
+                                    </a>
+                                }
+                                else
+                                {
+                                    <a href="@Url.RouteUrl("Admin_BrandList")" class="btn btn-dark waves-effect waves-light">
+                                        Close
+                                    </a>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+}
+
+

@@ -1,0 +1,383 @@
+﻿@model Boulevard.Models.Category
+@{
+    ViewBag.Title = "Create";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+    string parentCheck = "";
+    string childCheck = "";
+    string grandChildCheck = "";
+}
+
+@using (Html.BeginForm("Create", "Category", FormMethod.Post, new { enctype = "multipart/form-data", @id = "myForm" }))
+{
+    <input type="hidden" name="CategoryId" class="form-control" value="@Model.CategoryId">
+    <input type="hidden" name="CategoryKey" class="form-control" value="@Model.CategoryKey">
+    <input type="hidden" name="CreateBy" class="form-control" value="@Model.CreateBy">
+    <input type="hidden" name="CreateDate" class="form-control" value="@Model.CreateDate">
+    <input type="hidden" name="Image" class="form-control" value="@Model.Image">
+    <input type="hidden" name="Image" class="form-control" value="@Model.Icon">
+    <input type="hidden" name="ParentId" id="ParentId" value="@Model.ParentId" />
+    <input type="hidden" name="FeatureCategoryKey" id="FeatureCategoryKey" value="@ViewBag.FeatureCategoryKey" />
+
+    <div class="page-wrapper">
+        <div class="container-fluid">
+            <div class="row page-titles">
+                <div class="col-md-5 col-12 align-self-center">
+                    @if (ViewBag.FeatureCategoryKey != null)
+                    {
+                        if (ViewBag.FeatureCategoryKey == "f4309df5-9121-41ad-831a-994c46b62766")
+                        {
+                            <h3 class="text-themecolor mb-0">@ViewBag.FCatagoryName Agencies</h3>
+                        }
+                        else
+                        {
+                            <h3 class="text-themecolor mb-0">@ViewBag.FCatagoryName Category</h3>
+                        }
+                    }
+                    else
+                    {
+                        <h3 class="text-themecolor mb-0">Category</h3>
+                    }
+                </div>
+                <div class="col-md-7 col-12 align-self-center d-none d-md-block">
+                    <ol class="breadcrumb mb-0 p-0 bg-transparent float-right">
+                    </ol>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-body">
+
+                    <div class="row align-items-center mb-3">
+                        <div class="col-md-5 col-12 align-self-center">
+                            @if (ViewBag.FeatureCategoryKey != null)
+                            {
+                                <h3>Add Or Edit @ViewBag.FCatagoryName</h3>
+                            }
+                            else
+                            {
+                                <h3>Add Or Edit Category</h3>
+                            }
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-xl-4 col-lg-4 col-md-5 col-sm-12 col-12">
+
+                                <div class="contact-list">
+                                    <div class="contact_list_box">
+                                        <div class="contact_search_list entity-form-box">
+                                            <div class="form-group mb-4">
+                                                <div class="category-list tree--js category-left-sidebar">
+                                                    <div class="search-jstree">
+                                                        <div class="input-group p-0">
+                                                            <button type="submit"
+                                                                    class="btn input-group-append table-btn h-auto px-3 d-flex border-right justify-content-center align-items-center">
+                                                                <i class="ti-search"></i>
+                                                            </button>
+                                                            <input type="text" id="jstree-q" class="form-control search-form-control input-group-text px-0" placeholder="Search Store..." aria-describedby="input-group-append">
+                                                        </div>
+                                                    </div>
+                                                    <div class="" id="jstree">
+                                                        <ul>
+                                                            <li class="item active" data-jstree='{"opened": true,"icon":"fas fa-folder-open"}'>
+                                                                <a href="javascript:;" class="menu-link" onclick="TreeClick('')">
+                                                                    Default <span class="">(@Model.CategoryTree.ToList().Count)</span>
+                                                                </a>
+                                                                <ul class="inner-menu">
+                                                                    @foreach (var category in Model.CategoryTree)
+                                                                    {
+                                                                        parentCheck = "";
+
+                                                                        if (category.CategoryId == ViewBag.categoryId)
+                                                                        {
+                                                                            parentCheck = "jstree-clicked";
+                                                                        }
+                                                                        if (category.ChildCategories.Count > 0)
+                                                                        {
+
+                                                                            <li class="item text-truncate" data-jstree='{"opened":true,"icon":"fas fa-folder-open"}'>
+                                                                                <a href="javascript:;" class="menu-link @parentCheck" onclick="TreeClick('@category.CategoryKey')">
+                                                                                    @category.CategoryName <span class="">(@category.ChildCategories.Count)</span>
+                                                                                </a>
+                                                                                <ul class="inner-menu">
+
+                                                                                    @foreach (var childCategory in category.ChildCategories)
+                                                                                    {
+                                                                                        childCheck = "";
+
+                                                                                        if (childCategory.CategoryId == ViewBag.categoryId)
+                                                                                        {
+                                                                                            childCheck = "jstree-clicked";
+                                                                                        }
+                                                                                        if (childCategory.ChildCategories.Count > 0)
+                                                                                        {
+
+                                                                                            <li class="item" data-jstree='{"opened":true,"icon":"fas fa-folder-open"}'>
+                                                                                                <a href="javascript:;" class="menu-link @childCheck" onclick="TreeClick('@childCategory.CategoryKey')">
+                                                                                                    @childCategory.CategoryName <span class="">(@childCategory.ChildCategories.Count)</span>
+                                                                                                </a>
+                                                                                                <ul class="inner-menu">
+                                                                                                    @foreach (var grandchild in childCategory.ChildCategories)
+                                                                                                    {
+                                                                                                        grandChildCheck = "";
+
+                                                                                                        if (grandchild.CategoryId == ViewBag.categoryId)
+                                                                                                        {
+                                                                                                            grandChildCheck = "jstree-clicked";
+                                                                                                        }
+                                                                                                        <li class="item text-truncate" data-jstree='{"icon":"bi bi-chevron-right"}'>
+                                                                                                            <a href="javascript:;" class="menu-link @grandChildCheck" onclick="TreeClick('@grandchild.CategoryKey')">
+                                                                                                                @grandchild.CategoryName<span class=""></span>
+                                                                                                            </a>
+                                                                                                        </li>
+                                                                                                    }
+                                                                                                </ul>
+                                                                                            </li>
+                                                                                        }
+                                                                                        else
+                                                                                        {
+                                                                                            <li class="item" data-jstree='{"icon":"bi bi-chevron-right"}'>
+                                                                                                <a href="javascript:;" onclick="TreeClick('@childCategory.CategoryKey')" class="menu-link @childCheck">
+                                                                                                    @childCategory.CategoryName<span class=""></span>
+                                                                                                </a>
+                                                                                            </li>
+                                                                                        }
+                                                                                    }
+                                                                                </ul>
+                                                                            </li>
+                                                                        }
+                                                                        else
+                                                                        {
+                                                                            if (category.CategoryId == ViewBag.categoryId)
+                                                                            {
+                                                                                parentCheck = "jstree-clicked";
+                                                                            }
+                                                                            <li class="item" data-jstree='{"opened":true,"icon":"fas fa-folder-open"}'>
+                                                                                <a href="javascript:;" onclick="TreeClick('@category.CategoryKey')" class="menu-link @parentCheck">
+                                                                                    <i class="mdi mdi-chevron-right"></i>
+                                                                                    @category.CategoryName<span class=""></span>
+                                                                                </a>
+                                                                            </li>
+                                                                        }
+                                                                    }
+                                                                </ul>
+
+                                                            </li>
+                                                        </ul>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-xl-8 col-lg-8 col-md-7 col-sm-12 col-12">
+                                <div class="right-box-content">
+                                    @if (Model.CategoryKey != null && Model.CategoryKey != Guid.Empty)
+                                    {
+                                        <div class="col-12">
+                                            <div class="form-group text-end">
+
+                                                <a class="btn btn-success" onclick="AddChild()">Add Child</a>
+                                                <a class="btn btn-danger" onclick="DeleteChild()">Delete</a>
+                                            </div>
+                                        </div>
+                                    }
+                                    <div class="tenant-list d-block box-of-supplier">
+                                        <div class="tenant-filter-box tab-pane">
+
+                                            @using (Html.BeginForm("Create", "Category", FormMethod.Post, new { enctype = "multipart/form-data", @id = "main-form" }))
+                                            {
+                                                <div class="row">
+                                                    <!-- Column 1 -->
+                                                    <div class="col-12 col-md-6 col-lg-6">
+                                                        <div>
+                                                            <label class="form-label">Name</label>
+                                                            @Html.TextBoxFor(m => m.CategoryName, new { @class = "form-control", required = "required" })
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-12 col-md-6 col-lg-6">
+                                                        <div>
+                                                            <label class="form-label">Name (Arabic)</label>
+                                                            @Html.TextBoxFor(m => m.CategoryNameAr, new { @class = "form-control", required = "required", dir = "rtl" })
+                                                        </div>
+                                                    </div>
+                                                    @if (ViewBag.FeatureCategoryKey == null)
+                                                    {
+                                                        <div class="col-12 col-md-6 col-lg-6">
+                                                            <div>
+                                                                <label>Feature Category</label>
+                                                                @Html.DropDownList("FeatureCategoryId", (IEnumerable<SelectListItem>)ViewBag.featureCategory, "Choose Category", new { @class = "form-control", required = "required" })
+                                                            </div>
+                                                        </div>
+                                                    }
+                                                    <div class="col-12 col-md-6 col-lg-6">
+                                                        <div>
+                                                            <label>Details</label>
+                                                            @Html.TextAreaFor(m => m.CategoryDescription, new { @class = "form-control", required = "required" })
+
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-12 col-md-6 col-lg-6">
+                                                        <div>
+                                                            <label>Details (Arabic)</label>
+                                                            @Html.TextAreaFor(m => m.CategoryDescriptionAr, new { @class = "form-control", required = "required", dir = "rtl" })
+
+                                                        </div>
+                                                    </div>
+                                                    @*<div class="col-md-12">
+                    <label>Category Description</label>
+                    <textarea class="form-control description" rows="10" id="textarea" placeholder="Enter ..." name="CategoryDescription">@Model.CategoryDescription</textarea>
+                </div>*@
+
+                                                    <div class="col-12 col-md-6 col-lg-6">
+                                                        <div>
+                                                            <label>Image</label>
+                                                            <input type="file" name="Image" accept="image/png, image/jpeg" class="form-control dropify" data-default-file="../../@Model.Image">
+
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="col-12 col-md-6 col-lg-6">
+                                                        <div>
+                                                            <label>Icon</label>
+                                                            <input type="file" name="Icon" accept="image/png, image/jpeg" class="form-control dropify" data-default-file="../../@Model.Icon">
+
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            }
+
+                                            <div class="card-body mt-4">
+                                                <div class="form-group mb-0 text-right">
+
+                                                    <button type="submit" class="btn btn-success waves-effect waves-light" id="submit-btn">Save</button>
+                                                    @*@if (ViewBag.FeatureCategoryKey != null)
+                {
+                    <a href="@Url.RouteUrl("Admin_CategoryList", new { fCatagoryKey = Model.FeatureCategoryKey})" class="btn btn-dark waves-effect waves-light">
+                        Close
+                    </a>
+                }
+                else
+                {
+                    <a href="@Url.RouteUrl("Admin_CategoryList")" class="btn btn-dark waves-effect waves-light">
+                        Close
+                    </a>
+                }*@
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!--<div class="card-body">
+                            <div class="form-group mb-0 text-right">
+
+                                <button type="submit" class="btn btn-success waves-effect waves-light" id="submit-btn">Save</button>-->
+                                @*@if (ViewBag.FeatureCategoryKey != null)
+                                    {
+                                        <a href="@Url.RouteUrl("Admin_CategoryList", new { fCatagoryKey = Model.FeatureCategoryKey})" class="btn btn-dark waves-effect waves-light">
+                                            Close
+                                        </a>
+                                    }
+                                    else
+                                    {
+                                        <a href="@Url.RouteUrl("Admin_CategoryList")" class="btn btn-dark waves-effect waves-light">
+                                            Close
+                                        </a>
+                                    }*@
+                            <!--</div>
+                        </div>-->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+}
+
+@*<script src="~/assets/libs/jquery/dist/jquery.min.js"></script>
+    <script src="~/assets/libs/jquery-steps/build/jquery.steps.min.js"></script>
+    <script src="~/assets/libs/jquery-validation/dist/jquery.validate.min.js"></script>*@
+<script>
+    var url = "@Url.Action("Index", "Category")";
+    @*var fKey = "@ViewBag.FeatureCategoryKey"*@
+    function TreeClick(key) {
+        if (key == "") {
+            window.location = url;
+        }
+        else {
+            window.location = url + "?key=" + key + "&fCatagoryKey=@ViewBag.FeatureCategoryKey";
+        }
+
+    }
+
+    function AddChild() {
+        if ('@Model.CategoryKey' == "") {
+            window.location = url;
+        }
+        else {
+            debugger
+            var urlString = url + "?key=" + '@Model.CategoryKey' + "&isChild=true" + "&fCatagoryKey=@ViewBag.FeatureCategoryKey";
+            window.location = urlString;
+        }
+    }
+
+    function DeleteChild() {
+        if ('@Model.CategoryKey' == "") {
+            window.location = url;
+        }
+        else {
+            debugger
+            var urlString = url + "?key=" + '@Model.CategoryKey' + "&isChild=true" + "&deleteRequest=true" + "&fCatagoryKey=@ViewBag.FeatureCategoryKey";
+            window.location = urlString;
+        }
+    }
+
+
+
+
+</script>
+<script>
+    $(document).ready(function () {
+        $("#jstree-q").on("keyup", function () {
+            var value = $(this).val().toLowerCase();
+            $("#jstree li").filter(function () {
+                $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+            });
+        });
+    });
+</script>
+<script>
+    $(function () {
+        $("#jstree").jstree({
+            "checkbox": {
+                "keep_selected_style": false
+            },
+            "plugins": ["dnd", "search", "checkbox"]
+        });
+        var to = false;
+        $('#jstree-q').keyup(function () {
+            if (to) { clearTimeout(to); }
+            to = setTimeout(function () {
+                var v = $('#jstree-q').val();
+                $('#jstree').jstree(true).search(v);
+            }, 250);
+        });
+    });
+</script>
+
+
+@*<script src="https://cdn.tiny.cloud/1/xahfqqakox6xy2agqghyqj46a1hwfjdiuz4a5ixr5j00m126/tinymce/7/tinymce.min.js"
+    referrerpolicy="origin"
+    crossorigin="anonymous"></script>*@
+
+
+
+
+

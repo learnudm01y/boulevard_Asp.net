@@ -1,0 +1,162 @@
+﻿@model Boulevard.Models.FaqService
+@{
+    ViewBag.Title = "Create Or Update";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+
+    var fCategory = ViewBag.FeatureCategoryKey;
+}
+
+@using (Html.BeginForm("CreateAndUpdate", "FaqService", FormMethod.Post, new { enctype = "multipart/form-data", @id = "myForm" }))
+{
+
+
+    <!-- Container fluid  -->
+    <!-- ============================================================== -->
+    <div class="page-wrapper">
+        <div class="container-fluid">
+            <!-- ============================================================== -->
+            <!-- Bread crumb and right sidebar toggle -->
+            <!-- ============================================================== -->
+
+            <div class="row page-titles">
+                <div class="col-md-5 col-12 align-self-center">
+                    <h3 class="text-themecolor mb-0">@ViewBag.FCatagoryName Faq Service</h3>
+                </div>
+                <div class="col-md-7 col-12 align-self-center d-none d-md-block">
+                    <ol class="breadcrumb mb-0 p-0 bg-transparent float-right">
+                        <li class="breadcrumb-item active"><a href="@Url.RouteUrl("Admin_FaqService_List")">@ViewBag.FCatagoryName Faq Service</a></li>
+                        @if (Model.FaqServiceId == 0)
+                        {
+                            <li class="breadcrumb-item active">Add @ViewBag.FCatagoryName Faq Service</li>
+                        }
+                        else
+                        {
+                            <li class="breadcrumb-item active">Edit @ViewBag.FCatagoryName Faq Service</li>
+                        }
+                    </ol>
+                </div>
+            </div>
+            <!-- ============================================================== -->
+            <!-- End Bread crumb and right sidebar toggle -->
+            <!-- ============================================================== -->
+            <!--order list-->
+            <form>
+                <div class="card">
+                    <div class="card-header">
+                        <!--<h4 class="">General</h4>-->
+                        @ViewBag.FCatagoryName Faq Service Information
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <input type="hidden" name="FaqServiceId" class="form-control" value="@Model.FaqServiceId">
+                            <input type="hidden" name="CreateDate" class="form-control" value="@Model.CreateDate">
+                            <input type="hidden" name="CreateBy" class="form-control" value="@Model.CreateBy">
+                            <input type="hidden" name="FAQKey" class="form-control" value="@Model.FAQKey">
+                            <input type="hidden" name="FeatureCategoryKey" class="form-control" value="@ViewBag.FeatureCategoryKey">
+
+                            <div class="col-lg-6 col-md-6 col-sm-12">
+                                <div class="form-group">
+                                    <label>Faq Title</label>
+                                    <input type="text" name="FaqTitle" required class="form-control" value="@Model.FaqTitle">
+                                </div>
+                            </div>
+                            
+                            <div class="col-lg-6 col-md-6 col-sm-12">
+                                <div class="form-group">
+                                    <label>Faq Title (Arabic)</label>
+                                    <input type="text" name="FaqTitleAr" dir="rtl" required class="form-control" value="@Model.FaqTitleAr">
+                                </div>
+                            </div>
+
+                            @if (!string.IsNullOrEmpty(ViewBag.FeatureCategoryKey))
+                            {
+                                <div class="col-lg-6 col-md-6 col-sm-12">
+                                    <div class="form-group">
+                                        <label>Service</label>
+                                        @Html.DropDownList("ServiceId", (IEnumerable<SelectListItem>)ViewBag.service, "Choose Service", new { @class = "form-control", required = "required" })
+                                    </div>
+                                </div>
+                            }
+
+                            <div class="col-md-12">
+                                <label>Faq Description</label>
+                                <textarea class="form-control" rows="10" id="textarea" placeholder="Enter ..." name="FaqDescription">@Model.FaqDescription</textarea>
+                            </div>
+                            
+                            <div class="col-md-12">
+                                <label>Faq Description (Arabic)</label>
+                                <textarea class="form-control" rows="10" id="textarea" dir="rtl" placeholder="Enter ..." name="FaqDescriptionAr">@Model.FaqDescriptionAr</textarea>
+                            </div>
+
+                            <div class="col-md-12" style="margin-top:15px">
+
+                            </div>
+
+                            @*<div class="col-md-4 col-sm-4">
+                                    <div class="form-group">
+                                        <label>Is Active</label>
+                                        <div class="switch">
+                                            <label>
+                                                NO
+                                                @if (Model.IsActive == true)
+                                                {
+                                                    <input type="checkbox" checked="checked" name="IsActive" value="True"><span class="lever"></span>
+                                                }
+                                                else
+                                                {
+                                                    <input type="checkbox" name="IsActive" value="True"><span class="lever"></span>
+                                                }
+                                                <input name="IsActive" type="hidden" value="False" />
+                                                YES
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>*@
+
+                            <div class="col-md-4 col-sm-4">
+                                <div class="form-group">
+                                    <label>Status</label>
+                                    <div class="switch">
+                                        <label>
+                                            InActive
+                                            @if (Model.Status == "Active")
+                                            {
+                                                <input type="checkbox" checked="checked" name="Status" value="Active"><span class="lever"></span>
+                                            }
+                                            else
+                                            {
+                                                <input type="checkbox" name="Status" value="Active"><span class="lever"></span>
+                                            }
+                                            <input name="Status" type="hidden" value="InActive" />
+                                            Active
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                        <div class="card-body">
+                            <div class="form-group mb-0 text-right">
+                                @if (Model.FaqServiceId > 0)
+                                {
+                                    <button type="submit" class="btn btn-warning waves-effect waves-light" id="submit-btn">Reset</button>
+                                }
+                                else
+                                {
+                                    <button type="submit" class="btn btn-success waves-effect waves-light" id="submit-btn">Save</button>
+                                }
+                                <a href="@Url.RouteUrl("Admin_FaqService_List")" class="btn btn-dark waves-effect waves-light">
+                                    Close
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+            <!-- ============================================================== -->
+        </div>
+    </div>
+    <!-- ============================================================== -->
+    <!-- End Container fluid  -->
+}
+

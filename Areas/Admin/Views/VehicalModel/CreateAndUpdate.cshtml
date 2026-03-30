@@ -1,0 +1,146 @@
+﻿@model Boulevard.Models.VehicalModel
+@{
+    ViewBag.Title = "Create Or Update";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+
+@using (Html.BeginForm("CreateAndUpdate", "VehicalModel", FormMethod.Post, new { enctype = "multipart/form-data", @id = "myForm" }))
+{
+
+
+    <!-- Container fluid  -->
+    <!-- ============================================================== -->
+    <div class="page-wrapper">
+        <div class="container-fluid">
+            <!-- ============================================================== -->
+            <!-- Bread crumb and right sidebar toggle -->
+            <!-- ============================================================== -->
+            @if (Model.VehicalModelId > 0)
+            {
+                <div class="row page-titles">
+                    <div class="col-md-5 col-12 align-self-center">
+                        <h3 class="text-themecolor mb-0">Update Vehical Model</h3>
+                    </div>
+                    <div class="col-md-7 col-12 align-self-center d-none d-md-block">
+                        <ol class="breadcrumb mb-0 p-0 bg-transparent float-right">
+                            <li class="breadcrumb-item active"><a href="@Url.RouteUrl("Admin_VehicalModelList")">Vehical Model</a></li>
+                            <li class="breadcrumb-item active">Update Vehical Model</li>
+                        </ol>
+                    </div>
+                </div>
+            }
+            else
+            {
+                <div class="row page-titles">
+                    <div class="col-md-5 col-12 align-self-center">
+                        <h3 class="text-themecolor mb-0">Create Vehical Model</h3>
+                    </div>
+                    <div class="col-md-7 col-12 align-self-center d-none d-md-block">
+                        <ol class="breadcrumb mb-0 p-0 bg-transparent float-right">
+                            <li class="breadcrumb-item active"><a href="@Url.RouteUrl("Admin_VehicalModelList")">Vehical Model</a></li>
+                            <li class="breadcrumb-item active">Create Vehical Model</li>
+                        </ol>
+                    </div>
+                </div>
+            }
+
+            <!-- ============================================================== -->
+            <!-- End Bread crumb and right sidebar toggle -->
+            <!-- ============================================================== -->
+            <!--order list-->
+            <form>
+                <div class="card">
+                    <div class="card-header">
+                        <!--<h4 class="">General</h4>-->
+                        Vehical Model Information
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <input type="hidden" name="VehicalModelId" class="form-control" value="@Model.VehicalModelId">
+                            <input type="hidden" name="CreateDate" class="form-control" value="@Model.CreateDate">
+                            <input type="hidden" name="CreateBy" class="form-control" value="@Model.CreateBy">
+                            <input type="hidden" name="VehicalModelKey" class="form-control" value="@Model.VehicalModelKey">
+
+
+                            <div class="col-md-4 col-sm-4">
+                                <div class="form-group">
+                                    <label>Brand Name</label>
+                                    @Html.DropDownListFor(model => model.BrandId, (List<SelectListItem>)ViewBag.Brand, new { @class = "form-control select-2" })
+                                </div>
+                            </div>
+
+                            <div class="col-md-4 col-sm-4">
+                                <div class="form-group">
+                                    <label>Vehical Model Name</label>
+                                    <input type="text" name="VehicalModelName" required class="form-control" value="@Model.VehicalModelName">
+                                </div>
+                            </div>
+                           
+                            <div class="col-md-4 col-sm-4">
+                                <div class="form-group">
+                                    <label>Vehical Model Name (Arabic)</label>
+                                    <input type="text" name="VehicalModelNameAr" dir="rtl" required class="form-control" value="@Model.VehicalModelNameAr">
+                                </div>
+                            </div>
+
+                            <div class="col-md-4 col-sm-4">
+                                <div class="form-group">
+                                    <label>Model Details</label>
+                                    <input type="text" name="ModelDetails" required class="form-control" value="@Model.ModelDetails">
+                                </div>
+                            </div>
+                           
+                            <div class="col-md-4 col-sm-4">
+                                <div class="form-group">
+                                    <label>Model Details (Arabic)</label>
+                                    <input type="text" name="ModelDetailsAr" dir="rtl" required class="form-control" value="@Model.ModelDetailsAr">
+                                </div>
+                            </div>
+
+                            <div class="col-md-4 col-sm-4">
+                                <div class="form-group">
+                                    <label>Status</label>
+                                    <div class="switch">
+                                        <label>
+                                            InActive
+                                            @if (Model.Status == "Active")
+                                            {
+                                                <input type="checkbox" checked="checked" name="Status" value="Active"><span class="lever"></span>
+                                            }
+                                            else
+                                            {
+                                                <input type="checkbox" name="Status" value="Active"><span class="lever"></span>
+                                            }
+                                            <input name="Status" type="hidden" value="InActive" />
+                                            Active
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                        <div class="card-body">
+                            <div class="form-group mb-0 text-right">
+                                @if (Model.VehicalModelId > 0)
+                                {
+                                    <button type="submit" class="btn btn-warning waves-effect waves-light" id="submit-btn">Reset</button>
+                                }
+                                else
+                                {
+                                    <button type="submit" class="btn btn-success waves-effect waves-light" id="submit-btn">Save</button>
+                                }
+                                <a href="@Url.RouteUrl("Admin_VehicalModelList")" class="btn btn-dark waves-effect waves-light">
+                                    Close
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+            <!-- ============================================================== -->
+        </div>
+    </div>
+    <!-- ============================================================== -->
+    <!-- End Container fluid  -->
+}
+

@@ -1,0 +1,181 @@
+﻿@model Boulevard.Models.Service
+@{
+    ViewBag.Title = "Create";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+    string activeChk = "";
+    string PageTitle = "", ButtonTitle = "";
+    string buttonColor = "";
+    if (Model.ServiceId != 0)
+    {
+        PageTitle = "Edit";
+        ButtonTitle = "Reset";
+        buttonColor = "warning";
+    }
+    else
+    {
+        PageTitle = "Add";
+        ButtonTitle = "Save";
+        buttonColor = "success";
+    }
+}
+
+
+
+@using (Html.BeginForm("CreateForTypingAndInsurance", "Service", FormMethod.Post, new { enctype = "multipart/form-data", @id = "myForm" }))
+{
+
+
+    <div class="page-wrapper">
+        <div class="container-fluid">
+            <div class="row page-titles">
+                <div class="col-md-5 col-12 align-self-center">
+                    @if (ViewBag.FeatureCategoryKey == null)
+                    {
+                        <h3 class="text-themecolor mb-0">Hotel Info</h3>
+                    }
+                    else
+                    {
+                        <h3 class="text-themecolor mb-0">@ViewBag.FCatagoryName Info</h3>
+                    }
+                </div>
+                <div class="col-md-7 col-12 align-self-center d-none d-md-block">
+                    <ol class="breadcrumb mb-0 p-0 bg-transparent float-right">
+                    </ol>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-body">
+
+                    <div class="row align-items-center mb-3">
+                        <div class="col-md-5 col-12 align-self-center">
+                            <h3>@ViewBag.FCatagoryName @PageTitle</h3>
+                        </div>
+                        <div class="col-md-7 col-12 align-self-center d-none d-md-block">
+                            <ol class="breadcrumb mb-0 p-0 bg-transparent float-right">
+                                @if (ViewBag.FeatureCategoryKey == null)
+                                {
+                                    <li class="breadcrumb-item active"><a href="@Url.RouteUrl("Admin_ServiceListIndexForChildService")">Service</a></li>
+                                }
+                                else
+                                {
+                                    <li class="breadcrumb-item active"><a href="@Url.RouteUrl("Admin_ServiceListIndexForChildService", new { fCatagoryKey = ViewBag.FCatagoryKey })">@ViewBag.FCatagoryName</a></li>
+                                }
+                                <li class="breadcrumb-item active">@PageTitle @ViewBag.FCatagoryName</li>
+                            </ol>
+                        </div>
+
+                    </div>
+                    <hr>
+
+                    <div class="card-body">
+                        <div class="row">
+                            <input type="hidden" name="Model.ServiceId" class="form-control" value="@Model.ServiceId">
+                            <input type="hidden" name="Model.ServiceKey" class="form-control" value="@Model.ServiceKey">
+                            <input type="hidden" name="Model.CreateBy" class="form-control" value="@Model.CreateBy">
+                            <input type="hidden" name="Model.CreateDate" class="form-control" value="@Model.CreateDate">
+                            <input type="hidden" name="Model.Ratings" class="form-control" value="@Model.Ratings">
+                            <input type="hidden" name="Model.FeatureCategoryKey" class="form-control" value="@ViewBag.FeatureCategoryKey">
+                            <div class="col-lg-4 col-md-6 col-sm-12">
+                                <div class="form-group">
+                                    <label>Name</label>
+                                    <input name="Model.Name" class="form-control" value="@Model.Name" required />
+
+                                </div>
+                            </div>
+
+                            <div class="col-lg-4 col-md-6 col-sm-12">
+                                <div class="form-group">
+                                    <label>Name (Arabic)</label>
+                                    <input name="Model.NameAr" class="form-control" dir="rtl" value="@Model.NameAr" required />
+
+                                </div>
+                            </div>
+                            
+
+                 
+                                <div class="col-lg-4 col-md-6 col-sm-12">
+                                    <div class="form-group">
+                                        <label>Parent Service</label>
+                                        <select name="Model.ParentId" class="form-control" required>
+                                            <option value="">Choose Parent Service</option>
+                                            @foreach (var item in ViewBag.Catagory as IEnumerable<SelectListItem>)
+                                            {
+                                                <option value="@item.Value" selected="@(item.Value == Model.ParentId.ToString() ? "selected" : null)">
+                                                    @item.Text
+                                                </option>
+                                            }
+                                        </select>
+                                    </div>
+                                </div>
+                            
+
+
+
+                         
+                            <div class="col-md-4 col-sm-4">
+                                <div class="form-group">
+                                    <label>Status</label>
+                                    <select class="form-control custom-select select-2" name="Model.Status" id="Status" required>
+                                        <option value="">Select</option>
+                                        @if (Model.Status != null)
+                                        {
+                                            if (Model.Status == "Active")
+                                            {
+                                                <option selected value="Active">Active</option>
+                                                <option value="InActive">InActive</option>
+                                            }
+                                            else
+                                            {
+                                                <option value="Active">Active</option>
+                                                <option selected value="InActive">InActive</option>
+                                            }
+                                        }
+                                        else
+                                        {
+                                            <option value="Active">Active</option>
+                                            <option value="InActive">InActive</option>
+                                        }
+                                    </select>
+                                </div>
+                            </div>
+                            
+
+                            
+                    
+                          
+
+                        </div>
+                      
+
+
+
+
+
+                        <div class="card-body">
+                            <div class="form-group mb-0 text-right">
+
+                                <button type="submit" class="btn btn-@buttonColor waves-effect waves-light" id="submit-btn">@ButtonTitle</button>
+                                @if (ViewBag.FeatureCategoryKey != null)
+                                {
+                                    <a href="@Url.RouteUrl("Admin_ServiceListIndexForChildService", new {fCatagoryKey = ViewBag.FeatureCategoryKey})" class="btn btn-dark waves-effect waves-light">
+                                        Close
+                                    </a>
+                                }
+                                else
+                                {
+                                    <a href="@Url.RouteUrl("Admin_ServiceListIndexForChildService")" class="btn btn-dark waves-effect waves-light">
+                                        Close
+                                    </a>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+}
+
+

@@ -1,0 +1,167 @@
+﻿
+@{
+    Layout = null;
+}
+@model Boulevard.Models.MemberShip
+@{
+    ViewBag.Title = "Create Or Update";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+
+
+
+
+<!-- Container fluid  -->
+<!-- ============================================================== -->
+<div class="page-wrapper">
+    <div class="container-fluid">
+        <!-- ============================================================== -->
+        <!-- Bread crumb and right sidebar toggle -->
+        <!-- ============================================================== -->
+
+        <div class="row page-titles">
+            <div class="col-md-5 col-12 align-self-center">
+                <h3 class="text-themecolor mb-0">Add MemberShip</h3>
+            </div>
+            <div class="col-md-7 col-12 align-self-center d-none d-md-block">
+                <ol class="breadcrumb mb-0 p-0 bg-transparent float-right">
+                    <li class="breadcrumb-item active"><a href="@Url.RouteUrl("Admin_MemberShip_List")">MemberShip</a></li>
+                    <li class="breadcrumb-item active">Add MemberShip</li>
+                </ol>
+            </div>
+        </div>
+        <!-- ============================================================== -->
+        <!-- End Bread crumb and right sidebar toggle -->
+        <!-- ============================================================== -->
+        <!--order list-->
+        @*<form>*@
+        <div class="card">
+            <div class="card-header">
+                <!--<h4 class="">General</h4>-->
+                MemberShip Information
+            </div>
+            <div class="card-body">
+                @using (Html.BeginForm("CreateAndUpdate", "MemberShip", FormMethod.Post, new { enctype = "multipart/form-data", @id = "myForm", @class = "row" }))
+                {
+                    @*<div class="row">*@
+                    <input type="hidden" name="MemberShipId" class="form-control" value="@Model.MemberShipId">
+                    <input type="hidden" name="CreateDate" class="form-control" value="@Model.CreateDate">
+                    <input type="hidden" name="CreateBy" class="form-control" value="@Model.CreateBy">
+                    <input type="hidden" name="MemberShipKey" class="form-control" value="@Model.MemberShipKey">
+
+
+                    <div class="col-md-6 col-sm-6">
+                        <div class="form-group">
+                            <label>Title</label>
+                            <input type="text" name="Title" required class="form-control" value="@Model.Title">
+                        </div>
+                    </div>
+
+                    <div class="col-md-6 col-sm-6">
+                        <div class="form-group">
+                            <label>Title (Arabic)</label>
+                            <input type="text" name="TitleAr" dir="rtl" required class="form-control" value="@Model.TitleAr">
+                        </div>
+                    </div>
+
+                    <div class="col-md-6 col-sm-6">
+                        <div class="form-group">
+                            <label>Description</label>
+                            <textarea type="text" name="Description" rows="8" required class="form-control">@Model.Description</textarea>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6 col-sm-6">
+                        <div class="form-group">
+                            <label>Description (Arabic)</label>
+                            <textarea type="text" name="DescriptionAr" rows="8" dir="rtl" required class="form-control">@Model.DescriptionAr</textarea>
+                        </div>
+                    </div>
+
+                    <div class="col-12">
+                        <div class="col-md-6 col-sm-6">
+                            <div class="form-group">
+                                <label>Membership Validity In Month</label>
+                                <input type="number" name="MembershipValidityInMonth" required class="form-control" value="@Model.MembershipValidityInMonth">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6 col-sm-6">
+                        <div class="form-group">
+                            <label>Membership Banner</label>
+                            <input type="file" name="images" accept="image/png, image/jpeg" class="form-control dropify" data-default-file="../../@Model.MembershipBanner">
+                        </div>
+                    </div>
+
+                    <div class="col-md-6 col-sm-6">
+                        <div class="form-group">
+                            <label>Membership Banner (Arabic)</label>
+                            <input type="file" name="membershipBannerAr" accept="image/png, image/jpeg" class="form-control dropify" data-default-file="../../@Model.MembershipBannerAr">
+                        </div>
+                    </div>
+
+                    <div class="col-12">
+                        <div class="form-group">
+                            <label>Benefits</label>
+
+                            <textarea name="Benefits" class="form-control description" rows="8">@Model.Benefits</textarea>
+                        </div>
+                    </div>
+
+
+                    <div class="col-12">
+                        <div class="form-group">
+                            <label>Benefits(Arabic) </label>
+
+                            <textarea name="BenefitsAr" class="form-control description" rows="8">@Model.BenefitsAr</textarea>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4 col-sm-4">
+                        <div class="form-group">
+                            <label>Status</label>
+                            <div class="switch">
+                                <label>
+                                    InActive
+                                    @if (Model.Status == "Active")
+                                    {
+                                        <input type="checkbox" checked="checked" name="Status" value="Active"><span class="lever"></span>
+                                    }
+                                    else
+                                    {
+                                        <input type="checkbox" name="Status" value="Active"><span class="lever"></span>
+                                    }
+                                    <input name="Status" type="hidden" value="InActive" />
+                                    Active
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    @*</div>*@
+                    <div class="col-12">
+                        <div class="form-group mb-0 text-right">
+                            @if (Model.MemberShipId > 0)
+                            {
+                                <button type="submit" class="btn btn-warning waves-effect waves-light">Reset</button>
+                            }
+                            else
+                            {
+                                <button type="submit" class="btn btn-success waves-effect waves-light">Save</button>
+                            }
+                            <a href="@Url.RouteUrl("Admin_MemberShip_List")" class="btn btn-dark waves-effect waves-light">
+                                Close
+                            </a>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+        @*</form>*@
+        <!-- ============================================================== -->
+    </div>
+</div>
+<!-- ============================================================== -->
+<!-- End Container fluid  -->
+

@@ -1,0 +1,100 @@
+﻿body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Poppins', sans-serif;
+}
+
+    body:before {
+        content: '';
+        position: fixed;
+        width: 100vw;
+        height: 100vh;
+        background-image: url(/Areas/Admin/Content/assets/images/bg.jpg);
+        background-position: center center;
+        background-repeat: no-repeat;
+        background-attachment: fixed;
+        -webkit-background-size: cover;
+        background-size: cover;
+        -webkit-filter: blur(10px);
+        -moz-filter: blur(10px);
+        filter: blur(10px);
+    }
+
+.contact-form {
+    border-radius: 40px;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    padding-left: 60px;
+    padding-right: 60px;
+    padding-top: 125px;
+    padding-bottom: 60px;
+    background: rgba(50, 80, 100, 0.4);
+}
+
+.avatar {
+    position: absolute;
+    width: 80px;
+    height: 80px;
+    overflow: hidden;
+    top: calc(75px/2);
+    left: 160px;
+}
+
+.contact-form h4 {
+    margin: 0;
+    padding: 0 0 20px;
+    color: #fff;
+    text-align: center;
+    text-transform: uppercase;
+}
+
+.contact-form p {
+    margin: 0;
+    padding: 0;
+    font-weight: bold;
+    color: #fff;
+}
+
+.contact-form input {
+    width: 100%;
+    margin-bottom: 20px;
+}
+
+    .contact-form input[type=text], .contact-form input[type=password] {
+        padding-left: 10px;
+        border: none;
+        border-bottom: 1px solid #fff;
+        background: transparent;
+        outline: none;
+        height: 40px;
+        color: #fff;
+        font-size: 16px;
+        width: 275px;
+        border-radius: 7px;
+    }
+
+    .contact-form input[type=submit] {
+        height: 38px;
+        color: #fff;
+        font-size: 15px;
+        font-weight: 600;
+        background: #ff0000e3;
+        cursor: pointer;
+        border-radius: 7px;
+        border: none;
+        outline: none;
+        margin-top: 4%;
+    }
+
+.contact-form a {
+    color: #fff;
+    font-size: 14px;
+    font-weight: bold;
+    text-decoration: none;
+}
+
+input[type=checkbox] {
+    width: 20%;
+}
