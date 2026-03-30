@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<!--
+  Web.config.example — قالب آمن للاستخدام في المستودع.
+  استنسخ الاسم إلى Web.config على السيرفر واملأ القيم الحقيقية.
+  لا تَضع أسراراً هنا في الـ repo العام.
+-->
+<configuration>
+  <appSettings>
+    <!-- Example: <add key="SomeKey" value="REPLACE_ME"/> -->
+  </appSettings>
+
+  <connectionStrings>
+    <!-- Example:
+    <add name="DefaultConnection" connectionString="Server=YOUR_DB_SERVER;Database=DB;User Id=USER;Password=PASS;" providerName="System.Data.SqlClient"/>
+    -->
+  </connectionStrings>
+
+  <!-- Add any other required settings placeholders here -->
+</configuration>
