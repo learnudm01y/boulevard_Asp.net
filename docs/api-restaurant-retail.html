@@ -1,0 +1,731 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Boulevard API — Restaurant &amp; Retail</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Segoe UI', Arial, sans-serif; background: #f4f6f9; color: #222; }
+
+    header {
+      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+      color: #fff;
+      padding: 36px 40px 28px;
+    }
+    header h1 { font-size: 28px; font-weight: 700; letter-spacing: .5px; }
+    header p  { margin-top: 8px; color: #a0aec0; font-size: 14px; }
+
+    .base-url-box {
+      background: #0f3460;
+      color: #e2e8f0;
+      padding: 10px 40px;
+      font-size: 13px;
+      border-bottom: 2px solid #e53e3e;
+    }
+    .base-url-box span { color: #68d391; font-weight: 600; font-family: monospace; font-size: 14px; }
+
+    .response-note {
+      background: #fffbeb;
+      border-left: 4px solid #f6ad55;
+      margin: 28px 40px 0;
+      padding: 12px 16px;
+      font-size: 13px;
+      border-radius: 4px;
+    }
+    .response-note code { background: #fed7aa; padding: 2px 6px; border-radius: 3px; font-size: 12px; }
+
+    .section-title {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin: 36px 40px 16px;
+      padding-bottom: 10px;
+      border-bottom: 2px solid #e2e8f0;
+    }
+    .section-title .badge {
+      padding: 4px 14px;
+      border-radius: 20px;
+      font-size: 13px;
+      font-weight: 700;
+      color: #fff;
+    }
+    .badge-restaurant { background: #c05621; }
+    .badge-retail     { background: #2b6cb0; }
+    .section-title h2 { font-size: 20px; font-weight: 700; }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(520px, 1fr));
+      gap: 16px;
+      padding: 0 40px;
+    }
+
+    .card {
+      background: #fff;
+      border-radius: 8px;
+      box-shadow: 0 1px 4px rgba(0,0,0,.08);
+      overflow: hidden;
+    }
+    .card-head {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 16px;
+      background: #f7fafc;
+      border-bottom: 1px solid #e2e8f0;
+    }
+    .method {
+      background: #276749;
+      color: #fff;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 3px 8px;
+      border-radius: 4px;
+      letter-spacing: .5px;
+      flex-shrink: 0;
+    }
+    .endpoint {
+      font-family: monospace;
+      font-size: 13px;
+      color: #1a365d;
+      word-break: break-all;
+    }
+    .card-body { padding: 12px 16px; }
+    .desc { font-size: 13px; color: #4a5568; margin-bottom: 10px; }
+
+    table { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+    th { background: #edf2f7; text-align: left; padding: 6px 8px; color: #718096; font-weight: 600; text-transform: uppercase; font-size: 11px; }
+    td { padding: 6px 8px; border-bottom: 1px solid #f0f0f0; vertical-align: top; }
+    tr:last-child td { border-bottom: none; }
+    .param-name { font-family: monospace; color: #c05621; font-weight: 600; }
+    .param-type { color: #805ad5; }
+    .param-req  { color: #e53e3e; font-weight: 700; font-size: 11px; }
+    .param-opt  { color: #a0aec0; font-size: 11px; }
+    .no-params  { font-size: 12px; color: #a0aec0; font-style: italic; padding: 4px 0; }
+
+    footer {
+      text-align: center;
+      padding: 28px;
+      color: #a0aec0;
+      font-size: 12px;
+      margin-top: 40px;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>Boulevard API — Restaurant &amp; Retail</h1>
+  <p>Mobile Developer Reference &nbsp;·&nbsp; All endpoints use <strong>GET</strong> &nbsp;·&nbsp; All responses are JSON</p>
+</header>
+
+<div class="base-url-box">
+  Base URL: <span>https://your-domain.com</span>
+  &nbsp;&nbsp;|&nbsp;&nbsp;
+  All responses return: <span>{ "result": [...], "code": 200, "message": "success", "isSuccess": true }</span>
+</div>
+
+<div class="response-note">
+  ℹ️ Every response has the same wrapper: <code>result</code> = the data,
+  <code>isSuccess</code> = true/false, <code>code</code> = 200 (success) or 406 (error).
+  Always check <code>isSuccess</code> before using <code>result</code>.
+</div>
+
+
+<!-- ══════════════════════════════════════════════
+     RESTAURANT
+══════════════════════════════════════════════ -->
+<div class="section-title">
+  <span class="badge badge-restaurant">🍕 RESTAURANT</span>
+  <h2>Restaurant Endpoints</h2>
+</div>
+
+<div class="grid">
+
+  <!-- Banners -->
+  <div class="card">
+    <div class="card-head">
+      <span class="method">GET</span>
+      <span class="endpoint">/api/v1/restaurant/banners</span>
+    </div>
+    <div class="card-body">
+      <p class="desc">Get banners / web HTML blocks for the restaurant home screen.</p>
+      <table>
+        <tr><th>Parameter</th><th>Type</th><th>Required</th><th>Description</th></tr>
+        <tr><td class="param-name">PageIdentifier</td><td class="param-type">string</td><td class="param-opt">Optional</td><td>Identifier of the banner section</td></tr>
+        <tr><td class="param-name">lang</td><td class="param-type">string</td><td class="param-opt">Optional</td><td><code>en</code> or <code>ar</code> — default: <code>en</code></td></tr>
+      </table>
+    </div>
+  </div>
+
+  <!-- Categories -->
+  <div class="card">
+    <div class="card-head">
+      <span class="method">GET</span>
+      <span class="endpoint">/api/v1/restaurant/categories</span>
+    </div>
+    <div class="card-body">
+      <p class="desc">Get all categories (parent + children tree) for the restaurant.</p>
+      <table>
+        <tr><th>Parameter</th><th>Type</th><th>Required</th><th>Description</th></tr>
+        <tr><td class="param-name">type</td><td class="param-type">string</td><td class="param-opt">Optional</td><td><code>All</code> / <code>Product</code> — default: <code>All</code></td></tr>
+        <tr><td class="param-name">isTop</td><td class="param-type">bool</td><td class="param-opt">Optional</td><td>Filter top categories only</td></tr>
+        <tr><td class="param-name">isTrending</td><td class="param-type">bool</td><td class="param-opt">Optional</td><td>Filter trending categories only</td></tr>
+        <tr><td class="param-name">lang</td><td class="param-type">string</td><td class="param-opt">Optional</td><td><code>en</code> or <code>ar</code></td></tr>
+      </table>
+    </div>
+  </div>
+
+  <!-- Category Products -->
+  <div class="card">
+    <div class="card-head">
+      <span class="method">GET</span>
+      <span class="endpoint">/api/v1/restaurant/category-products</span>
+    </div>
+    <div class="card-body">
+      <p class="desc">Get products that belong to a specific category.</p>
+      <table>
+        <tr><th>Parameter</th><th>Type</th><th>Required</th><th>Description</th></tr>
+        <tr><td class="param-name">categoryId</td><td class="param-type">int</td><td class="param-req">Required</td><td>The ID of the category</td></tr>
+        <tr><td class="param-name">keyword</td><td class="param-type">string</td><td class="param-opt">Optional</td><td>Search keyword</td></tr>
+        <tr><td class="param-name">size</td><td class="param-type">int</td><td class="param-opt">Optional</td><td>Number of items to return</td></tr>
+        <tr><td class="param-name">count</td><td class="param-type">int</td><td class="param-opt">Optional</td><td>Offset / start from</td></tr>
+        <tr><td class="param-name">brandId</td><td class="param-type">int</td><td class="param-opt">Optional</td><td>Filter by brand</td></tr>
+        <tr><td class="param-name">memberId</td><td class="param-type">int</td><td class="param-opt">Optional</td><td>Pass to mark favourites</td></tr>
+        <tr><td class="param-name">lang</td><td class="param-type">string</td><td class="param-opt">Optional</td><td><code>en</code> or <code>ar</code></td></tr>
+      </table>
+    </div>
+  </div>
+
+  <!-- Parent Category Products -->
+  <div class="card">
+    <div class="card-head">
+      <span class="method">GET</span>
+      <span class="endpoint">/api/v1/restaurant/parent-category-products</span>
+    </div>
+    <div class="card-body">
+      <p class="desc">Get all parent categories each with their products (for home screen sections).</p>
+      <table>
+        <tr><th>Parameter</th><th>Type</th><th>Required</th><th>Description</th></tr>
+        <tr><td class="param-name">size</td><td class="param-type">int</td><td class="param-opt">Optional</td><td>Products per category — default: 10</td></tr>
+        <tr><td class="param-name">count</td><td class="param-type">int</td><td class="param-opt">Optional</td><td>Offset</td></tr>
+        <tr><td class="param-name">memberId</td><td class="param-type">int</td><td class="param-opt">Optional</td><td>Pass to mark favourites</td></tr>
+        <tr><td class="param-name">lang</td><td class="param-type">string</td><td class="param-opt">Optional</td><td><code>en</code> or <code>ar</code></td></tr>
+      </table>
+    </div>
+  </div>
+
+  <!-- Brands -->
+  <div class="card">
+    <div class="card-head">
+      <span class="method">GET</span>
+      <span class="endpoint">/api/v1/restaurant/brands</span>
+    </div>
+    <div class="card-body">
+      <p class="desc">Get the list of restaurant brands.</p>
+      <table>
+        <tr><th>Parameter</th><th>Type</th><th>Required</th><th>Description</th></tr>
+        <tr><td class="param-name">type</td><td class="param-type">string</td><td class="param-opt">Optional</td><td><code>All</code> — default: <code>All</code></td></tr>
+        <tr><td class="param-name">isFeature</td><td class="param-type">bool</td><td class="param-opt">Optional</td><td>Featured brands only</td></tr>
+        <tr><td class="param-name">isTrending</td><td class="param-type">bool</td><td class="param-opt">Optional</td><td>Trending brands only</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <!-- Brand Products -->
+  <div class="card">
+    <div class="card-head">
+      <span class="method">GET</span>
+      <span class="endpoint">/api/v1/restaurant/brand-products</span>
+    </div>
+    <div class="card-body">
+      <p class="desc">Get all products of a specific brand.</p>
+      <table>
+        <tr><th>Parameter</th><th>Type</th><th>Required</th><th>Description</th></tr>
+        <tr><td class="param-name">brandId</td><td class="param-type">int</td><td class="param-req">Required</td><td>The brand ID</td></tr>
+        <tr><td class="param-name">keyword</td><td class="param-type">string</td><td class="param-opt">Optional</td><td>Search keyword</td></tr>
+        <tr><td class="param-name">size</td><td class="param-type">int</td><td class="param-opt">Optional</td><td>Items to return</td></tr>
+        <tr><td class="param-name">count</td><td class="param-type">int</td><td class="param-opt">Optional</td><td>Offset</td></tr>
+        <tr><td class="param-name">memberId</td><td class="param-type">int</td><td class="param-opt">Optional</td><td>Pass to mark favourites</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <!-- Products (Search) -->
+  <div class="card">
+    <div class="card-head">
+      <span class="method">GET</span>
+      <span class="endpoint">/api/v1/restaurant/products</span>
+    </div>
+    <div class="card-body">
+      <p class="desc">Search / list all restaurant products with pagination.</p>
+      <table>
+        <tr><th>Parameter</th><th>Type</th><th>Required</th><th>Description</th></tr>
+        <tr><td class="param-name">keyword</td><td class="param-type">string</td><td class="param-opt">Optional</td><td>Search by product name</td></tr>
+        <tr><td class="param-name">size</td><td class="param-type">int</td><td class="param-opt">Optional</td><td>Items to return</td></tr>
+        <tr><td class="param-name">count</td><td class="param-type">int</td><td class="param-opt">Optional</td><td>Offset</td></tr>
+        <tr><td class="param-name">memberId</td><td class="param-type">int</td><td class="param-opt">Optional</td><td>Pass to mark favourites</td></tr>
+        <tr><td class="param-name">lang</td><td class="param-type">string</td><td class="param-opt">Optional</td><td><code>en</code> or <code>ar</code></td></tr>
+      </table>
+    </div>
+  </div>
+
+  <!-- Product Details -->
+  <div class="card">
+    <div class="card-head">
+      <span class="method">GET</span>
+      <span class="endpoint">/api/v1/restaurant/product-details</span>
+    </div>
+    <div class="card-body">
+      <p class="desc">Get full details of a single product / dish.</p>
+      <table>
+        <tr><th>Parameter</th><th>Type</th><th>Required</th><th>Description</th></tr>
+        <tr><td class="param-name">productId</td><td class="param-type">int</td><td class="param-req">Required</td><td>Product ID</td></tr>
+        <tr><td class="param-name">memberId</td><td class="param-type">int</td><td class="param-opt">Optional</td><td>Pass to mark favourite status</td></tr>
+        <tr><td class="param-name">lang</td><td class="param-type">string</td><td class="param-opt">Optional</td><td><code>en</code> or <code>ar</code></td></tr>
+      </table>
+    </div>
+  </div>
+
+  <!-- Best Sellers -->
+  <div class="card">
+    <div class="card-head">
+      <span class="method">GET</span>
+      <span class="endpoint">/api/v1/restaurant/best-sellers</span>
+    </div>
+    <div class="card-body">
+      <p class="desc">Get best-selling dishes for the restaurant home screen.</p>
+      <table>
+        <tr><th>Parameter</th><th>Type</th><th>Required</th><th>Description</th></tr>
+        <tr><td class="param-name">size</td><td class="param-type">int</td><td class="param-opt">Optional</td><td>Items to return</td></tr>
+        <tr><td class="param-name">count</td><td class="param-type">int</td><td class="param-opt">Optional</td><td>Offset</td></tr>
+        <tr><td class="param-name">memberId</td><td class="param-type">int</td><td class="param-opt">Optional</td><td>Pass to mark favourites</td></tr>
+        <tr><td class="param-name">lang</td><td class="param-type">string</td><td class="param-opt">Optional</td><td><code>en</code> or <code>ar</code></td></tr>
+      </table>
+    </div>
+  </div>
+
+  <!-- Related Products -->
+  <div class="card">
+    <div class="card-head">
+      <span class="method">GET</span>
+      <span class="endpoint">/api/v1/restaurant/related-products</span>
+    </div>
+    <div class="card-body">
+      <p class="desc">Get products related to the currently viewed product (for product detail screen).</p>
+      <table>
+        <tr><th>Parameter</th><th>Type</th><th>Required</th><th>Description</th></tr>
+        <tr><td class="param-name">productId</td><td class="param-type">int</td><td class="param-req">Required</td><td>The current product ID</td></tr>
+        <tr><td class="param-name">size</td><td class="param-type">int</td><td class="param-opt">Optional</td><td>Items to return</td></tr>
+        <tr><td class="param-name">count</td><td class="param-type">int</td><td class="param-opt">Optional</td><td>Offset</td></tr>
+        <tr><td class="param-name">memberId</td><td class="param-type">int</td><td class="param-opt">Optional</td><td>Pass to mark favourites</td></tr>
+        <tr><td class="param-name">lang</td><td class="param-type">string</td><td class="param-opt">Optional</td><td><code>en</code> or <code>ar</code></td></tr>
+      </table>
+    </div>
+  </div>
+
+  <!-- More Products -->
+  <div class="card">
+    <div class="card-head">
+      <span class="method">GET</span>
+      <span class="endpoint">/api/v1/restaurant/more-products</span>
+    </div>
+    <div class="card-body">
+      <p class="desc">Get more products (infinite scroll / load more) starting after a given product.</p>
+      <table>
+        <tr><th>Parameter</th><th>Type</th><th>Required</th><th>Description</th></tr>
+        <tr><td class="param-name">productId</td><td class="param-type">int</td><td class="param-req">Required</td><td>Last product ID already loaded</td></tr>
+        <tr><td class="param-name">size</td><td class="param-type">int</td><td class="param-opt">Optional</td><td>Items to return</td></tr>
+        <tr><td class="param-name">count</td><td class="param-type">int</td><td class="param-opt">Optional</td><td>Offset</td></tr>
+        <tr><td class="param-name">memberId</td><td class="param-type">int</td><td class="param-opt">Optional</td><td>Pass to mark favourites</td></tr>
+        <tr><td class="param-name">lang</td><td class="param-type">string</td><td class="param-opt">Optional</td><td><code>en</code> or <code>ar</code></td></tr>
+      </table>
+    </div>
+  </div>
+
+  <!-- Tags -->
+  <div class="card">
+    <div class="card-head">
+      <span class="method">GET</span>
+      <span class="endpoint">/api/v1/restaurant/tags</span>
+    </div>
+    <div class="card-body">
+      <p class="desc">Get all product tags for the restaurant (for filter chips on listing screen).</p>
+      <p class="no-params">No parameters required.</p>
+    </div>
+  </div>
+
+  <!-- Products By Tag -->
+  <div class="card">
+    <div class="card-head">
+      <span class="method">GET</span>
+      <span class="endpoint">/api/v1/restaurant/products-by-tag</span>
+    </div>
+    <div class="card-body">
+      <p class="desc">Get products filtered by a specific tag.</p>
+      <table>
+        <tr><th>Parameter</th><th>Type</th><th>Required</th><th>Description</th></tr>
+        <tr><td class="param-name">tagId</td><td class="param-type">int</td><td class="param-req">Required</td><td>Tag ID from <code>/tags</code> endpoint</td></tr>
+        <tr><td class="param-name">size</td><td class="param-type">int</td><td class="param-opt">Optional</td><td>Items to return</td></tr>
+        <tr><td class="param-name">count</td><td class="param-type">int</td><td class="param-opt">Optional</td><td>Offset</td></tr>
+        <tr><td class="param-name">memberId</td><td class="param-type">int</td><td class="param-opt">Optional</td><td>Pass to mark favourites</td></tr>
+        <tr><td class="param-name">lang</td><td class="param-type">string</td><td class="param-opt">Optional</td><td><code>en</code> or <code>ar</code></td></tr>
+      </table>
+    </div>
+  </div>
+
+  <!-- Offers: Products -->
+  <div class="card">
+    <div class="card-head">
+      <span class="method">GET</span>
+      <span class="endpoint">/api/v1/restaurant/offers/products</span>
+    </div>
+    <div class="card-body">
+      <p class="desc">Get trending product offers for the restaurant.</p>
+      <table>
+        <tr><th>Parameter</th><th>Type</th><th>Required</th><th>Description</th></tr>
+        <tr><td class="param-name">size</td><td class="param-type">int</td><td class="param-opt">Optional</td><td>Items — default: 10</td></tr>
+        <tr><td class="param-name">count</td><td class="param-type">int</td><td class="param-opt">Optional</td><td>Offset</td></tr>
+        <tr><td class="param-name">memberId</td><td class="param-type">int</td><td class="param-opt">Optional</td><td>Pass to mark favourites</td></tr>
+        <tr><td class="param-name">lang</td><td class="param-type">string</td><td class="param-opt">Optional</td><td><code>en</code> or <code>ar</code></td></tr>
+      </table>
+    </div>
+  </div>
+
+  <!-- Offers: Brands -->
+  <div class="card">
+    <div class="card-head">
+      <span class="method">GET</span>
+      <span class="endpoint">/api/v1/restaurant/offers/brands</span>
+    </div>
+    <div class="card-body">
+      <p class="desc">Get trending brand offers for the restaurant.</p>
+      <table>
+        <tr><th>Parameter</th><th>Type</th><th>Required</th><th>Description</th></tr>
+        <tr><td class="param-name">size</td><td class="param-type">int</td><td class="param-opt">Optional</td><td>Items — default: 10</td></tr>
+        <tr><td class="param-name">count</td><td class="param-type">int</td><td class="param-opt">Optional</td><td>Offset</td></tr>
+        <tr><td class="param-name">lang</td><td class="param-type">string</td><td class="param-opt">Optional</td><td><code>en</code> or <code>ar</code></td></tr>
+      </table>
+    </div>
+  </div>
+
+  <!-- Offers: Categories -->
+  <div class="card">
+    <div class="card-head">
+      <span class="method">GET</span>
+      <span class="endpoint">/api/v1/restaurant/offers/categories</span>
+    </div>
+    <div class="card-body">
+      <p class="desc">Get trending category offers for the restaurant.</p>
+      <table>
+        <tr><th>Parameter</th><th>Type</th><th>Required</th><th>Description</th></tr>
+        <tr><td class="param-name">size</td><td class="param-type">int</td><td class="param-opt">Optional</td><td>Items — default: 10</td></tr>
+        <tr><td class="param-name">count</td><td class="param-type">int</td><td class="param-opt">Optional</td><td>Offset</td></tr>
+        <tr><td class="param-name">lang</td><td class="param-type">string</td><td class="param-opt">Optional</td><td><code>en</code> or <code>ar</code></td></tr>
+      </table>
+    </div>
+  </div>
+
+</div><!-- /grid restaurant -->
+
+
+<!-- ══════════════════════════════════════════════
+     RETAIL
+══════════════════════════════════════════════ -->
+<div class="section-title">
+  <span class="badge badge-retail">🛍️ RETAIL</span>
+  <h2>Retail Endpoints</h2>
+</div>
+
+<div class="grid">
+
+  <!-- Banners -->
+  <div class="card">
+    <div class="card-head">
+      <span class="method">GET</span>
+      <span class="endpoint">/api/v1/retail/banners</span>
+    </div>
+    <div class="card-body">
+      <p class="desc">Get banners / web HTML blocks for the retail home screen.</p>
+      <table>
+        <tr><th>Parameter</th><th>Type</th><th>Required</th><th>Description</th></tr>
+        <tr><td class="param-name">PageIdentifier</td><td class="param-type">string</td><td class="param-opt">Optional</td><td>Identifier of the banner section</td></tr>
+        <tr><td class="param-name">lang</td><td class="param-type">string</td><td class="param-opt">Optional</td><td><code>en</code> or <code>ar</code> — default: <code>en</code></td></tr>
+      </table>
+    </div>
+  </div>
+
+  <!-- Categories -->
+  <div class="card">
+    <div class="card-head">
+      <span class="method">GET</span>
+      <span class="endpoint">/api/v1/retail/categories</span>
+    </div>
+    <div class="card-body">
+      <p class="desc">Get all categories (parent + children tree) for retail.</p>
+      <table>
+        <tr><th>Parameter</th><th>Type</th><th>Required</th><th>Description</th></tr>
+        <tr><td class="param-name">type</td><td class="param-type">string</td><td class="param-opt">Optional</td><td><code>All</code> / <code>Product</code> — default: <code>All</code></td></tr>
+        <tr><td class="param-name">isTop</td><td class="param-type">bool</td><td class="param-opt">Optional</td><td>Filter top categories only</td></tr>
+        <tr><td class="param-name">isTrending</td><td class="param-type">bool</td><td class="param-opt">Optional</td><td>Filter trending categories only</td></tr>
+        <tr><td class="param-name">lang</td><td class="param-type">string</td><td class="param-opt">Optional</td><td><code>en</code> or <code>ar</code></td></tr>
+      </table>
+    </div>
+  </div>
+
+  <!-- Category Products -->
+  <div class="card">
+    <div class="card-head">
+      <span class="method">GET</span>
+      <span class="endpoint">/api/v1/retail/category-products</span>
+    </div>
+    <div class="card-body">
+      <p class="desc">Get products that belong to a specific retail category.</p>
+      <table>
+        <tr><th>Parameter</th><th>Type</th><th>Required</th><th>Description</th></tr>
+        <tr><td class="param-name">categoryId</td><td class="param-type">int</td><td class="param-req">Required</td><td>The ID of the category</td></tr>
+        <tr><td class="param-name">keyword</td><td class="param-type">string</td><td class="param-opt">Optional</td><td>Search keyword</td></tr>
+        <tr><td class="param-name">size</td><td class="param-type">int</td><td class="param-opt">Optional</td><td>Items to return</td></tr>
+        <tr><td class="param-name">count</td><td class="param-type">int</td><td class="param-opt">Optional</td><td>Offset</td></tr>
+        <tr><td class="param-name">brandId</td><td class="param-type">int</td><td class="param-opt">Optional</td><td>Filter by brand</td></tr>
+        <tr><td class="param-name">memberId</td><td class="param-type">int</td><td class="param-opt">Optional</td><td>Pass to mark favourites</td></tr>
+        <tr><td class="param-name">lang</td><td class="param-type">string</td><td class="param-opt">Optional</td><td><code>en</code> or <code>ar</code></td></tr>
+      </table>
+    </div>
+  </div>
+
+  <!-- Parent Category Products -->
+  <div class="card">
+    <div class="card-head">
+      <span class="method">GET</span>
+      <span class="endpoint">/api/v1/retail/parent-category-products</span>
+    </div>
+    <div class="card-body">
+      <p class="desc">Get all parent categories each with their products (for home screen sections).</p>
+      <table>
+        <tr><th>Parameter</th><th>Type</th><th>Required</th><th>Description</th></tr>
+        <tr><td class="param-name">size</td><td class="param-type">int</td><td class="param-opt">Optional</td><td>Products per category — default: 10</td></tr>
+        <tr><td class="param-name">count</td><td class="param-type">int</td><td class="param-opt">Optional</td><td>Offset</td></tr>
+        <tr><td class="param-name">memberId</td><td class="param-type">int</td><td class="param-opt">Optional</td><td>Pass to mark favourites</td></tr>
+        <tr><td class="param-name">lang</td><td class="param-type">string</td><td class="param-opt">Optional</td><td><code>en</code> or <code>ar</code></td></tr>
+      </table>
+    </div>
+  </div>
+
+  <!-- Brands -->
+  <div class="card">
+    <div class="card-head">
+      <span class="method">GET</span>
+      <span class="endpoint">/api/v1/retail/brands</span>
+    </div>
+    <div class="card-body">
+      <p class="desc">Get the list of retail brands.</p>
+      <table>
+        <tr><th>Parameter</th><th>Type</th><th>Required</th><th>Description</th></tr>
+        <tr><td class="param-name">type</td><td class="param-type">string</td><td class="param-opt">Optional</td><td><code>All</code> — default: <code>All</code></td></tr>
+        <tr><td class="param-name">isFeature</td><td class="param-type">bool</td><td class="param-opt">Optional</td><td>Featured brands only</td></tr>
+        <tr><td class="param-name">isTrending</td><td class="param-type">bool</td><td class="param-opt">Optional</td><td>Trending brands only</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <!-- Brand Products -->
+  <div class="card">
+    <div class="card-head">
+      <span class="method">GET</span>
+      <span class="endpoint">/api/v1/retail/brand-products</span>
+    </div>
+    <div class="card-body">
+      <p class="desc">Get all products of a specific retail brand.</p>
+      <table>
+        <tr><th>Parameter</th><th>Type</th><th>Required</th><th>Description</th></tr>
+        <tr><td class="param-name">brandId</td><td class="param-type">int</td><td class="param-req">Required</td><td>The brand ID</td></tr>
+        <tr><td class="param-name">keyword</td><td class="param-type">string</td><td class="param-opt">Optional</td><td>Search keyword</td></tr>
+        <tr><td class="param-name">size</td><td class="param-type">int</td><td class="param-opt">Optional</td><td>Items to return</td></tr>
+        <tr><td class="param-name">count</td><td class="param-type">int</td><td class="param-opt">Optional</td><td>Offset</td></tr>
+        <tr><td class="param-name">memberId</td><td class="param-type">int</td><td class="param-opt">Optional</td><td>Pass to mark favourites</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <!-- Products -->
+  <div class="card">
+    <div class="card-head">
+      <span class="method">GET</span>
+      <span class="endpoint">/api/v1/retail/products</span>
+    </div>
+    <div class="card-body">
+      <p class="desc">Search / list all retail products with pagination.</p>
+      <table>
+        <tr><th>Parameter</th><th>Type</th><th>Required</th><th>Description</th></tr>
+        <tr><td class="param-name">keyword</td><td class="param-type">string</td><td class="param-opt">Optional</td><td>Search by product name</td></tr>
+        <tr><td class="param-name">size</td><td class="param-type">int</td><td class="param-opt">Optional</td><td>Items to return</td></tr>
+        <tr><td class="param-name">count</td><td class="param-type">int</td><td class="param-opt">Optional</td><td>Offset</td></tr>
+        <tr><td class="param-name">memberId</td><td class="param-type">int</td><td class="param-opt">Optional</td><td>Pass to mark favourites</td></tr>
+        <tr><td class="param-name">lang</td><td class="param-type">string</td><td class="param-opt">Optional</td><td><code>en</code> or <code>ar</code></td></tr>
+      </table>
+    </div>
+  </div>
+
+  <!-- Product Details -->
+  <div class="card">
+    <div class="card-head">
+      <span class="method">GET</span>
+      <span class="endpoint">/api/v1/retail/product-details</span>
+    </div>
+    <div class="card-body">
+      <p class="desc">Get full details of a single retail product.</p>
+      <table>
+        <tr><th>Parameter</th><th>Type</th><th>Required</th><th>Description</th></tr>
+        <tr><td class="param-name">productId</td><td class="param-type">int</td><td class="param-req">Required</td><td>Product ID</td></tr>
+        <tr><td class="param-name">memberId</td><td class="param-type">int</td><td class="param-opt">Optional</td><td>Pass to mark favourite status</td></tr>
+        <tr><td class="param-name">lang</td><td class="param-type">string</td><td class="param-opt">Optional</td><td><code>en</code> or <code>ar</code></td></tr>
+      </table>
+    </div>
+  </div>
+
+  <!-- Best Sellers -->
+  <div class="card">
+    <div class="card-head">
+      <span class="method">GET</span>
+      <span class="endpoint">/api/v1/retail/best-sellers</span>
+    </div>
+    <div class="card-body">
+      <p class="desc">Get best-selling retail products.</p>
+      <table>
+        <tr><th>Parameter</th><th>Type</th><th>Required</th><th>Description</th></tr>
+        <tr><td class="param-name">size</td><td class="param-type">int</td><td class="param-opt">Optional</td><td>Items to return</td></tr>
+        <tr><td class="param-name">count</td><td class="param-type">int</td><td class="param-opt">Optional</td><td>Offset</td></tr>
+        <tr><td class="param-name">memberId</td><td class="param-type">int</td><td class="param-opt">Optional</td><td>Pass to mark favourites</td></tr>
+        <tr><td class="param-name">lang</td><td class="param-type">string</td><td class="param-opt">Optional</td><td><code>en</code> or <code>ar</code></td></tr>
+      </table>
+    </div>
+  </div>
+
+  <!-- Related Products -->
+  <div class="card">
+    <div class="card-head">
+      <span class="method">GET</span>
+      <span class="endpoint">/api/v1/retail/related-products</span>
+    </div>
+    <div class="card-body">
+      <p class="desc">Get products related to the currently viewed product.</p>
+      <table>
+        <tr><th>Parameter</th><th>Type</th><th>Required</th><th>Description</th></tr>
+        <tr><td class="param-name">productId</td><td class="param-type">int</td><td class="param-req">Required</td><td>The current product ID</td></tr>
+        <tr><td class="param-name">size</td><td class="param-type">int</td><td class="param-opt">Optional</td><td>Items to return</td></tr>
+        <tr><td class="param-name">count</td><td class="param-type">int</td><td class="param-opt">Optional</td><td>Offset</td></tr>
+        <tr><td class="param-name">memberId</td><td class="param-type">int</td><td class="param-opt">Optional</td><td>Pass to mark favourites</td></tr>
+        <tr><td class="param-name">lang</td><td class="param-type">string</td><td class="param-opt">Optional</td><td><code>en</code> or <code>ar</code></td></tr>
+      </table>
+    </div>
+  </div>
+
+  <!-- More Products -->
+  <div class="card">
+    <div class="card-head">
+      <span class="method">GET</span>
+      <span class="endpoint">/api/v1/retail/more-products</span>
+    </div>
+    <div class="card-body">
+      <p class="desc">Load more products (infinite scroll) starting after a given product.</p>
+      <table>
+        <tr><th>Parameter</th><th>Type</th><th>Required</th><th>Description</th></tr>
+        <tr><td class="param-name">productId</td><td class="param-type">int</td><td class="param-req">Required</td><td>Last product ID already loaded</td></tr>
+        <tr><td class="param-name">size</td><td class="param-type">int</td><td class="param-opt">Optional</td><td>Items to return</td></tr>
+        <tr><td class="param-name">count</td><td class="param-type">int</td><td class="param-opt">Optional</td><td>Offset</td></tr>
+        <tr><td class="param-name">memberId</td><td class="param-type">int</td><td class="param-opt">Optional</td><td>Pass to mark favourites</td></tr>
+        <tr><td class="param-name">lang</td><td class="param-type">string</td><td class="param-opt">Optional</td><td><code>en</code> or <code>ar</code></td></tr>
+      </table>
+    </div>
+  </div>
+
+  <!-- Tags -->
+  <div class="card">
+    <div class="card-head">
+      <span class="method">GET</span>
+      <span class="endpoint">/api/v1/retail/tags</span>
+    </div>
+    <div class="card-body">
+      <p class="desc">Get all product tags for retail (for filter chips).</p>
+      <p class="no-params">No parameters required.</p>
+    </div>
+  </div>
+
+  <!-- Products By Tag -->
+  <div class="card">
+    <div class="card-head">
+      <span class="method">GET</span>
+      <span class="endpoint">/api/v1/retail/products-by-tag</span>
+    </div>
+    <div class="card-body">
+      <p class="desc">Get products filtered by a specific tag.</p>
+      <table>
+        <tr><th>Parameter</th><th>Type</th><th>Required</th><th>Description</th></tr>
+        <tr><td class="param-name">tagId</td><td class="param-type">int</td><td class="param-req">Required</td><td>Tag ID from <code>/tags</code> endpoint</td></tr>
+        <tr><td class="param-name">size</td><td class="param-type">int</td><td class="param-opt">Optional</td><td>Items to return</td></tr>
+        <tr><td class="param-name">count</td><td class="param-type">int</td><td class="param-opt">Optional</td><td>Offset</td></tr>
+        <tr><td class="param-name">memberId</td><td class="param-type">int</td><td class="param-opt">Optional</td><td>Pass to mark favourites</td></tr>
+        <tr><td class="param-name">lang</td><td class="param-type">string</td><td class="param-opt">Optional</td><td><code>en</code> or <code>ar</code></td></tr>
+      </table>
+    </div>
+  </div>
+
+  <!-- Offers: Products -->
+  <div class="card">
+    <div class="card-head">
+      <span class="method">GET</span>
+      <span class="endpoint">/api/v1/retail/offers/products</span>
+    </div>
+    <div class="card-body">
+      <p class="desc">Get trending product offers for retail.</p>
+      <table>
+        <tr><th>Parameter</th><th>Type</th><th>Required</th><th>Description</th></tr>
+        <tr><td class="param-name">size</td><td class="param-type">int</td><td class="param-opt">Optional</td><td>Items — default: 10</td></tr>
+        <tr><td class="param-name">count</td><td class="param-type">int</td><td class="param-opt">Optional</td><td>Offset</td></tr>
+        <tr><td class="param-name">memberId</td><td class="param-type">int</td><td class="param-opt">Optional</td><td>Pass to mark favourites</td></tr>
+        <tr><td class="param-name">lang</td><td class="param-type">string</td><td class="param-opt">Optional</td><td><code>en</code> or <code>ar</code></td></tr>
+      </table>
+    </div>
+  </div>
+
+  <!-- Offers: Brands -->
+  <div class="card">
+    <div class="card-head">
+      <span class="method">GET</span>
+      <span class="endpoint">/api/v1/retail/offers/brands</span>
+    </div>
+    <div class="card-body">
+      <p class="desc">Get trending brand offers for retail.</p>
+      <table>
+        <tr><th>Parameter</th><th>Type</th><th>Required</th><th>Description</th></tr>
+        <tr><td class="param-name">size</td><td class="param-type">int</td><td class="param-opt">Optional</td><td>Items — default: 10</td></tr>
+        <tr><td class="param-name">count</td><td class="param-type">int</td><td class="param-opt">Optional</td><td>Offset</td></tr>
+        <tr><td class="param-name">lang</td><td class="param-type">string</td><td class="param-opt">Optional</td><td><code>en</code> or <code>ar</code></td></tr>
+      </table>
+    </div>
+  </div>
+
+  <!-- Offers: Categories -->
+  <div class="card">
+    <div class="card-head">
+      <span class="method">GET</span>
+      <span class="endpoint">/api/v1/retail/offers/categories</span>
+    </div>
+    <div class="card-body">
+      <p class="desc">Get trending category offers for retail.</p>
+      <table>
+        <tr><th>Parameter</th><th>Type</th><th>Required</th><th>Description</th></tr>
+        <tr><td class="param-name">size</td><td class="param-type">int</td><td class="param-opt">Optional</td><td>Items — default: 10</td></tr>
+        <tr><td class="param-name">count</td><td class="param-type">int</td><td class="param-opt">Optional</td><td>Offset</td></tr>
+        <tr><td class="param-name">lang</td><td class="param-type">string</td><td class="param-opt">Optional</td><td><code>en</code> or <code>ar</code></td></tr>
+      </table>
+    </div>
+  </div>
+
+</div><!-- /grid retail -->
+
+<footer>Boulevard API Docs &nbsp;·&nbsp; Restaurant &amp; Retail &nbsp;·&nbsp; All rights reserved</footer>
+</body>
+</html>

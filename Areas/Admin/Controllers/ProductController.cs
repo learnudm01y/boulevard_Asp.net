@@ -238,11 +238,11 @@ namespace Boulevard.Areas.Admin.Controllers
             }
             if (model.ProductKey == Guid.Empty)
             {
-                var featureCategory = new FeatureCategory();
                 if (!string.IsNullOrEmpty(model.FeatureCategoryKey))
                 {
-                    featureCategory = await _featureCategoryAccess.GetByKey(Guid.Parse(model.FeatureCategoryKey));
-                    model.FeatureCategoryId = featureCategory.FeatureCategoryId;
+                    var featureCategory = await _featureCategoryAccess.GetByKey(Guid.Parse(model.FeatureCategoryKey));
+                    if (featureCategory != null)
+                        model.FeatureCategoryId = featureCategory.FeatureCategoryId;
                 }
                 await _productAccess.Insert(model);
 
@@ -509,7 +509,12 @@ namespace Boulevard.Areas.Admin.Controllers
             {
                 try
                 {
-                    var feacherCategory =await _featureCategoryAccess.GetByKey(Guid.Parse(model.fCatagoryKey));
+                    if (string.IsNullOrEmpty(model.fCatagoryKey) || !Guid.TryParse(model.fCatagoryKey, out Guid _fcGuid))
+                        return RedirectToAction(nameof(AddBulk), new { message = "Invalid category key.", fCatagoryKey = model.fCatagoryKey });
+
+                    var feacherCategory = await _featureCategoryAccess.GetByKey(Guid.Parse(model.fCatagoryKey));
+                    if (feacherCategory == null)
+                        return RedirectToAction(nameof(AddBulk), new { message = "Feature category not found in database. Please run the seed script first.", fCatagoryKey = model.fCatagoryKey });
 
                     StringBuilder queryString = new StringBuilder();
                     DataSet ds = new DataSet();
@@ -750,11 +755,17 @@ namespace Boulevard.Areas.Admin.Controllers
             return RedirectToAction("AddBulk", new { message = "",fCatagoryKey = fCatagoryKey });
         }
 
-        public async Task<ActionResult> UpdateAllTemptoProduct(string fCatagoryKey)   
+        public async Task<ActionResult> UpdateAllTemptoProduct(string fCatagoryKey)
         {
             try
             {
-                var feacherCategory = await _featureCategoryAccess.GetByKey(Guid.Parse(fCatagoryKey));
+                if (string.IsNullOrEmpty(fCatagoryKey) || !Guid.TryParse(fCatagoryKey, out Guid fcGuid))
+                    return RedirectToAction("AddBulk", new { message = "Invalid category key.", fCatagoryKey = fCatagoryKey });
+
+                var feacherCategory = await _featureCategoryAccess.GetByKey(fcGuid);
+                if (feacherCategory == null)
+                    return RedirectToAction("AddBulk", new { message = "Feature category not found.", fCatagoryKey = fCatagoryKey });
+
                 _tempMemberDataAccess.AddProduct(feacherCategory.FeatureCategoryId);
                 _tempMemberDataAccess.DeleteTempProduct();
                 return RedirectToAction("AddBulk", new { message = "All Records Successfully Added to Member.", fCatagoryKey = fCatagoryKey });

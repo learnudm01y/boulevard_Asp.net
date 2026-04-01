@@ -35,7 +35,8 @@ namespace Boulevard.Areas.Admin.Controllers
                 {
                     ViewBag.FCatagoryName = await _featureCategoryAccess.GetFeatureCategoryName(fCatagoryKey);
                     var FCategory = await _featureCategoryAccess.GetByKey(Guid.Parse(fCatagoryKey));
-                    ViewBag.FCategoryId = FCategory.FeatureCategoryId;
+                    if (FCategory != null)
+                        ViewBag.FCategoryId = FCategory.FeatureCategoryId;
                 }
                 list = await _commonProductTagDataAcces.GetAllByFCatagoryKey(fCatagoryKey);
                 return View(list);
@@ -43,7 +44,7 @@ namespace Boulevard.Areas.Admin.Controllers
             catch (Exception ex)
             {
                 Log.Error(ex.ToString());
-                return null;
+                return View(new List<CommonProductTag>());
             }
         }
 

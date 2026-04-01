@@ -804,6 +804,206 @@ new { controller = "Service", action = "GetServicesByIdTypingandInsurance", id =
     new { controller = "Courier", action = "CancelOrderForCourier", areaId = RouteParameter.Optional }
   );
 
+            #region Restaurant
+
+            config.Routes.MapHttpRoute(
+                "Restaurant_GetBanners",
+                "api/v1/restaurant/banners",
+                new { controller = "Restaurant", action = "GetBanners", id = RouteParameter.Optional }
+            );
+
+            config.Routes.MapHttpRoute(
+                "Restaurant_GetCategories",
+                "api/v1/restaurant/categories",
+                new { controller = "Restaurant", action = "GetCategories", id = RouteParameter.Optional }
+            );
+
+            config.Routes.MapHttpRoute(
+                "Restaurant_GetCategoryProducts",
+                "api/v1/restaurant/category-products",
+                new { controller = "Restaurant", action = "GetCategoryProducts", id = RouteParameter.Optional }
+            );
+
+            config.Routes.MapHttpRoute(
+                "Restaurant_GetParentCategoryProducts",
+                "api/v1/restaurant/parent-category-products",
+                new { controller = "Restaurant", action = "GetParentCategoryProducts", id = RouteParameter.Optional }
+            );
+
+            config.Routes.MapHttpRoute(
+                "Restaurant_GetBrands",
+                "api/v1/restaurant/brands",
+                new { controller = "Restaurant", action = "GetBrands", id = RouteParameter.Optional }
+            );
+
+            config.Routes.MapHttpRoute(
+                "Restaurant_GetBrandProducts",
+                "api/v1/restaurant/brand-products",
+                new { controller = "Restaurant", action = "GetBrandProducts", id = RouteParameter.Optional }
+            );
+
+            config.Routes.MapHttpRoute(
+                "Restaurant_GetProducts",
+                "api/v1/restaurant/products",
+                new { controller = "Restaurant", action = "GetProducts", id = RouteParameter.Optional }
+            );
+
+            config.Routes.MapHttpRoute(
+                "Restaurant_GetProductDetails",
+                "api/v1/restaurant/product-details",
+                new { controller = "Restaurant", action = "GetProductDetails", id = RouteParameter.Optional }
+            );
+
+            config.Routes.MapHttpRoute(
+                "Restaurant_GetBestSellers",
+                "api/v1/restaurant/best-sellers",
+                new { controller = "Restaurant", action = "GetBestSellers", id = RouteParameter.Optional }
+            );
+
+            config.Routes.MapHttpRoute(
+                "Restaurant_GetRelatedProducts",
+                "api/v1/restaurant/related-products",
+                new { controller = "Restaurant", action = "GetRelatedProducts", id = RouteParameter.Optional }
+            );
+
+            config.Routes.MapHttpRoute(
+                "Restaurant_GetMoreProducts",
+                "api/v1/restaurant/more-products",
+                new { controller = "Restaurant", action = "GetMoreProducts", id = RouteParameter.Optional }
+            );
+
+            config.Routes.MapHttpRoute(
+                "Restaurant_GetTags",
+                "api/v1/restaurant/tags",
+                new { controller = "Restaurant", action = "GetTags", id = RouteParameter.Optional }
+            );
+
+            config.Routes.MapHttpRoute(
+                "Restaurant_GetProductsByTag",
+                "api/v1/restaurant/products-by-tag",
+                new { controller = "Restaurant", action = "GetProductsByTag", id = RouteParameter.Optional }
+            );
+
+            config.Routes.MapHttpRoute(
+                "Restaurant_GetTrendingProductOffers",
+                "api/v1/restaurant/offers/products",
+                new { controller = "Restaurant", action = "GetTrendingProductOffers", id = RouteParameter.Optional }
+            );
+
+            config.Routes.MapHttpRoute(
+                "Restaurant_GetTrendingBrandOffers",
+                "api/v1/restaurant/offers/brands",
+                new { controller = "Restaurant", action = "GetTrendingBrandOffers", id = RouteParameter.Optional }
+            );
+
+            config.Routes.MapHttpRoute(
+                "Restaurant_GetTrendingCategoryOffers",
+                "api/v1/restaurant/offers/categories",
+                new { controller = "Restaurant", action = "GetTrendingCategoryOffers", id = RouteParameter.Optional }
+            );
+
+            #endregion
+
+            #region Retail
+
+            config.Routes.MapHttpRoute(
+                "Retail_GetBanners",
+                "api/v1/retail/banners",
+                new { controller = "Retail", action = "GetBanners", id = RouteParameter.Optional }
+            );
+
+            config.Routes.MapHttpRoute(
+                "Retail_GetCategories",
+                "api/v1/retail/categories",
+                new { controller = "Retail", action = "GetCategories", id = RouteParameter.Optional }
+            );
+
+            config.Routes.MapHttpRoute(
+                "Retail_GetCategoryProducts",
+                "api/v1/retail/category-products",
+                new { controller = "Retail", action = "GetCategoryProducts", id = RouteParameter.Optional }
+            );
+
+            config.Routes.MapHttpRoute(
+                "Retail_GetParentCategoryProducts",
+                "api/v1/retail/parent-category-products",
+                new { controller = "Retail", action = "GetParentCategoryProducts", id = RouteParameter.Optional }
+            );
+
+            config.Routes.MapHttpRoute(
+                "Retail_GetBrands",
+                "api/v1/retail/brands",
+                new { controller = "Retail", action = "GetBrands", id = RouteParameter.Optional }
+            );
+
+            config.Routes.MapHttpRoute(
+                "Retail_GetBrandProducts",
+                "api/v1/retail/brand-products",
+                new { controller = "Retail", action = "GetBrandProducts", id = RouteParameter.Optional }
+            );
+
+            config.Routes.MapHttpRoute(
+                "Retail_GetProducts",
+                "api/v1/retail/products",
+                new { controller = "Retail", action = "GetProducts", id = RouteParameter.Optional }
+            );
+
+            config.Routes.MapHttpRoute(
+                "Retail_GetProductDetails",
+                "api/v1/retail/product-details",
+                new { controller = "Retail", action = "GetProductDetails", id = RouteParameter.Optional }
+            );
+
+            config.Routes.MapHttpRoute(
+                "Retail_GetBestSellers",
+                "api/v1/retail/best-sellers",
+                new { controller = "Retail", action = "GetBestSellers", id = RouteParameter.Optional }
+            );
+
+            config.Routes.MapHttpRoute(
+                "Retail_GetRelatedProducts",
+                "api/v1/retail/related-products",
+                new { controller = "Retail", action = "GetRelatedProducts", id = RouteParameter.Optional }
+            );
+
+            config.Routes.MapHttpRoute(
+                "Retail_GetMoreProducts",
+                "api/v1/retail/more-products",
+                new { controller = "Retail", action = "GetMoreProducts", id = RouteParameter.Optional }
+            );
+
+            config.Routes.MapHttpRoute(
+                "Retail_GetTags",
+                "api/v1/retail/tags",
+                new { controller = "Retail", action = "GetTags", id = RouteParameter.Optional }
+            );
+
+            config.Routes.MapHttpRoute(
+                "Retail_GetProductsByTag",
+                "api/v1/retail/products-by-tag",
+                new { controller = "Retail", action = "GetProductsByTag", id = RouteParameter.Optional }
+            );
+
+            config.Routes.MapHttpRoute(
+                "Retail_GetTrendingProductOffers",
+                "api/v1/retail/offers/products",
+                new { controller = "Retail", action = "GetTrendingProductOffers", id = RouteParameter.Optional }
+            );
+
+            config.Routes.MapHttpRoute(
+                "Retail_GetTrendingBrandOffers",
+                "api/v1/retail/offers/brands",
+                new { controller = "Retail", action = "GetTrendingBrandOffers", id = RouteParameter.Optional }
+            );
+
+            config.Routes.MapHttpRoute(
+                "Retail_GetTrendingCategoryOffers",
+                "api/v1/retail/offers/categories",
+                new { controller = "Retail", action = "GetTrendingCategoryOffers", id = RouteParameter.Optional }
+            );
+
+            #endregion
+
             
         }
 
