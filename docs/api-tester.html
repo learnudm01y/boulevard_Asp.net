@@ -1319,6 +1319,7 @@ async function runServiceEndpoint(sectionKey, epId) {
     <div class="response-meta"><span class="http-code code-0xx">…</span><span style="color:var(--muted);">Sending request…</span></div>
   </div>`;
 
+  const ep        = SERVICE_ENDPOINTS.find(e => e.id === epId);
   const t0        = performance.now();
   const url       = buildServiceUrl(sectionKey, epId);
   const directUrl = buildServiceDirectUrl(sectionKey, epId);

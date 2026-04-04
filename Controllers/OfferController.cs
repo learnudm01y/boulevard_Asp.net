@@ -70,9 +70,9 @@ namespace Boulevard.Controllers
             }
         }
 
-        public async Task<IHttpActionResult> GetTrandingServiceOffer(int featureecategoryid = 0, int size = 10, int count = 0, int memberid = 0, string lang = "en")
+        public async Task<IHttpActionResult> GetTrandingServiceOffer(int featureCategoryId = 0, int size = 10, int count = 0, int memberid = 0, string lang = "en")
         {
-            var result = await _offerService.TrendingOfferServices(featureecategoryid, size, count,memberid,lang);
+            var result = await _offerService.TrendingOfferServices(featureCategoryId, size, count,memberid,lang);
             if (result != null)
             {
                 return SuccessMessage(result);

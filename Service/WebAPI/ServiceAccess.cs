@@ -276,9 +276,12 @@ namespace Boulevard.Service.WebAPI
             try
             {
                 Boulevard.Models.Service Service = await uow.ServiceRepository.Get().Where(p => p.ServiceId == serviceId).Include(p => p.ServiceLandmarks).Include(p => p.FeatureCategory).Include(p => p.ServiceTypes).Include(p => p.ServiceAmenities).Include(p => p.ServiceImages).Include(p => p.Country).Include(p => p.City).FirstOrDefaultAsync();
+                if (Service == null) return null;
                 Service.Name = lang == "en" ? Service.Name : Service.NameAr;
-                Service.City = await new CityAccess().GetById(Service.CityId.Value, lang);
-                Service.Country = await new CountryAccess().GetById(Service.CountryId.Value, lang);
+                if (Service.CityId.HasValue)
+                    Service.City = await new CityAccess().GetById(Service.CityId.Value, lang);
+                if (Service.CountryId.HasValue)
+                    Service.Country = await new CountryAccess().GetById(Service.CountryId.Value, lang);
                 Service.UserReviews = await uow.UserReviewRepository.Get().Where(p => p.FeatureType.ToLower() == "service" && p.FeatureTypeId == serviceId).Include(p => p.UserReviewImages).ToListAsync();
                 if (Service.UserReviews != null && Service.UserReviews.Count > 0)
                 {
@@ -598,7 +601,23 @@ namespace Boulevard.Service.WebAPI
                 } 
                 else
                 {
-                    return null;
+                    // No keyword — return all active service types for this category
+                    var categoryServiceIds = await uow.ServiceRepository.Get()
+                        .Where(s => s.FeatureCategoryId == featureCategoryId && s.IsPackage == false)
+                        .Select(s => s.ServiceId)
+                        .ToListAsync();
+
+                    var allTypes = await uow.ServiceTypesRepository.Get()
+                        .Where(s => categoryServiceIds.Contains(s.ServiceId) && s.Status == "Active")
+                        .OrderByDescending(s => s.ServiceId)
+                        .ToListAsync();
+
+                    foreach (var type in allTypes)
+                    {
+                        var ss = await GetSmallServices(type.ServiceId, type.ServiceTypeId, memberId, lang);
+                        if (ss != null) listofservices.Add(ss);
+                    }
+                    return listofservices;
                 }
 
             }

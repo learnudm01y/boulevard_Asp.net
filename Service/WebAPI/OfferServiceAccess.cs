@@ -705,11 +705,13 @@ namespace Boulevard.Service.WebAPI
                 await updateAllOfferAvaibality();
                 if (featureCategoryId > 0)
                 {
-                    offersList = await uow.OfferInformationRepository.Get().Where(p => p.Status.ToLower() == "active" && p.IsTimeLimit == false && p.IsBrand == false && p.IsProduct == false && p.IsCategory == false &&  p.FeatureCategoryId == featureCategoryId && p.IsService == true && p.FeatureType == "Service").ToListAsync();
+                    // Filter by category + trending — do not restrict by IsService/IsCategory flags
+                    // (admin-created service offers may use IsCategory=true, IsService=false)
+                    offersList = await uow.OfferInformationRepository.Get().Where(p => p.Status.ToLower() == "active" && p.IsTimeLimit == false && p.IsBrand == false && p.IsProduct == false && p.IsTrending == true && p.FeatureCategoryId == featureCategoryId).ToListAsync();
                 }
                 else
                 {
-                    offersList = await uow.OfferInformationRepository.Get().Where(p => p.Status.ToLower() == "active" && p.IsTimeLimit == false && p.IsBrand == false && p.IsProduct == false && p.IsCategory == false && p.IsTrending == true  && p.IsService == true && p.FeatureType == "Service").ToListAsync();
+                    offersList = await uow.OfferInformationRepository.Get().Where(p => p.Status.ToLower() == "active" && p.IsTimeLimit == false && p.IsBrand == false && p.IsProduct == false && p.IsTrending == true && p.FeatureType == "Service").ToListAsync();
                 }
                 if (offersList != null && offersList.Count()>0)
                 {
