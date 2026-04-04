@@ -192,11 +192,12 @@ namespace Boulevard.Service.WebAPI
                         var searchWords = keyword.ToLower().Split(" ".ToCharArray(),
                             StringSplitOptions.RemoveEmptyEntries);
 
-                        
-                            productids = await uow.ProductRepository.Get().Where(s => searchWords.Any(t => s.ProductName.ToLower().Contains(t)) && s.FeatureCategoryId==featureCategoryId && s.Status == "Active").OrderByDescending(s => s.ProductId).Take(size).Skip(count).Select(s => s.ProductId).ToListAsync();
-                        
+                        productids = await uow.ProductRepository.Get().Where(s => searchWords.Any(t => s.ProductName.ToLower().Contains(t)) && s.FeatureCategoryId==featureCategoryId && s.Status == "Active").OrderByDescending(s => s.ProductId).Take(size).Skip(count).Select(s => s.ProductId).ToListAsync();
                     }
-                    
+                    else
+                    {
+                        productids = await uow.ProductRepository.Get().Where(s => s.FeatureCategoryId == featureCategoryId && s.Status == "Active").OrderByDescending(s => s.ProductId).Take(size).Skip(count).Select(s => s.ProductId).ToListAsync();
+                    }
 
                     if (productids.Count() > 0 || productids != null)
                     {

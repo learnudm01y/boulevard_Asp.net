@@ -60,6 +60,28 @@ namespace Boulevard
            
         }
 
+        protected void Application_BeginRequest()
+        {
+            // Allow CORS for all API routes (supports file:// and any origin)
+            if (Request.Path.StartsWith("/api/", StringComparison.OrdinalIgnoreCase))
+            {
+                var origin = Request.Headers["Origin"];
+                Response.Headers.Set("Access-Control-Allow-Origin",
+                    string.IsNullOrEmpty(origin) ? "*" : origin);
+                Response.Headers.Set("Access-Control-Allow-Headers",
+                    "Content-Type, Accept, Authorization, X-Requested-With");
+                Response.Headers.Set("Access-Control-Allow-Methods",
+                    "GET, POST, PUT, DELETE, OPTIONS");
+
+                if (Request.HttpMethod == "OPTIONS")
+                {
+                    Response.StatusCode = 200;
+                    Response.End();
+                    return;
+                }
+            }
+        }
+
         public void Logger()
         {
             var filePath = HttpRuntime.AppDomainAppPath;

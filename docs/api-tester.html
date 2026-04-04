@@ -1,0 +1,1056 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Boulevard API Tester — Restaurant &amp; Retail</title>
+  <style>
+    :root {
+      --restaurant: #e8500a;
+      --retail:     #1a6fe8;
+      --ok:         #16a34a;
+      --err:        #dc2626;
+      --warn:       #d97706;
+      --bg:         #0f1117;
+      --panel:      #1c1e26;
+      --card:       #23262f;
+      --border:     #2e3140;
+      --text:       #e2e4ed;
+      --muted:      #7b7f94;
+      --code-bg:    #12141a;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    /* ─── Header ─────────────────────────────────────── */
+    header {
+      background: var(--panel);
+      border-bottom: 1px solid var(--border);
+      padding: 18px 32px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    header h1 { font-size: 1.15rem; font-weight: 700; letter-spacing: .02em; }
+    header h1 span { opacity: .45; font-weight: 400; margin-left: 6px; font-size:.9rem; }
+    #globalStatus {
+      font-size: .8rem;
+      padding: 4px 12px;
+      border-radius: 20px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      color: var(--muted);
+    }
+
+    /* ─── Config bar ──────────────────────────────────── */
+    .config-bar {
+      background: var(--panel);
+      border-bottom: 1px solid var(--border);
+      padding: 12px 32px;
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    .config-bar label { font-size: .82rem; color: var(--muted); white-space:nowrap; }
+    .config-bar input, .config-bar select {
+      background: var(--card);
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 6px 10px;
+      border-radius: 6px;
+      font-size: .84rem;
+      outline: none;
+    }
+    .config-bar input:focus, .config-bar select:focus {
+      border-color: var(--retail);
+    }
+    #baseUrlInput { width: 280px; }
+    .btn {
+      cursor: pointer;
+      border: none;
+      border-radius: 6px;
+      padding: 7px 16px;
+      font-size: .84rem;
+      font-weight: 600;
+      transition: opacity .15s;
+    }
+    .btn:hover { opacity: .85; }
+    .btn-primary { background: var(--retail); color: #fff; }
+    .btn-restaurant { background: var(--restaurant); color: #fff; }
+    .btn-sm { padding: 5px 12px; font-size: .78rem; }
+    .btn-danger { background: var(--err); color: #fff; }
+    .btn-neutral { background: var(--card); color: var(--text); border: 1px solid var(--border); }
+    .btn:disabled { opacity: .35; cursor: not-allowed; }
+
+    /* ─── Layout ──────────────────────────────────────── */
+    .sections {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0;
+      min-height: calc(100vh - 112px);
+    }
+    @media (max-width: 900px) { .sections { grid-template-columns: 1fr; } }
+
+    .section {
+      border-right: 1px solid var(--border);
+      overflow: hidden;
+    }
+    .section:last-child { border-right: none; }
+
+    .section-header {
+      padding: 16px 24px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 57px;
+      z-index: 50;
+    }
+    .section-restaurant .section-header { background: color-mix(in srgb, var(--restaurant) 12%, var(--panel)); border-left: 3px solid var(--restaurant); }
+    .section-retail     .section-header { background: color-mix(in srgb, var(--retail)     12%, var(--panel)); border-left: 3px solid var(--retail); }
+
+    .section-header h2 { font-size: 1rem; font-weight: 700; }
+    .section-header .badge {
+      margin-left: auto;
+      font-size: .72rem;
+      padding: 3px 9px;
+      border-radius: 20px;
+      background: var(--card);
+      color: var(--muted);
+      border: 1px solid var(--border);
+    }
+    .section-actions {
+      display: flex;
+      gap: 6px;
+      padding: 10px 24px;
+      border-bottom: 1px solid var(--border);
+      background: var(--panel);
+    }
+    .summary-bar {
+      padding: 6px 24px;
+      font-size: .76rem;
+      color: var(--muted);
+      border-bottom: 1px solid var(--border);
+      background: var(--bg);
+      display: flex;
+      gap: 16px;
+    }
+    .summary-bar .s-ok   { color: var(--ok); }
+    .summary-bar .s-err  { color: var(--err); }
+    .summary-bar .s-pend { color: var(--warn); }
+
+    /* ─── Endpoint cards ──────────────────────────────── */
+    .endpoint-list { padding: 12px; display: flex; flex-direction: column; gap: 8px; }
+
+    .ep-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      overflow: hidden;
+      transition: border-color .15s;
+    }
+    .ep-card.status-ok   { border-left: 3px solid var(--ok); }
+    .ep-card.status-err  { border-left: 3px solid var(--err); }
+    .ep-card.status-run  { border-left: 3px solid var(--warn); }
+
+    .ep-head {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 14px;
+      cursor: pointer;
+      user-select: none;
+    }
+    .ep-head:hover { background: color-mix(in srgb, var(--border) 30%, transparent); }
+
+    .ep-method {
+      font-size: .7rem;
+      font-weight: 700;
+      padding: 2px 7px;
+      border-radius: 4px;
+      background: var(--ok);
+      color: #fff;
+      flex-shrink: 0;
+    }
+    .ep-name { font-size: .82rem; font-weight: 600; flex: 1; }
+    .ep-path { font-size: .72rem; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 200px; }
+    .ep-status-pill {
+      font-size: .7rem;
+      padding: 2px 8px;
+      border-radius: 10px;
+      background: var(--border);
+      color: var(--muted);
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+    .pill-ok   { background: color-mix(in srgb, var(--ok)   20%, transparent); color: var(--ok);  border: 1px solid var(--ok); }
+    .pill-err  { background: color-mix(in srgb, var(--err)  20%, transparent); color: var(--err); border: 1px solid var(--err); }
+    .pill-run  { background: color-mix(in srgb, var(--warn) 20%, transparent); color: var(--warn); border: 1px solid var(--warn); }
+
+    .ep-body { padding: 0 14px 14px; display: none; }
+    .ep-body.open { display: block; }
+
+    /* params */
+    .params-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6px 10px;
+      margin-bottom: 10px;
+    }
+    .param-row { display: flex; flex-direction: column; gap: 3px; }
+    .param-row label { font-size: .72rem; color: var(--muted); }
+    .param-row input, .param-row select {
+      background: var(--code-bg);
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 5px 8px;
+      border-radius: 5px;
+      font-size: .8rem;
+      outline: none;
+      width: 100%;
+    }
+    .param-row input:focus { border-color: var(--retail); }
+
+    .ep-controls { display: flex; gap: 8px; margin-bottom: 10px; align-items: center; }
+    .ep-timer { font-size: .74rem; color: var(--muted); margin-left: auto; }
+
+    /* response */
+    .response-block {
+      background: var(--code-bg);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      overflow: hidden;
+    }
+    .response-meta {
+      display: flex;
+      gap: 10px;
+      padding: 6px 12px;
+      border-bottom: 1px solid var(--border);
+      font-size: .74rem;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    .response-meta .http-code {
+      font-weight: 700;
+      padding: 1px 7px;
+      border-radius: 4px;
+    }
+    .code-2xx { background: var(--ok);  color: #fff; }
+    .code-4xx { background: var(--err); color: #fff; }
+    .code-5xx { background: #7c3aed;    color: #fff; }
+    .code-0xx  { background: var(--warn); color: #fff; }
+
+    pre.response-json {
+      padding: 10px 12px;
+      font-family: 'Cascadia Code', 'Fira Code', monospace;
+      font-size: .76rem;
+      line-height: 1.55;
+      white-space: pre-wrap;
+      word-break: break-all;
+      color: #a8d8ea;
+      max-height: 320px;
+      overflow-y: auto;
+      margin: 0;
+    }
+    .json-key    { color: #79b8ff; }
+    .json-str    { color: #9ecbff; }
+    .json-num    { color: #f8c555; }
+    .json-bool   { color: #ff79c6; }
+    .json-null   { color: var(--muted); }
+
+    /* tabs */
+    .tab-bar {
+      display: flex;
+      gap: 0;
+      border-bottom: 1px solid var(--border);
+      padding: 0 12px;
+      font-size: .76rem;
+    }
+    .tab-btn {
+      padding: 6px 12px;
+      cursor: pointer;
+      color: var(--muted);
+      border-bottom: 2px solid transparent;
+      margin-bottom: -1px;
+      background: none;
+      border-top: none;
+      border-left: none;
+      border-right: none;
+      color: var(--muted);
+      font-size: .76rem;
+      transition: color .15s;
+    }
+    .tab-btn.active { color: var(--retail); border-bottom-color: var(--retail); }
+    .tab-pane { display: none; }
+    .tab-pane.active { display: block; }
+
+    /* scrollbar */
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: var(--panel); }
+    ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+    /* expand icon */
+    .expand-icon { font-size: .8rem; color: var(--muted); transition: transform .15s; flex-shrink:0; }
+    .ep-body.open ~ .ep-head .expand-icon { transform: rotate(90deg); }
+
+    /* spinner */
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .spinner {
+      display: inline-block;
+      width: 12px; height: 12px;
+      border: 2px solid var(--warn);
+      border-top-color: transparent;
+      border-radius: 50%;
+      animation: spin .6s linear infinite;
+      vertical-align: middle;
+    }
+
+    /* ─── CORS warning banner ─────────────────────────── */
+    #corsBanner {
+      display: none;
+      background: color-mix(in srgb, var(--warn) 12%, var(--panel));
+      border-bottom: 2px solid var(--warn);
+      padding: 12px 32px;
+      font-size: .84rem;
+      color: var(--text);
+      gap: 12px;
+      align-items: flex-start;
+      flex-direction: column;
+    }
+    #corsBanner.visible { display: flex; }
+    #corsBanner strong { color: var(--warn); }
+    #corsBanner code {
+      background: var(--code-bg);
+      padding: 3px 8px;
+      border-radius: 4px;
+      font-size: .82rem;
+      user-select: all;
+      cursor: text;
+    }
+    #corsBanner .banner-row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+    .proxy-toggle-label {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+      font-size: .83rem;
+      color: var(--text);
+      padding: 5px 12px;
+      border-radius: 6px;
+      background: var(--card);
+      border: 1px solid var(--warn);
+      user-select: none;
+    }
+    .proxy-toggle-label input { accent-color: var(--warn); width: 15px; height: 15px; cursor: pointer; }
+    .proxy-active { border-color: var(--ok) !important; color: var(--ok) !important; }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>Boulevard API Tester <span>Restaurant &amp; Retail</span></h1>
+  <div id="globalStatus">Ready</div>
+</header>
+
+<!-- file:// CORS warning banner -->
+<div id="corsBanner">
+  <div class="banner-row">
+    <strong>⚠ CORS Blocked:</strong>
+    <span>This page is opened from <code>file://</code> — browsers block cross-origin fetch requests from the filesystem.</span>
+  </div>
+  <div class="banner-row" style="gap:18px">
+    <strong>Fix option 1 — Enable CORS Proxy:</strong>
+    <label class="proxy-toggle-label" id="proxyToggleLabel">
+      <input type="checkbox" id="useCorsProxy" onchange="onProxyToggle()" />
+      Use CORS Proxy (corsproxy.io)
+    </label>
+    <span style="color:var(--muted);font-size:.78rem">Routes requests through corsproxy.io — no server changes needed</span>
+  </div>
+  <div class="banner-row">
+    <strong>Fix option 2 — Local server:</strong>
+    <span>Run in PowerShell from this folder:</span>
+    <code>python -m http.server 8080</code>
+    <span style="color:var(--muted)">then open</span>
+    <code>http://localhost:8080/api-tester.html</code>
+    <span style="color:var(--muted);font-size:.78rem">(requires CORS headers on the API server — already added to Web.config)</span>
+  </div>
+</div>
+
+<div class="config-bar">
+  <label>Base URL</label>
+  <input id="baseUrlInput" type="text" value="https://boulevard.r-y-x.net" />
+  <label>Lang</label>
+  <select id="globalLang">
+    <option value="en">en</option>
+    <option value="ar">ar</option>
+  </select>
+  <label>Page Size</label>
+  <input id="globalSize" type="number" value="10" style="width:70px" />
+  <label class="proxy-toggle-label" id="proxyToggleLabelBar" style="border-color:var(--border)">
+    <input type="checkbox" id="useCorsProxyBar" onchange="onProxyToggleBar()" />
+    CORS Proxy
+  </label>
+  <button class="btn btn-restaurant" onclick="runAll('restaurant')">▶ Run All Restaurant</button>
+  <button class="btn btn-primary"    onclick="runAll('retail')">▶ Run All Retail</button>
+  <button class="btn btn-neutral btn-sm" onclick="clearAll()">✕ Clear All</button>
+</div>
+
+<div class="sections">
+  <!-- ═══ RESTAURANT ═══════════════════════════════════════════ -->
+  <div class="section section-restaurant" id="section-restaurant">
+    <div class="section-header">
+      <span style="font-size:1.3rem">🍽️</span>
+      <h2>Restaurant</h2>
+      <code style="font-size:.72rem;color:var(--muted)">GUID: E7B3A1C2-D4F5-4A6B-8C9D-1E2F3A4B5C6D</code>
+      <span class="badge" id="badge-restaurant">0 / 15</span>
+    </div>
+    <div class="section-actions">
+      <button class="btn btn-restaurant btn-sm" onclick="runAll('restaurant')">▶ Run All</button>
+      <button class="btn btn-neutral btn-sm"    onclick="expandAll('restaurant')">⊞ Expand All</button>
+      <button class="btn btn-neutral btn-sm"    onclick="collapseAll('restaurant')">⊟ Collapse All</button>
+    </div>
+    <div class="summary-bar" id="summary-restaurant">
+      <span class="s-pend">Pending: 15</span>
+      <span class="s-ok">OK: 0</span>
+      <span class="s-err">Errors: 0</span>
+    </div>
+    <div class="endpoint-list" id="list-restaurant"></div>
+  </div>
+
+  <!-- ═══ RETAIL ═══════════════════════════════════════════════ -->
+  <div class="section section-retail" id="section-retail">
+    <div class="section-header">
+      <span style="font-size:1.3rem">🛍️</span>
+      <h2>Retail</h2>
+      <code style="font-size:.72rem;color:var(--muted)">GUID: F1A2B3C4-D5E6-4F70-8B9C-0D1E2F3A4B5C</code>
+      <span class="badge" id="badge-retail">0 / 15</span>
+    </div>
+    <div class="section-actions">
+      <button class="btn btn-primary btn-sm" onclick="runAll('retail')">▶ Run All</button>
+      <button class="btn btn-neutral btn-sm" onclick="expandAll('retail')">⊞ Expand All</button>
+      <button class="btn btn-neutral btn-sm" onclick="collapseAll('retail')">⊟ Collapse All</button>
+    </div>
+    <div class="summary-bar" id="summary-retail">
+      <span class="s-pend">Pending: 15</span>
+      <span class="s-ok">OK: 0</span>
+      <span class="s-err">Errors: 0</span>
+    </div>
+    <div class="endpoint-list" id="list-retail"></div>
+  </div>
+</div>
+
+<script>
+// ─── Endpoint definitions ─────────────────────────────────────────────────────
+const ENDPOINTS = [
+  {
+    id: 'categories',
+    name: 'Get Categories',
+    path: (s) => `api/v1/${s}/categories`,
+    params: [
+      { key: 'type',        label: 'Type',        type: 'select', options: ['All','Feature','Trending'], default: 'All' },
+      { key: 'isTop',       label: 'isTop',       type: 'select', options: ['false','true'],            default: 'false' },
+      { key: 'isTrending',  label: 'isTrending',  type: 'select', options: ['false','true'],            default: 'false' },
+      { key: 'lang',        label: 'Language',    type: 'lang' },
+    ],
+    critical: true,
+  },
+  {
+    id: 'parent-category-products',
+    name: 'Parent Category Products',
+    path: (s) => `api/v1/${s}/parent-category-products`,
+    params: [
+      { key: 'size',     label: 'Size',     type: 'size' },
+      { key: 'count',    label: 'Offset',   type: 'number', default: '0' },
+      { key: 'memberId', label: 'MemberId', type: 'number', default: '0' },
+      { key: 'lang',     label: 'Language', type: 'lang' },
+    ],
+    critical: true,
+  },
+  {
+    id: 'products',
+    name: 'Get Products',
+    path: (s) => `api/v1/${s}/products`,
+    params: [
+      { key: 'keyword',  label: 'Keyword',  type: 'text',   default: '' },
+      { key: 'size',     label: 'Size',     type: 'size' },
+      { key: 'count',    label: 'Offset',   type: 'number', default: '0' },
+      { key: 'memberId', label: 'MemberId', type: 'number', default: '0' },
+      { key: 'lang',     label: 'Language', type: 'lang' },
+    ],
+    critical: true,
+  },
+  {
+    id: 'best-sellers',
+    name: 'Best Sellers',
+    path: (s) => `api/v1/${s}/best-sellers`,
+    params: [
+      { key: 'size',     label: 'Size',     type: 'size' },
+      { key: 'count',    label: 'Offset',   type: 'number', default: '0' },
+      { key: 'memberId', label: 'MemberId', type: 'number', default: '0' },
+      { key: 'lang',     label: 'Language', type: 'lang' },
+    ],
+  },
+  {
+    id: 'brands',
+    name: 'Get Brands',
+    path: (s) => `api/v1/${s}/brands`,
+    params: [
+      { key: 'type',       label: 'Type',       type: 'select', options: ['All','Feature','Trending'], default: 'All' },
+      { key: 'isFeature',  label: 'isFeature',  type: 'select', options: ['false','true'], default: 'false' },
+      { key: 'isTrending', label: 'isTrending', type: 'select', options: ['false','true'], default: 'false' },
+    ],
+  },
+  {
+    id: 'tags',
+    name: 'Get Tags',
+    path: (s) => `api/v1/${s}/tags`,
+    params: [],
+  },
+  {
+    id: 'banners',
+    name: 'Get Banners',
+    path: (s) => `api/v1/${s}/banners`,
+    params: [
+      { key: 'PageIdentifier', label: 'Page Identifier', type: 'text', default: '' },
+      { key: 'lang',           label: 'Language', type: 'lang' },
+    ],
+  },
+  {
+    id: 'category-products',
+    name: 'Category Products',
+    path: (s) => `api/v1/${s}/category-products`,
+    params: [
+      { key: 'categoryId',  label: 'Category ID *', type: 'number', default: '1' },
+      { key: 'keyword',     label: 'Keyword',       type: 'text',   default: '' },
+      { key: 'size',        label: 'Size',          type: 'size' },
+      { key: 'count',       label: 'Offset',        type: 'number', default: '0' },
+      { key: 'brandId',     label: 'Brand ID',      type: 'number', default: '0' },
+      { key: 'memberId',    label: 'Member ID',     type: 'number', default: '0' },
+      { key: 'IsScheduled', label: 'IsScheduled',   type: 'select', options: ['false','true'], default: 'false' },
+      { key: 'lang',        label: 'Language',      type: 'lang' },
+      { key: 'productType', label: 'Product Type',  type: 'select', options: ['1','2','3'], default: '1' },
+    ],
+    note: 'Set a valid Category ID from the categories result first.',
+  },
+  {
+    id: 'product-details',
+    name: 'Product Details',
+    path: (s) => `api/v1/${s}/product-details`,
+    params: [
+      { key: 'productId', label: 'Product ID *', type: 'number', default: '1' },
+      { key: 'memberId',  label: 'Member ID',    type: 'number', default: '0' },
+      { key: 'lang',      label: 'Language',     type: 'lang' },
+    ],
+    note: 'Set a valid Product ID from the products result first.',
+  },
+  {
+    id: 'related-products',
+    name: 'Related Products',
+    path: (s) => `api/v1/${s}/related-products`,
+    params: [
+      { key: 'productId', label: 'Product ID *', type: 'number', default: '1' },
+      { key: 'size',      label: 'Size',         type: 'size' },
+      { key: 'count',     label: 'Offset',       type: 'number', default: '0' },
+      { key: 'memberId',  label: 'Member ID',    type: 'number', default: '0' },
+      { key: 'lang',      label: 'Language',     type: 'lang' },
+    ],
+  },
+  {
+    id: 'more-products',
+    name: 'More Products',
+    path: (s) => `api/v1/${s}/more-products`,
+    params: [
+      { key: 'productId', label: 'Product ID *', type: 'number', default: '1' },
+      { key: 'size',      label: 'Size',         type: 'size' },
+      { key: 'count',     label: 'Offset',       type: 'number', default: '0' },
+      { key: 'memberId',  label: 'Member ID',    type: 'number', default: '0' },
+      { key: 'lang',      label: 'Language',     type: 'lang' },
+    ],
+  },
+  {
+    id: 'brand-products',
+    name: 'Brand Products',
+    path: (s) => `api/v1/${s}/brand-products`,
+    params: [
+      { key: 'brandId',  label: 'Brand ID *', type: 'number', default: '1' },
+      { key: 'keyword',  label: 'Keyword',    type: 'text',   default: '' },
+      { key: 'size',     label: 'Size',       type: 'size' },
+      { key: 'count',    label: 'Offset',     type: 'number', default: '0' },
+      { key: 'memberId', label: 'Member ID',  type: 'number', default: '0' },
+    ],
+    note: 'Set a valid Brand ID from the brands result first.',
+  },
+  {
+    id: 'products-by-tag',
+    name: 'Products by Tag',
+    path: (s) => `api/v1/${s}/products-by-tag`,
+    params: [
+      { key: 'tagId',    label: 'Tag ID *', type: 'number', default: '1' },
+      { key: 'size',     label: 'Size',     type: 'size' },
+      { key: 'count',    label: 'Offset',   type: 'number', default: '0' },
+      { key: 'memberId', label: 'Member ID', type: 'number', default: '0' },
+      { key: 'lang',     label: 'Language', type: 'lang' },
+    ],
+  },
+  {
+    id: 'offers-products',
+    name: 'Offers — Products',
+    path: (s) => `api/v1/${s}/offers/products`,
+    params: [
+      { key: 'size',     label: 'Size',     type: 'size' },
+      { key: 'count',    label: 'Offset',   type: 'number', default: '0' },
+      { key: 'memberId', label: 'Member ID', type: 'number', default: '0' },
+      { key: 'lang',     label: 'Language', type: 'lang' },
+    ],
+  },
+  {
+    id: 'offers-brands',
+    name: 'Offers — Brands',
+    path: (s) => `api/v1/${s}/offers/brands`,
+    params: [
+      { key: 'size',  label: 'Size',     type: 'size' },
+      { key: 'count', label: 'Offset',   type: 'number', default: '0' },
+      { key: 'lang',  label: 'Language', type: 'lang' },
+    ],
+  },
+  {
+    id: 'offers-categories',
+    name: 'Offers — Categories',
+    path: (s) => `api/v1/${s}/offers/categories`,
+    params: [
+      { key: 'size',  label: 'Size',     type: 'size' },
+      { key: 'count', label: 'Offset',   type: 'number', default: '0' },
+      { key: 'lang',  label: 'Language', type: 'lang' },
+    ],
+  },
+];
+
+// ─── State ────────────────────────────────────────────────────────────────────
+const state = {
+  restaurant: {},
+  retail: {},
+};
+
+// ─── Build UI ─────────────────────────────────────────────────────────────────
+function buildSection(sectionName) {
+  const list = document.getElementById(`list-${sectionName}`);
+  list.innerHTML = '';
+
+  ENDPOINTS.forEach(ep => {
+    const cardId = `card-${sectionName}-${ep.id}`;
+    const card = document.createElement('div');
+    card.className = 'ep-card';
+    card.id = cardId;
+
+    // Build params HTML
+    let paramsHtml = '';
+    if (ep.params.length > 0) {
+      paramsHtml = `<div class="params-grid">`;
+      ep.params.forEach(p => {
+        const inputId = `param-${sectionName}-${ep.id}-${p.key}`;
+        if (p.type === 'select') {
+          const opts = p.options.map(o => `<option value="${o}" ${o === (p.default||'') ? 'selected' : ''}>${o}</option>`).join('');
+          paramsHtml += `<div class="param-row"><label>${p.label}</label><select id="${inputId}">${opts}</select></div>`;
+        } else if (p.type === 'lang') {
+          paramsHtml += `<div class="param-row"><label>${p.label}</label><select id="${inputId}"><option value="en">en</option><option value="ar">ar</option></select></div>`;
+        } else if (p.type === 'size') {
+          paramsHtml += `<div class="param-row"><label>${p.label || 'Size'}</label><input type="number" id="${inputId}" value="10" /></div>`;
+        } else {
+          paramsHtml += `<div class="param-row"><label>${p.label}</label><input type="${p.type === 'number' ? 'number' : 'text'}" id="${inputId}" value="${p.default || ''}" /></div>`;
+        }
+      });
+      paramsHtml += `</div>`;
+    }
+    if (ep.note) {
+      paramsHtml += `<p id="note-${sectionName}-${ep.id}" style="font-size:.73rem;color:var(--warn);margin-bottom:8px;">⚠ ${ep.note}</p>`;
+    }
+
+    const critical = ep.critical ? `<span style="font-size:.68rem;color:var(--restaurant);margin-left:4px;">★ KEY</span>` : '';
+
+    card.innerHTML = `
+      <div class="ep-head" onclick="toggleCard('${sectionName}','${ep.id}')">
+        <span class="ep-method">GET</span>
+        <span class="ep-name">${ep.name}${critical}</span>
+        <span class="ep-path" title="${ep.path(sectionName)}">${ep.path(sectionName)}</span>
+        <span class="ep-status-pill" id="pill-${sectionName}-${ep.id}">Pending</span>
+        <span class="expand-icon">▶</span>
+      </div>
+      <div class="ep-body" id="body-${sectionName}-${ep.id}">
+        <div style="margin-top:8px">
+          ${paramsHtml}
+          <div class="ep-controls">
+            <button class="btn btn-${sectionName === 'restaurant' ? 'restaurant' : 'primary'} btn-sm"
+                    id="btn-${sectionName}-${ep.id}"
+                    onclick="runEndpoint('${sectionName}','${ep.id}')">▶ Send</button>
+            <button class="btn btn-neutral btn-sm" onclick="clearEndpoint('${sectionName}','${ep.id}')">✕ Clear</button>
+            <button class="btn btn-neutral btn-sm" onclick="copyUrl('${sectionName}','${ep.id}')">⎘ Copy URL</button>
+            <span class="ep-timer" id="timer-${sectionName}-${ep.id}"></span>
+          </div>
+          <div id="response-${sectionName}-${ep.id}"></div>
+        </div>
+      </div>`;
+
+    list.appendChild(card);
+  });
+}
+
+// ─── Toggle card ──────────────────────────────────────────────────────────────
+function toggleCard(sectionName, epId) {
+  const body = document.getElementById(`body-${sectionName}-${epId}`);
+  body.classList.toggle('open');
+}
+function expandAll(sectionName) {
+  document.querySelectorAll(`#list-${sectionName} .ep-body`).forEach(b => b.classList.add('open'));
+}
+function collapseAll(sectionName) {
+  document.querySelectorAll(`#list-${sectionName} .ep-body`).forEach(b => b.classList.remove('open'));
+}
+
+// ─── CORS Proxy helpers ──────────────────────────────────────────────────────
+const CORS_PROXY = 'https://corsproxy.io/?url=';
+
+function isProxyEnabled() {
+  return document.getElementById('useCorsProxy')?.checked ||
+         document.getElementById('useCorsProxyBar')?.checked || false;
+}
+
+function onProxyToggle() {
+  const val = document.getElementById('useCorsProxy').checked;
+  document.getElementById('useCorsProxyBar').checked = val;
+  _applyProxyStyle(val);
+}
+function onProxyToggleBar() {
+  const val = document.getElementById('useCorsProxyBar').checked;
+  document.getElementById('useCorsProxy').checked = val;
+  _applyProxyStyle(val);
+}
+function _applyProxyStyle(on) {
+  ['proxyToggleLabel','proxyToggleLabelBar'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.classList.toggle('proxy-active', on);
+  });
+  setGlobalStatus(on ? 'CORS Proxy ON — requests routed via corsproxy.io' : 'CORS Proxy OFF');
+}
+
+// ─── Build URL ────────────────────────────────────────────────────────────────
+function buildUrl(sectionName, epId) {
+  const ep   = ENDPOINTS.find(e => e.id === epId);
+  const base = document.getElementById('baseUrlInput').value.replace(/\/$/, '');
+  const qs   = new URLSearchParams();
+
+  ep.params.forEach(p => {
+    const inputId = `param-${sectionName}-${ep.id}-${p.key}`;
+    let val;
+    if (p.type === 'lang') {
+      val = document.getElementById(inputId)?.value || document.getElementById('globalLang').value;
+    } else if (p.type === 'size') {
+      val = document.getElementById(inputId)?.value || document.getElementById('globalSize').value;
+    } else {
+      val = document.getElementById(inputId)?.value ?? p.default ?? '';
+    }
+    if (val !== '' && val !== null && val !== undefined) qs.set(p.key, val);
+  });
+
+  const qStr    = qs.toString();
+  const directUrl = `${base}/${ep.path(sectionName)}${qStr ? '?' + qStr : ''}`;
+  return isProxyEnabled() ? `${CORS_PROXY}${encodeURIComponent(directUrl)}` : directUrl;
+}
+
+// Returns the direct URL regardless of proxy setting (used for display/copy)
+function buildDirectUrl(sectionName, epId) {
+  const ep   = ENDPOINTS.find(e => e.id === epId);
+  const base = document.getElementById('baseUrlInput').value.replace(/\/$/, '');
+  const qs   = new URLSearchParams();
+  ep.params.forEach(p => {
+    const inputId = `param-${sectionName}-${ep.id}-${p.key}`;
+    let val;
+    if (p.type === 'lang')       val = document.getElementById(inputId)?.value || document.getElementById('globalLang').value;
+    else if (p.type === 'size') val = document.getElementById(inputId)?.value || document.getElementById('globalSize').value;
+    else                        val = document.getElementById(inputId)?.value ?? p.default ?? '';
+    if (val !== '' && val !== null && val !== undefined) qs.set(p.key, val);
+  });
+  const qStr = qs.toString();
+  return `${base}/${ep.path(sectionName)}${qStr ? '?' + qStr : ''}`;
+}
+
+function copyUrl(sectionName, epId) {
+  // Always copy the direct URL (not the proxy URL)
+  navigator.clipboard.writeText(buildDirectUrl(sectionName, epId))
+    .then(() => setGlobalStatus('URL copied!', 2000));
+}
+
+// ─── Smart Auto-Fill ──────────────────────────────────────────────────────────
+// After a successful response, propagate real IDs to dependent endpoint inputs.
+function autoFill(sectionName, targetEpId, paramKey, value) {
+  const inputId = `param-${sectionName}-${targetEpId}-${paramKey}`;
+  const el = document.getElementById(inputId);
+  if (!el) return;
+  el.value = value;
+  // Flash the input to signal it was updated
+  el.style.transition = 'background .3s';
+  el.style.background = 'color-mix(in srgb, var(--ok) 25%, var(--card))';
+  setTimeout(() => { el.style.background = ''; }, 1500);
+  // Update the URL preview if the card is open
+  const noteEl = document.getElementById(`note-${sectionName}-${targetEpId}`);
+  if (noteEl) noteEl.style.display = 'none'; // hide "set valid ID" warning
+}
+
+// ─── Run single endpoint ──────────────────────────────────────────────────────
+async function runEndpoint(sectionName, epId) {
+  const card    = document.getElementById(`card-${sectionName}-${epId}`);
+  const pill    = document.getElementById(`pill-${sectionName}-${epId}`);
+  const timer   = document.getElementById(`timer-${sectionName}-${epId}`);
+  const respDiv = document.getElementById(`response-${sectionName}-${epId}`);
+  const btn     = document.getElementById(`btn-${sectionName}-${epId}`);
+  const body    = document.getElementById(`body-${sectionName}-${epId}`);
+
+  // Open card
+  body.classList.add('open');
+
+  // Set running state
+  card.className = 'ep-card status-run';
+  pill.className = 'ep-status-pill pill-run';
+  pill.innerHTML = '<span class="spinner"></span>';
+  btn.disabled   = true;
+  timer.textContent = '';
+
+  respDiv.innerHTML = `<div class="response-block">
+    <div class="response-meta"><span class="http-code code-0xx">…</span><span style="color:var(--muted);">Sending request…</span></div>
+  </div>`;
+
+  const t0        = performance.now();
+  const url       = buildUrl(sectionName, epId);         // may be proxy URL
+  const directUrl = buildDirectUrl(sectionName, epId);   // always original URL
+
+  try {
+    const res  = await fetch(url, { method: 'GET', headers: { 'Accept': 'application/json' } });
+    const ms   = Math.round(performance.now() - t0);
+    const text = await res.text();
+    let parsed, isJson = false;
+
+    try { parsed = JSON.parse(text); isJson = true; } catch { parsed = text; }
+
+    const codeClass = res.ok ? 'code-2xx' : (res.status >= 500 ? 'code-5xx' : 'code-4xx');
+    const isOk      = res.ok;
+
+    // Analyse boulevard envelope
+    let envelopeStatus = null, dataCount = null;
+    if (isJson && typeof parsed === 'object' && parsed !== null) {
+      envelopeStatus = parsed.StatusCode ?? parsed.statusCode ?? null;
+      const data = parsed.Data ?? parsed.data ?? parsed.Result ?? parsed.result;
+      if (Array.isArray(data)) {
+        dataCount = data.length;
+      } else if (data && typeof data === 'object') {
+        // result is an object (e.g. category-products, brand-products) — count nested products
+        const nested = data.products ?? data.Products;
+        if (Array.isArray(nested)) dataCount = nested.length;
+      }
+    }
+
+    card.className = `ep-card ${isOk ? 'status-ok' : 'status-err'}`;
+    pill.className = `ep-status-pill ${isOk ? 'pill-ok' : 'pill-err'}`;
+    const pillText = isOk
+      ? (envelopeStatus ? `${res.status} · Env:${envelopeStatus}` : `${res.status} OK`)
+      : `${res.status} Error`;
+    pill.textContent = pillText;
+    timer.textContent = `${ms}ms${dataCount !== null ? ` · ${dataCount} items` : ''}`;
+
+    // Save state
+    state[sectionName][epId] = { ok: isOk, status: res.status, ms, dataCount };
+    updateSummary(sectionName);
+
+    // ── Smart Auto-Fill: propagate real IDs to dependent endpoints ────────────
+    if (isOk && isJson && parsed) {
+      const rows = parsed.result ?? parsed.Result ?? parsed.data ?? parsed.Data;
+      if (Array.isArray(rows) && rows.length > 0) {
+        const first = rows[0];
+        if (epId === 'categories') {
+          const catId = first.categoryId ?? first.CategoryId;
+          if (catId) autoFill(sectionName, 'category-products', 'categoryId', catId);
+        }
+        if (epId === 'brands') {
+          const brId = first.brandId ?? first.BrandId;
+          if (brId) autoFill(sectionName, 'brand-products', 'brandId', brId);
+        }
+        if (epId === 'products') {
+          const pId = first.productId ?? first.ProductId;
+          if (pId) {
+            autoFill(sectionName, 'product-details',   'productId', pId);
+            autoFill(sectionName, 'related-products',  'productId', pId);
+            autoFill(sectionName, 'more-products',     'productId', pId);
+          }
+        }
+      }
+      // brand-products / category-products return result as object with nested products[]
+      const obj = parsed.result ?? parsed.Result ?? parsed.data ?? parsed.Data;
+      if (obj && typeof obj === 'object' && !Array.isArray(obj)) {
+        const nested = obj.products ?? obj.Products;
+        if (Array.isArray(nested) && nested.length > 0) {
+          const pId = nested[0].productId ?? nested[0].ProductId;
+          if (pId && (epId === 'brand-products' || epId === 'category-products')) {
+            autoFill(sectionName, 'product-details',  'productId', pId);
+            autoFill(sectionName, 'related-products', 'productId', pId);
+            autoFill(sectionName, 'more-products',    'productId', pId);
+          }
+        }
+      }
+    }
+    // ─────────────────────────────────────────────────────────────────────────
+
+    respDiv.innerHTML = `
+      <div class="response-block">
+        <div class="tab-bar">
+          <button class="tab-btn active" onclick="switchTab(this,'body-tab-${sectionName}-${epId}')">Response Body</button>
+          <button class="tab-btn" onclick="switchTab(this,'url-tab-${sectionName}-${epId}')">URL</button>
+        </div>
+        <div class="response-meta">
+          <span class="http-code ${codeClass}">${res.status}</span>
+          <span style="color:var(--muted)">${res.statusText}</span>
+          <span style="color:var(--muted)">${ms}ms</span>
+          ${dataCount !== null ? `<span style="color:var(--ok)">★ ${dataCount} items</span>` : ''}
+          ${envelopeStatus !== null ? `<span style="color:${envelopeStatus===200||envelopeStatus==='200'?'var(--ok)':'var(--err)'}">Envelope: ${envelopeStatus}</span>` : ''}
+        </div>
+        <div id="body-tab-${sectionName}-${epId}" class="tab-pane active">
+          <pre class="response-json">${isJson ? syntaxHighlight(parsed) : escHtml(text)}</pre>
+        </div>
+        <div id="url-tab-${sectionName}-${epId}" class="tab-pane">
+          <pre class="response-json" style="color:var(--muted)">${escHtml(directUrl)}</pre>
+        </div>
+      </div>`;
+
+  } catch (err) {
+    const ms = Math.round(performance.now() - t0);
+    card.className = 'ep-card status-err';
+    pill.className = 'ep-status-pill pill-err';
+    pill.textContent = 'CORS/Net Error';
+    timer.textContent = `${ms}ms`;
+    state[sectionName][epId] = { ok: false, status: 0, ms };
+    updateSummary(sectionName);
+
+    const isFileOrigin = location.protocol === 'file:';
+    const proxyOn = isProxyEnabled();
+    const hint = proxyOn
+      ? 'The CORS proxy itself may be down or rate-limited.\nTry opening the direct URL in a new tab.'
+      : (isFileOrigin
+          ? 'CORS is blocked from file:// origin.\n\n✅ Enable the "CORS Proxy" toggle above and retry.\n   OR\n✅ Run: python -m http.server 8080  then open http://localhost:8080/api-tester.html'
+          : 'Network error or CORS blocked.\nEnsure the server has Access-Control-Allow-Origin headers.');
+
+    respDiv.innerHTML = `
+      <div class="response-block">
+        <div class="response-meta"><span class="http-code code-4xx">ERR</span><span style="color:var(--err)">${escHtml(err.message)}</span></div>
+        <pre class="response-json" style="color:var(--err)">${escHtml(hint)}\n\nDirect URL:\n${escHtml(directUrl)}</pre>
+      </div>`;
+  } finally {
+    btn.disabled = false;
+  }
+}
+
+// ─── Run all ──────────────────────────────────────────────────────────────────
+async function runAll(sectionName) {
+  setGlobalStatus(`Running all ${sectionName} endpoints…`);
+  for (const ep of ENDPOINTS) {
+    await runEndpoint(sectionName, ep.id);
+    await new Promise(r => setTimeout(r, 200)); // small delay between requests
+  }
+  setGlobalStatus('Done ✓');
+}
+
+// ─── Clear ────────────────────────────────────────────────────────────────────
+function clearEndpoint(sectionName, epId) {
+  document.getElementById(`response-${sectionName}-${epId}`).innerHTML = '';
+  document.getElementById(`pill-${sectionName}-${epId}`).className = 'ep-status-pill';
+  document.getElementById(`pill-${sectionName}-${epId}`).textContent = 'Pending';
+  document.getElementById(`timer-${sectionName}-${epId}`).textContent = '';
+  document.getElementById(`card-${sectionName}-${epId}`).className = 'ep-card';
+  delete state[sectionName][epId];
+  updateSummary(sectionName);
+}
+
+function clearAll() {
+  ['restaurant','retail'].forEach(s => {
+    ENDPOINTS.forEach(ep => clearEndpoint(s, ep.id));
+  });
+}
+
+// ─── Summary bar ─────────────────────────────────────────────────────────────
+function updateSummary(sectionName) {
+  const total = ENDPOINTS.length;
+  const results = Object.values(state[sectionName]);
+  const ok  = results.filter(r => r.ok).length;
+  const err = results.filter(r => !r.ok).length;
+  const pending = total - results.length;
+
+  document.getElementById(`summary-${sectionName}`).innerHTML =
+    `<span class="s-pend">Pending: ${pending}</span>
+     <span class="s-ok">OK: ${ok}</span>
+     <span class="s-err">Errors: ${err}</span>`;
+
+  document.getElementById(`badge-${sectionName}`).textContent =
+    `${results.length} / ${total}`;
+}
+
+// ─── Tab switching ────────────────────────────────────────────────────────────
+function switchTab(btn, targetId) {
+  const tabBar = btn.closest('.response-block').querySelector('.tab-bar');
+  tabBar.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  const block = btn.closest('.response-block');
+  block.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
+  document.getElementById(targetId).classList.add('active');
+}
+
+// ─── Global status ────────────────────────────────────────────────────────────
+let _statusTimer = null;
+function setGlobalStatus(msg, clearAfterMs = 0) {
+  document.getElementById('globalStatus').textContent = msg;
+  if (_statusTimer) clearTimeout(_statusTimer);
+  if (clearAfterMs) _statusTimer = setTimeout(() => setGlobalStatus('Ready'), clearAfterMs);
+}
+
+// ─── Syntax highlighter ───────────────────────────────────────────────────────
+function syntaxHighlight(obj) {
+  const json = JSON.stringify(obj, null, 2);
+  return json.replace(/("(\\u[a-fA-F0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g, match => {
+    let cls = 'json-num';
+    if (/^"/.test(match)) {
+      cls = /:$/.test(match) ? 'json-key' : 'json-str';
+    } else if (/true|false/.test(match)) {
+      cls = 'json-bool';
+    } else if (/null/.test(match)) {
+      cls = 'json-null';
+    }
+    return `<span class="${cls}">${escHtml(match)}</span>`;
+  });
+}
+
+function escHtml(str) {
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
+}
+
+// ─── Init ─────────────────────────────────────────────────────────────────────
+buildSection('restaurant');
+buildSection('retail');
+
+// Show CORS banner when opened from file://
+if (location.protocol === 'file:') {
+  document.getElementById('corsBanner').classList.add('visible');
+  document.getElementById('globalStatus').textContent = '⚠ file:// detected — enable CORS Proxy';
+  document.getElementById('globalStatus').style.color = 'var(--warn)';
+}
+</script>
+</body>
+</html>
