@@ -49,6 +49,8 @@ namespace Boulevard.Service.Admin
             try
             {
                 model.LastUpdate = DateTime.Now;
+                // Detach any navigation reference so EF won't try to re-insert the parent ServiceType
+                model.ServiceType = null;
                 return await uow.ServiceTypeFileRepository.Add(model);
             }
             catch (Exception ex)

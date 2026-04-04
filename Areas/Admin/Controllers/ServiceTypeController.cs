@@ -212,15 +212,18 @@ namespace Boulevard.Areas.Admin.Controllers
             if (model.ServiceTypeKey == null || model.ServiceTypeKey == Guid.Empty)
             {
                 var serviceData = await _serviceTypeAccess.Insert(model);
-                var featureCategoryId = db.Services.Where(s => s.ServiceId == serviceData.ServiceId).Select(s => s.FeatureCategoryId).FirstOrDefault();
-                var fCatagory = await _featureCategoryAccess.GetById(featureCategoryId);
-                if (fCatagory.FeatureCategoryId != 9)
+                if (serviceData.ServiceTypeId > 0)
                 {
-                    var serviceCategory = new ServiceCategory();
-                    serviceCategory.CategoryId = model.CategoryId;
-                    serviceCategory.ServiceId = serviceData.ServiceId;
-                    serviceCategory.ServiceTypeId = serviceData.ServiceTypeId;
-                    await _serviceCategoryDataAccess.Create(serviceCategory);
+                    var featureCategoryId = db.Services.Where(s => s.ServiceId == serviceData.ServiceId).Select(s => s.FeatureCategoryId).FirstOrDefault();
+                    var fCatagory = await _featureCategoryAccess.GetById(featureCategoryId);
+                    if (fCatagory != null && fCatagory.FeatureCategoryId != 9)
+                    {
+                        var serviceCategory = new ServiceCategory();
+                        serviceCategory.CategoryId = model.CategoryId;
+                        serviceCategory.ServiceId = serviceData.ServiceId;
+                        serviceCategory.ServiceTypeId = serviceData.ServiceTypeId;
+                        await _serviceCategoryDataAccess.Create(serviceCategory);
+                    }
                 }
             }
             else
@@ -355,12 +358,13 @@ namespace Boulevard.Areas.Admin.Controllers
             {
                 var serviceData = await _serviceTypeAccess.Insert(model);
 
-                if (images != null)
+                if (serviceData.ServiceTypeId > 0 && images != null)
                 {
                     if (images.FirstOrDefault() != null)
                     {
                         foreach (var extrImage in images)
                         {
+                            if (extrImage == null || extrImage.ContentLength == 0) continue;
                             ServiceTypeFile serviceTypeFile = new ServiceTypeFile();
                             serviceTypeFile.ServiceTypeId = serviceData.ServiceTypeId;
                             serviceTypeFile.FileSource = "TypeImage";
@@ -377,7 +381,7 @@ namespace Boulevard.Areas.Admin.Controllers
             {
                 var result = await _serviceTypeAccess.Update(model);
                 //var service = await _serviceAccess.GetById(result.ServiceId);
-                if (images != null && images.FirstOrDefault() != null)
+                if (result.ServiceTypeId > 0 && images != null && images.FirstOrDefault() != null)
                 {
                     //var db = new BoulevardDbContext();
                     var serviceTypeFileNode = await db.ServiceTypeFiles.Where(s => s.ServiceTypeId == result.ServiceTypeId && s.FileSource == "TypeImage").ToListAsync();
@@ -391,6 +395,7 @@ namespace Boulevard.Areas.Admin.Controllers
                     }
                     foreach (var intrImage in images)
                     {
+                        if (intrImage == null || intrImage.ContentLength == 0) continue;
                         ServiceTypeFile serviceTypeFile = new ServiceTypeFile();
                         serviceTypeFile.ServiceTypeId = result.ServiceTypeId;
                         serviceTypeFile.FileSource = "TypeImage";

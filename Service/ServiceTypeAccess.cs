@@ -153,12 +153,13 @@ namespace Boulevard.Service
         /// <returns></returns>
         public async Task<ServiceType> Insert(ServiceType node)
         {
+            ServiceType insertData = null;
             try
             {
                 node.ServiceTypeKey = Guid.NewGuid();
                 node.CreateBy = 1;
                 node.CreateDate = DateTimeHelper.DubaiTime();
-                var insertData = await uow.ServiceTypesRepository.Add(node);
+                insertData = await uow.ServiceTypesRepository.Add(node);
                 if (insertData != null)
                 {
                     var service = await uow.ServiceRepository.GetById(insertData.ServiceId);
@@ -203,12 +204,18 @@ namespace Boulevard.Service
                     }
                 }
 
-                return node;
+                return insertData ?? node;
             }
             catch (Exception ex)
             {
                 Log.Error(ex.ToString());
-                return new ServiceType();
+                // If the ServiceType row was committed before the exception, return it
+                // so callers can still use the valid ServiceTypeId (e.g. for linked files).
+                if (insertData != null && insertData.ServiceTypeId > 0)
+                {
+                    return insertData;
+                }
+                throw;
             }
         }
 

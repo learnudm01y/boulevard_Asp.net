@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Boulevard API — Restaurant &amp; Retail</title>
+  <title>Boulevard API — Restaurant, Retail, Laundry &amp; Photography</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body { font-family: 'Segoe UI', Arial, sans-serif; background: #f4f6f9; color: #222; }
@@ -52,6 +52,8 @@
     }
     .badge-restaurant { background: #c05621; }
     .badge-retail     { background: #2b6cb0; }
+    .badge-laundry    { background: #0a7a52; }
+    .badge-photography{ background: #6b21a8; }
     .section-title h2 { font-size: 20px; font-weight: 700; }
 
     .grid {
@@ -104,7 +106,16 @@
     .param-opt  { color: #a0aec0; font-size: 11px; }
     .no-params  { font-size: 12px; color: #a0aec0; font-style: italic; padding: 4px 0; }
 
-    footer {
+    .method-post {
+      background: #c05621;
+      color: #fff;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 3px 8px;
+      border-radius: 4px;
+      letter-spacing: .5px;
+      flex-shrink: 0;
+    }
       text-align: center;
       padding: 28px;
       color: #a0aec0;
@@ -116,7 +127,7 @@
 <body>
 
 <header>
-  <h1>Boulevard API — Restaurant &amp; Retail</h1>
+  <h1>Boulevard API — Restaurant, Retail, Laundry &amp; Photography</h1>
   <p>Mobile Developer Reference &nbsp;·&nbsp; All endpoints use <strong>GET</strong> &nbsp;·&nbsp; All responses are JSON</p>
 </header>
 
@@ -130,6 +141,9 @@
   ℹ️ Every response has the same wrapper: <code>result</code> = the data,
   <code>isSuccess</code> = true/false, <code>code</code> = 200 (success) or 406 (error).
   Always check <code>isSuccess</code> before using <code>result</code>.
+  <br/><br/>
+  ⚠️ <strong>Note:</strong> <code>category-products</code> and <code>brand-products</code> return <code>result</code> as a <strong>single object</strong>
+  (category/brand info + nested <code>products: [...]</code> array), not as a plain array.
 </div>
 
 
@@ -184,7 +198,7 @@
       <span class="endpoint">/api/v1/restaurant/category-products</span>
     </div>
     <div class="card-body">
-      <p class="desc">Get products that belong to a specific category.</p>
+      <p class="desc">Get products that belong to a specific category. <strong>Response:</strong> <code>result</code> is an object containing category info + <code>products: [...]</code> array.</p>
       <table>
         <tr><th>Parameter</th><th>Type</th><th>Required</th><th>Description</th></tr>
         <tr><td class="param-name">categoryId</td><td class="param-type">int</td><td class="param-req">Required</td><td>The ID of the category</td></tr>
@@ -193,6 +207,8 @@
         <tr><td class="param-name">count</td><td class="param-type">int</td><td class="param-opt">Optional</td><td>Offset / start from</td></tr>
         <tr><td class="param-name">brandId</td><td class="param-type">int</td><td class="param-opt">Optional</td><td>Filter by brand</td></tr>
         <tr><td class="param-name">memberId</td><td class="param-type">int</td><td class="param-opt">Optional</td><td>Pass to mark favourites</td></tr>
+        <tr><td class="param-name">IsScheduled</td><td class="param-type">bool</td><td class="param-opt">Optional</td><td>Filter scheduled products only — default: <code>false</code></td></tr>
+        <tr><td class="param-name">productType</td><td class="param-type">int</td><td class="param-opt">Optional</td><td><code>1</code> = now, <code>2</code> = scheduled, <code>3</code> = all — default: <code>1</code></td></tr>
         <tr><td class="param-name">lang</td><td class="param-type">string</td><td class="param-opt">Optional</td><td><code>en</code> or <code>ar</code></td></tr>
       </table>
     </div>
@@ -240,7 +256,7 @@
       <span class="endpoint">/api/v1/restaurant/brand-products</span>
     </div>
     <div class="card-body">
-      <p class="desc">Get all products of a specific brand.</p>
+      <p class="desc">Get all products of a specific brand. <strong>Response:</strong> <code>result</code> is an object containing brand info + <code>products: [...]</code> array.</p>
       <table>
         <tr><th>Parameter</th><th>Type</th><th>Required</th><th>Description</th></tr>
         <tr><td class="param-name">brandId</td><td class="param-type">int</td><td class="param-req">Required</td><td>The brand ID</td></tr>
@@ -259,7 +275,7 @@
       <span class="endpoint">/api/v1/restaurant/products</span>
     </div>
     <div class="card-body">
-      <p class="desc">Search / list all restaurant products with pagination.</p>
+      <p class="desc">List all restaurant products with pagination, or search by keyword. Omit <code>keyword</code> to return all products.</p>
       <table>
         <tr><th>Parameter</th><th>Type</th><th>Required</th><th>Description</th></tr>
         <tr><td class="param-name">keyword</td><td class="param-type">string</td><td class="param-opt">Optional</td><td>Search by product name</td></tr>
@@ -481,7 +497,7 @@
       <span class="endpoint">/api/v1/retail/category-products</span>
     </div>
     <div class="card-body">
-      <p class="desc">Get products that belong to a specific retail category.</p>
+      <p class="desc">Get products that belong to a specific retail category. <strong>Response:</strong> <code>result</code> is an object containing category info + <code>products: [...]</code> array.</p>
       <table>
         <tr><th>Parameter</th><th>Type</th><th>Required</th><th>Description</th></tr>
         <tr><td class="param-name">categoryId</td><td class="param-type">int</td><td class="param-req">Required</td><td>The ID of the category</td></tr>
@@ -490,6 +506,8 @@
         <tr><td class="param-name">count</td><td class="param-type">int</td><td class="param-opt">Optional</td><td>Offset</td></tr>
         <tr><td class="param-name">brandId</td><td class="param-type">int</td><td class="param-opt">Optional</td><td>Filter by brand</td></tr>
         <tr><td class="param-name">memberId</td><td class="param-type">int</td><td class="param-opt">Optional</td><td>Pass to mark favourites</td></tr>
+        <tr><td class="param-name">IsScheduled</td><td class="param-type">bool</td><td class="param-opt">Optional</td><td>Filter scheduled products only — default: <code>false</code></td></tr>
+        <tr><td class="param-name">productType</td><td class="param-type">int</td><td class="param-opt">Optional</td><td><code>1</code> = now, <code>2</code> = scheduled, <code>3</code> = all — default: <code>1</code></td></tr>
         <tr><td class="param-name">lang</td><td class="param-type">string</td><td class="param-opt">Optional</td><td><code>en</code> or <code>ar</code></td></tr>
       </table>
     </div>
@@ -537,7 +555,7 @@
       <span class="endpoint">/api/v1/retail/brand-products</span>
     </div>
     <div class="card-body">
-      <p class="desc">Get all products of a specific retail brand.</p>
+      <p class="desc">Get all products of a specific retail brand. <strong>Response:</strong> <code>result</code> is an object containing brand info + <code>products: [...]</code> array.</p>
       <table>
         <tr><th>Parameter</th><th>Type</th><th>Required</th><th>Description</th></tr>
         <tr><td class="param-name">brandId</td><td class="param-type">int</td><td class="param-req">Required</td><td>The brand ID</td></tr>
@@ -556,7 +574,7 @@
       <span class="endpoint">/api/v1/retail/products</span>
     </div>
     <div class="card-body">
-      <p class="desc">Search / list all retail products with pagination.</p>
+      <p class="desc">List all retail products with pagination, or search by keyword. Omit <code>keyword</code> to return all products.</p>
       <table>
         <tr><th>Parameter</th><th>Type</th><th>Required</th><th>Description</th></tr>
         <tr><td class="param-name">keyword</td><td class="param-type">string</td><td class="param-opt">Optional</td><td>Search by product name</td></tr>
@@ -726,6 +744,332 @@
 
 </div><!-- /grid retail -->
 
-<footer>Boulevard API Docs &nbsp;·&nbsp; Restaurant &amp; Retail &nbsp;·&nbsp; All rights reserved</footer>
+
+<!-- ══════════════════════════════════════════════
+     LAUNDRY (Service Section)
+══════════════════════════════════════════════ -->
+<div class="section-title">
+  <span class="badge badge-laundry">🧺 LAUNDRY</span>
+  <h2>Laundry Endpoints</h2>
+</div>
+
+<div class="response-note" style="margin-bottom:0">
+  ℹ️ Laundry is a <strong>Service-type section</strong>. All endpoints use <code>featureCategoryId = 21</code>.
+  Unlike Restaurant/Retail (product-based), service sections share the <code>/api/v1/Service/</code> prefix with all other service categories.
+  <br/><br/>
+  ⚠️ <code>GetServices</code> is a <strong>POST</strong> endpoint — test it via Postman or curl with a JSON body.
+</div>
+
+<div class="grid">
+
+  <!-- Search Service Types -->
+  <div class="card">
+    <div class="card-head">
+      <span class="method method-post">POST</span>
+      <span class="endpoint">/api/v1/Service/SearchingServiceType</span>
+    </div>
+    <div class="card-body">
+      <p class="desc">Keyword search for service types (providers) in the Laundry section. <strong>Note:</strong> keyword must be non-empty to get results — use <code>GetServices</code> (below) for full listing.</p>
+      <table>
+        <tr><th>Parameter</th><th>Type</th><th>Required</th><th>Description</th></tr>
+        <tr><td class="param-name">featureCategoryId</td><td class="param-type">int</td><td class="param-req">Required</td><td>Fixed: <code>21</code> (Laundry)</td></tr>
+        <tr><td class="param-name">keyword</td><td class="param-type">string</td><td class="param-req">Required</td><td>Search keyword — must be non-empty for results</td></tr>
+        <tr><td class="param-name">size</td><td class="param-type">int</td><td class="param-opt">Optional</td><td>Items to return — default: 10</td></tr>
+        <tr><td class="param-name">count</td><td class="param-type">int</td><td class="param-opt">Optional</td><td>Offset — default: 0</td></tr>
+        <tr><td class="param-name">memberId</td><td class="param-type">int</td><td class="param-opt">Optional</td><td>Pass to mark favourites</td></tr>
+        <tr><td class="param-name">lang</td><td class="param-type">string</td><td class="param-opt">Optional</td><td><code>en</code> or <code>ar</code></td></tr>
+      </table>
+    </div>
+  </div>
+
+  <!-- Get Services (POST) -->
+  <div class="card">
+    <div class="card-head">
+      <span class="method method-post">POST</span>
+      <span class="endpoint">/api/v1/Service/GetServices</span>
+    </div>
+    <div class="card-body">
+      <p class="desc">Get paginated services list with optional search. Returns service packages for the Laundry section.</p>
+      <p style="font-size:12px;color:#805ad5;margin-bottom:8px;font-weight:700">Content-Type: application/json</p>
+      <table>
+        <tr><th>Body Field</th><th>Type</th><th>Required</th><th>Description</th></tr>
+        <tr><td class="param-name">FeatureCategoryId</td><td class="param-type">int</td><td class="param-req">Required</td><td>Fixed: <code>21</code> (Laundry)</td></tr>
+        <tr><td class="param-name">SearchKeyword</td><td class="param-type">string</td><td class="param-opt">Optional</td><td>Search by service or provider name</td></tr>
+        <tr><td class="param-name">size</td><td class="param-type">int</td><td class="param-opt">Optional</td><td>Page size — default: 10</td></tr>
+        <tr><td class="param-name">count</td><td class="param-type">int</td><td class="param-opt">Optional</td><td>Offset — default: 0</td></tr>
+      </table>
+      <p style="font-size:11px;color:#718096;margin-top:8px">Example body: <code>{"FeatureCategoryId":21,"SearchKeyword":"","size":10,"count":0}</code></p>
+    </div>
+  </div>
+
+  <!-- Service Details -->
+  <div class="card">
+    <div class="card-head">
+      <span class="method">GET</span>
+      <span class="endpoint">/api/v1/Service/GetServiceDetailsById</span>
+    </div>
+    <div class="card-body">
+      <p class="desc">Get full details for a specific laundry service, including service types, images, pricing, and amenities.</p>
+      <table>
+        <tr><th>Parameter</th><th>Type</th><th>Required</th><th>Description</th></tr>
+        <tr><td class="param-name">serviceId</td><td class="param-type">int</td><td class="param-req">Required</td><td>Service ID (e.g. <code>50094</code> for default Laundry Service)</td></tr>
+        <tr><td class="param-name">memberId</td><td class="param-type">int</td><td class="param-opt">Optional</td><td>Pass to check membership discounts</td></tr>
+        <tr><td class="param-name">lang</td><td class="param-type">string</td><td class="param-opt">Optional</td><td><code>en</code> or <code>ar</code></td></tr>
+      </table>
+    </div>
+  </div>
+
+  <!-- Related Services -->
+  <div class="card">
+    <div class="card-head">
+      <span class="method">GET</span>
+      <span class="endpoint">/api/v1/Service/GetRelatedServices</span>
+    </div>
+    <div class="card-body">
+      <p class="desc">Get other laundry services related to the currently viewed service (for the service detail screen).</p>
+      <table>
+        <tr><th>Parameter</th><th>Type</th><th>Required</th><th>Description</th></tr>
+        <tr><td class="param-name">featureId</td><td class="param-type">int</td><td class="param-req">Required</td><td>Fixed: <code>21</code> (Laundry FeatureCategoryId)</td></tr>
+        <tr><td class="param-name">serviceId</td><td class="param-type">int</td><td class="param-req">Required</td><td>The currently viewed service ID</td></tr>
+        <tr><td class="param-name">lang</td><td class="param-type">string</td><td class="param-opt">Optional</td><td><code>en</code> or <code>ar</code></td></tr>
+      </table>
+    </div>
+  </div>
+
+  <!-- Filter Options -->
+  <div class="card">
+    <div class="card-head">
+      <span class="method">GET</span>
+      <span class="endpoint">/api/v1/Service/GetFilterResponse</span>
+    </div>
+    <div class="card-body">
+      <p class="desc">Get available filter options (amenities, types, price ranges) for the Laundry listing screen.</p>
+      <table>
+        <tr><th>Parameter</th><th>Type</th><th>Required</th><th>Description</th></tr>
+        <tr><td class="param-name">featureCategoryId</td><td class="param-type">int</td><td class="param-req">Required</td><td>Fixed: <code>21</code> (Laundry)</td></tr>
+        <tr><td class="param-name">lang</td><td class="param-type">string</td><td class="param-opt">Optional</td><td><code>en</code> or <code>ar</code></td></tr>
+      </table>
+    </div>
+  </div>
+
+  <!-- Amenities -->
+  <div class="card">
+    <div class="card-head">
+      <span class="method">GET</span>
+      <span class="endpoint">/api/v1/Service/GetServiceAmenities</span>
+    </div>
+    <div class="card-body">
+      <p class="desc">Get all amenity tags available for laundry services (for filtering chips on the listing screen).</p>
+      <table>
+        <tr><th>Parameter</th><th>Type</th><th>Required</th><th>Description</th></tr>
+        <tr><td class="param-name">featureCategoryId</td><td class="param-type">int</td><td class="param-req">Required</td><td>Fixed: <code>21</code> (Laundry)</td></tr>
+        <tr><td class="param-name">lang</td><td class="param-type">string</td><td class="param-opt">Optional</td><td><code>en</code> or <code>ar</code></td></tr>
+      </table>
+    </div>
+  </div>
+
+  <!-- Offers -->
+  <div class="card">
+    <div class="card-head">
+      <span class="method">GET</span>
+      <span class="endpoint">/api/v1/Offers/GetTrandingServiceOffer</span>
+    </div>
+    <div class="card-body">
+      <p class="desc">Get trending / featured offers for the Laundry section (for the home screen offer banner).</p>
+      <table>
+        <tr><th>Parameter</th><th>Type</th><th>Required</th><th>Description</th></tr>
+        <tr><td class="param-name">featureCategoryId</td><td class="param-type">int</td><td class="param-req">Required</td><td>Fixed: <code>21</code> (Laundry)</td></tr>
+        <tr><td class="param-name">size</td><td class="param-type">int</td><td class="param-opt">Optional</td><td>Items to return — default: 10</td></tr>
+        <tr><td class="param-name">count</td><td class="param-type">int</td><td class="param-opt">Optional</td><td>Offset — default: 0</td></tr>
+        <tr><td class="param-name">lang</td><td class="param-type">string</td><td class="param-opt">Optional</td><td><code>en</code> or <code>ar</code></td></tr>
+      </table>
+    </div>
+  </div>
+
+  <!-- Place Order -->
+  <div class="card">
+    <div class="card-head">
+      <span class="method method-post">POST</span>
+      <span class="endpoint">/api/v1/Order/InsertOrderRequestService</span>
+    </div>
+    <div class="card-body">
+      <p class="desc">Place a new laundry service order request. Shared by all service sections (Laundry, Photography, Salon, Medical…).</p>
+      <p style="font-size:12px;color:#805ad5;margin-bottom:8px;font-weight:700">Content-Type: application/json — Requires auth token</p>
+      <table>
+        <tr><th>Body Field</th><th>Type</th><th>Required</th><th>Description</th></tr>
+        <tr><td class="param-name">ServiceId</td><td class="param-type">int</td><td class="param-req">Required</td><td>The service entity ID</td></tr>
+        <tr><td class="param-name">ServiceTypeId</td><td class="param-type">int</td><td class="param-req">Required</td><td>The selected service type / package</td></tr>
+        <tr><td class="param-name">MemberId</td><td class="param-type">int</td><td class="param-req">Required</td><td>Logged-in member ID</td></tr>
+        <tr><td class="param-name">FeatureCategoryId</td><td class="param-type">int</td><td class="param-opt">Optional</td><td>Fixed: <code>21</code> (Laundry)</td></tr>
+      </table>
+    </div>
+  </div>
+
+</div><!-- /grid laundry -->
+
+
+<!-- ══════════════════════════════════════════════
+     PHOTOGRAPHY (Service Section)
+══════════════════════════════════════════════ -->
+<div class="section-title">
+  <span class="badge badge-photography">📷 PHOTOGRAPHY</span>
+  <h2>Photography Endpoints</h2>
+</div>
+
+<div class="response-note" style="margin-bottom:0">
+  ℹ️ Photography is a <strong>Service-type section</strong>. All endpoints use <code>featureCategoryId = 22</code>.
+  Identical API structure to Laundry — only the <code>featureCategoryId</code> value changes.
+  <br/><br/>
+  ⚠️ <code>GetServices</code> is a <strong>POST</strong> endpoint — test it via Postman or curl with a JSON body.
+</div>
+
+<div class="grid">
+
+  <!-- Search Service Types -->
+  <div class="card">
+    <div class="card-head">
+      <span class="method method-post">POST</span>
+      <span class="endpoint">/api/v1/Service/SearchingServiceType</span>
+    </div>
+    <div class="card-body">
+      <p class="desc">Keyword search for service types (providers) in the Photography section. <strong>Note:</strong> keyword must be non-empty to get results — use <code>GetServices</code> (below) for full listing.</p>
+      <table>
+        <tr><th>Parameter</th><th>Type</th><th>Required</th><th>Description</th></tr>
+        <tr><td class="param-name">featureCategoryId</td><td class="param-type">int</td><td class="param-req">Required</td><td>Fixed: <code>22</code> (Photography)</td></tr>
+        <tr><td class="param-name">keyword</td><td class="param-type">string</td><td class="param-req">Required</td><td>Search keyword — must be non-empty for results</td></tr>
+        <tr><td class="param-name">size</td><td class="param-type">int</td><td class="param-opt">Optional</td><td>Items to return — default: 10</td></tr>
+        <tr><td class="param-name">count</td><td class="param-type">int</td><td class="param-opt">Optional</td><td>Offset — default: 0</td></tr>
+        <tr><td class="param-name">memberId</td><td class="param-type">int</td><td class="param-opt">Optional</td><td>Pass to mark favourites</td></tr>
+        <tr><td class="param-name">lang</td><td class="param-type">string</td><td class="param-opt">Optional</td><td><code>en</code> or <code>ar</code></td></tr>
+      </table>
+    </div>
+  </div>
+
+  <!-- Get Services (POST) -->
+  <div class="card">
+    <div class="card-head">
+      <span class="method method-post">POST</span>
+      <span class="endpoint">/api/v1/Service/GetServices</span>
+    </div>
+    <div class="card-body">
+      <p class="desc">Get paginated services list with optional search. Returns service packages for the Photography section.</p>
+      <p style="font-size:12px;color:#805ad5;margin-bottom:8px;font-weight:700">Content-Type: application/json</p>
+      <table>
+        <tr><th>Body Field</th><th>Type</th><th>Required</th><th>Description</th></tr>
+        <tr><td class="param-name">FeatureCategoryId</td><td class="param-type">int</td><td class="param-req">Required</td><td>Fixed: <code>22</code> (Photography)</td></tr>
+        <tr><td class="param-name">SearchKeyword</td><td class="param-type">string</td><td class="param-opt">Optional</td><td>Search by service or provider name</td></tr>
+        <tr><td class="param-name">size</td><td class="param-type">int</td><td class="param-opt">Optional</td><td>Page size — default: 10</td></tr>
+        <tr><td class="param-name">count</td><td class="param-type">int</td><td class="param-opt">Optional</td><td>Offset — default: 0</td></tr>
+      </table>
+      <p style="font-size:11px;color:#718096;margin-top:8px">Example body: <code>{"FeatureCategoryId":22,"SearchKeyword":"","size":10,"count":0}</code></p>
+    </div>
+  </div>
+
+  <!-- Service Details -->
+  <div class="card">
+    <div class="card-head">
+      <span class="method">GET</span>
+      <span class="endpoint">/api/v1/Service/GetServiceDetailsById</span>
+    </div>
+    <div class="card-body">
+      <p class="desc">Get full details for a specific photography service, including service types, images, pricing, and amenities.</p>
+      <table>
+        <tr><th>Parameter</th><th>Type</th><th>Required</th><th>Description</th></tr>
+        <tr><td class="param-name">serviceId</td><td class="param-type">int</td><td class="param-req">Required</td><td>Service ID (e.g. <code>50095</code> for default Photography Service)</td></tr>
+        <tr><td class="param-name">memberId</td><td class="param-type">int</td><td class="param-opt">Optional</td><td>Pass to check membership discounts</td></tr>
+        <tr><td class="param-name">lang</td><td class="param-type">string</td><td class="param-opt">Optional</td><td><code>en</code> or <code>ar</code></td></tr>
+      </table>
+    </div>
+  </div>
+
+  <!-- Related Services -->
+  <div class="card">
+    <div class="card-head">
+      <span class="method">GET</span>
+      <span class="endpoint">/api/v1/Service/GetRelatedServices</span>
+    </div>
+    <div class="card-body">
+      <p class="desc">Get other photography services related to the currently viewed service (for the service detail screen).</p>
+      <table>
+        <tr><th>Parameter</th><th>Type</th><th>Required</th><th>Description</th></tr>
+        <tr><td class="param-name">featureId</td><td class="param-type">int</td><td class="param-req">Required</td><td>Fixed: <code>22</code> (Photography FeatureCategoryId)</td></tr>
+        <tr><td class="param-name">serviceId</td><td class="param-type">int</td><td class="param-req">Required</td><td>The currently viewed service ID</td></tr>
+        <tr><td class="param-name">lang</td><td class="param-type">string</td><td class="param-opt">Optional</td><td><code>en</code> or <code>ar</code></td></tr>
+      </table>
+    </div>
+  </div>
+
+  <!-- Filter Options -->
+  <div class="card">
+    <div class="card-head">
+      <span class="method">GET</span>
+      <span class="endpoint">/api/v1/Service/GetFilterResponse</span>
+    </div>
+    <div class="card-body">
+      <p class="desc">Get available filter options for the Photography listing screen.</p>
+      <table>
+        <tr><th>Parameter</th><th>Type</th><th>Required</th><th>Description</th></tr>
+        <tr><td class="param-name">featureCategoryId</td><td class="param-type">int</td><td class="param-req">Required</td><td>Fixed: <code>22</code> (Photography)</td></tr>
+        <tr><td class="param-name">lang</td><td class="param-type">string</td><td class="param-opt">Optional</td><td><code>en</code> or <code>ar</code></td></tr>
+      </table>
+    </div>
+  </div>
+
+  <!-- Amenities -->
+  <div class="card">
+    <div class="card-head">
+      <span class="method">GET</span>
+      <span class="endpoint">/api/v1/Service/GetServiceAmenities</span>
+    </div>
+    <div class="card-body">
+      <p class="desc">Get all amenity tags available for photography services (for filtering chips on the listing screen).</p>
+      <table>
+        <tr><th>Parameter</th><th>Type</th><th>Required</th><th>Description</th></tr>
+        <tr><td class="param-name">featureCategoryId</td><td class="param-type">int</td><td class="param-req">Required</td><td>Fixed: <code>22</code> (Photography)</td></tr>
+        <tr><td class="param-name">lang</td><td class="param-type">string</td><td class="param-opt">Optional</td><td><code>en</code> or <code>ar</code></td></tr>
+      </table>
+    </div>
+  </div>
+
+  <!-- Offers -->
+  <div class="card">
+    <div class="card-head">
+      <span class="method">GET</span>
+      <span class="endpoint">/api/v1/Offers/GetTrandingServiceOffer</span>
+    </div>
+    <div class="card-body">
+      <p class="desc">Get trending / featured offers for the Photography section (for the home screen offer banner).</p>
+      <table>
+        <tr><th>Parameter</th><th>Type</th><th>Required</th><th>Description</th></tr>
+        <tr><td class="param-name">featureCategoryId</td><td class="param-type">int</td><td class="param-req">Required</td><td>Fixed: <code>22</code> (Photography)</td></tr>
+        <tr><td class="param-name">size</td><td class="param-type">int</td><td class="param-opt">Optional</td><td>Items to return — default: 10</td></tr>
+        <tr><td class="param-name">count</td><td class="param-type">int</td><td class="param-opt">Optional</td><td>Offset — default: 0</td></tr>
+        <tr><td class="param-name">lang</td><td class="param-type">string</td><td class="param-opt">Optional</td><td><code>en</code> or <code>ar</code></td></tr>
+      </table>
+    </div>
+  </div>
+
+  <!-- Place Order -->
+  <div class="card">
+    <div class="card-head">
+      <span class="method method-post">POST</span>
+      <span class="endpoint">/api/v1/Order/InsertOrderRequestService</span>
+    </div>
+    <div class="card-body">
+      <p class="desc">Place a new photography service order request. Shared by all service sections.</p>
+      <p style="font-size:12px;color:#805ad5;margin-bottom:8px;font-weight:700">Content-Type: application/json — Requires auth token</p>
+      <table>
+        <tr><th>Body Field</th><th>Type</th><th>Required</th><th>Description</th></tr>
+        <tr><td class="param-name">ServiceId</td><td class="param-type">int</td><td class="param-req">Required</td><td>The service entity ID</td></tr>
+        <tr><td class="param-name">ServiceTypeId</td><td class="param-type">int</td><td class="param-req">Required</td><td>The selected service type / package</td></tr>
+        <tr><td class="param-name">MemberId</td><td class="param-type">int</td><td class="param-req">Required</td><td>Logged-in member ID</td></tr>
+        <tr><td class="param-name">FeatureCategoryId</td><td class="param-type">int</td><td class="param-opt">Optional</td><td>Fixed: <code>22</code> (Photography)</td></tr>
+      </table>
+    </div>
+  </div>
+
+</div><!-- /grid photography -->
+
+<footer>Boulevard API Docs &nbsp;·&nbsp; Restaurant &amp; Retail &amp; Laundry &amp; Photography &nbsp;·&nbsp; All rights reserved</footer>
 </body>
 </html>

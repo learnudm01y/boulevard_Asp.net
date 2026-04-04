@@ -1027,6 +1027,31 @@ new { controller = "OrderRequestProduct", action = "GetPagedOrdersCount", id = U
         "admin/order-service-MedicalDetails",
         new { controller = "OrderRequestService", action = "MedicalDetails", id = UrlParameter.Optional }
       );
+
+      context.MapRoute(
+        "Admin_Order_LaundryIndex",
+        "admin/LaundryIndex",
+        new { controller = "OrderRequestService", action = "LaundryIndex", id = UrlParameter.Optional }
+      );
+
+      context.MapRoute(
+        "Admin_Order_LaundryDetails",
+        "admin/order-service-LaundryDetails",
+        new { controller = "OrderRequestService", action = "LaundryDetails", id = UrlParameter.Optional }
+      );
+
+      context.MapRoute(
+        "Admin_Order_PhotographyIndex",
+        "admin/PhotographyIndex",
+        new { controller = "OrderRequestService", action = "PhotographyIndex", id = UrlParameter.Optional }
+      );
+
+      context.MapRoute(
+        "Admin_Order_PhotographyDetails",
+        "admin/order-service-PhotographyDetails",
+        new { controller = "OrderRequestService", action = "PhotographyDetails", id = UrlParameter.Optional }
+      );
+
       context.MapRoute(
         "Admin_Order_Service_Approved",
         "admin/order-service-approved/{id}",

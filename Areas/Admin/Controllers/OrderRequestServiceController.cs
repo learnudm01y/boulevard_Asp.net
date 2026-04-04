@@ -463,5 +463,25 @@ namespace Boulevard.Areas.Admin.Controllers
         {
             return View();
         }
+
+        public async Task<ActionResult> LaundryIndex()
+        {
+            return View();
+        }
+
+        public async Task<ActionResult> LaundryDetails()
+        {
+            return View();
+        }
+
+        public async Task<ActionResult> PhotographyIndex()
+        {
+            return View();
+        }
+
+        public async Task<ActionResult> PhotographyDetails()
+        {
+            return View();
+        }
     }
 }

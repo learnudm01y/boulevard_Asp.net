@@ -3,11 +3,13 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Boulevard API Tester — Restaurant &amp; Retail</title>
+  <title>Boulevard API Tester — All Sections</title>
   <style>
     :root {
       --restaurant: #e8500a;
       --retail:     #1a6fe8;
+      --laundry:    #0ea572;
+      --photography:#7c3aed;
       --ok:         #16a34a;
       --err:        #dc2626;
       --warn:       #d97706;
@@ -118,6 +120,8 @@
     }
     .section-restaurant .section-header { background: color-mix(in srgb, var(--restaurant) 12%, var(--panel)); border-left: 3px solid var(--restaurant); }
     .section-retail     .section-header { background: color-mix(in srgb, var(--retail)     12%, var(--panel)); border-left: 3px solid var(--retail); }
+    .section-laundry    .section-header { background: color-mix(in srgb, var(--laundry)    12%, var(--panel)); border-left: 3px solid var(--laundry); }
+    .section-photography .section-header{ background: color-mix(in srgb, var(--photography)12%, var(--panel)); border-left: 3px solid var(--photography); }
 
     .section-header h2 { font-size: 1rem; font-weight: 700; }
     .section-header .badge {
@@ -358,7 +362,7 @@
 <body>
 
 <header>
-  <h1>Boulevard API Tester <span>Restaurant &amp; Retail</span></h1>
+  <h1>Boulevard API Tester <span>All Sections</span></h1>
   <div id="globalStatus">Ready</div>
 </header>
 
@@ -402,6 +406,8 @@
   </label>
   <button class="btn btn-restaurant" onclick="runAll('restaurant')">▶ Run All Restaurant</button>
   <button class="btn btn-primary"    onclick="runAll('retail')">▶ Run All Retail</button>
+  <button class="btn" style="background:var(--laundry);color:#fff" onclick="runServiceAll('laundry')">▶ Run All Laundry</button>
+  <button class="btn" style="background:var(--photography);color:#fff" onclick="runServiceAll('photography')">▶ Run All Photography</button>
   <button class="btn btn-neutral btn-sm" onclick="clearAll()">✕ Clear All</button>
 </div>
 
@@ -446,6 +452,48 @@
       <span class="s-err">Errors: 0</span>
     </div>
     <div class="endpoint-list" id="list-retail"></div>
+  </div>
+
+  <!-- ═══ LAUNDRY ═══════════════════════════════════════════════ -->
+  <div class="section section-laundry" id="section-laundry">
+    <div class="section-header">
+      <span style="font-size:1.3rem">🧺</span>
+      <h2>Laundry</h2>
+      <code style="font-size:.72rem;color:var(--muted)">FeatureCategoryId: 21 · DefaultServiceId: 50094</code>
+      <span class="badge" id="badge-laundry">0 / 6</span>
+    </div>
+    <div class="section-actions">
+      <button class="btn btn-sm" style="background:var(--laundry);color:#fff" onclick="runServiceAll('laundry')">▶ Run All</button>
+      <button class="btn btn-neutral btn-sm" onclick="expandServiceAll('laundry')">⊞ Expand All</button>
+      <button class="btn btn-neutral btn-sm" onclick="collapseServiceAll('laundry')">⊟ Collapse All</button>
+    </div>
+    <div class="summary-bar" id="summary-laundry">
+      <span class="s-pend">Pending: 6</span>
+      <span class="s-ok">OK: 0</span>
+      <span class="s-err">Errors: 0</span>
+    </div>
+    <div class="endpoint-list" id="list-laundry"></div>
+  </div>
+
+  <!-- ═══ PHOTOGRAPHY ══════════════════════════════════════════ -->
+  <div class="section section-photography" id="section-photography">
+    <div class="section-header">
+      <span style="font-size:1.3rem">📷</span>
+      <h2>Photography</h2>
+      <code style="font-size:.72rem;color:var(--muted)">FeatureCategoryId: 22 · DefaultServiceId: 50095</code>
+      <span class="badge" id="badge-photography">0 / 6</span>
+    </div>
+    <div class="section-actions">
+      <button class="btn btn-sm" style="background:var(--photography);color:#fff" onclick="runServiceAll('photography')">▶ Run All</button>
+      <button class="btn btn-neutral btn-sm" onclick="expandServiceAll('photography')">⊞ Expand All</button>
+      <button class="btn btn-neutral btn-sm" onclick="collapseServiceAll('photography')">⊟ Collapse All</button>
+    </div>
+    <div class="summary-bar" id="summary-photography">
+      <span class="s-pend">Pending: 6</span>
+      <span class="s-ok">OK: 0</span>
+      <span class="s-err">Errors: 0</span>
+    </div>
+    <div class="endpoint-list" id="list-photography"></div>
   </div>
 </div>
 
@@ -639,6 +687,8 @@ const ENDPOINTS = [
 const state = {
   restaurant: {},
   retail: {},
+  laundry: {},
+  photography: {},
 };
 
 // ─── Build UI ─────────────────────────────────────────────────────────────────
@@ -980,6 +1030,9 @@ function clearAll() {
   ['restaurant','retail'].forEach(s => {
     ENDPOINTS.forEach(ep => clearEndpoint(s, ep.id));
   });
+  ['laundry','photography'].forEach(s => {
+    SERVICE_ENDPOINTS.forEach(ep => clearServiceEndpoint(s, ep.id));
+  });
 }
 
 // ─── Summary bar ─────────────────────────────────────────────────────────────
@@ -1041,9 +1094,368 @@ function escHtml(str) {
     .replace(/"/g, '&quot;');
 }
 
+// ─── Service Section Config ───────────────────────────────────────────────────
+const SERVICE_SECTION_CFG = {
+  laundry:     { fcId: 21, defaultServiceId: 50094, accentVar: '--laundry'     },
+  photography: { fcId: 22, defaultServiceId: 50095, accentVar: '--photography' },
+};
+
+// ─── Service Endpoint Definitions ────────────────────────────────────────────
+const SERVICE_ENDPOINTS = [
+  {
+    id: 'svc-search',
+    name: 'Search Service Types',
+    path: 'api/v1/Service/SearchingServiceType',
+    method: 'POST',
+    note: 'keyword must be non-empty to get results — use GetServices (POST) for full listing.',
+    params: [
+      { key: 'featureCategoryId', label: 'Category ID', type: 'fcId' },
+      { key: 'keyword',           label: 'Keyword',     type: 'text',   default: '' },
+      { key: 'size',              label: 'Size',        type: 'size' },
+      { key: 'count',             label: 'Offset',      type: 'number', default: '0' },
+      { key: 'memberId',          label: 'Member ID',   type: 'number', default: '0' },
+      { key: 'lang',              label: 'Language',    type: 'lang' },
+    ],
+    critical: true,
+  },
+  {
+    id: 'svc-details',
+    name: 'Service Details',
+    path: 'api/v1/Service/GetServiceDetailsById',
+    method: 'GET',
+    params: [
+      { key: 'serviceId', label: 'Service ID *', type: 'serviceId' },
+      { key: 'memberId',  label: 'Member ID',    type: 'number', default: '0' },
+      { key: 'lang',      label: 'Language',     type: 'lang' },
+    ],
+    note: 'Service ID is pre-filled with the default service. Update from search results.',
+  },
+  {
+    id: 'svc-related',
+    name: 'Related Services',
+    path: 'api/v1/Service/GetRelatedServices',
+    method: 'GET',
+    params: [
+      { key: 'featureId', label: 'Feature Cat ID', type: 'fcId' },
+      { key: 'serviceId', label: 'Service ID *',   type: 'serviceId' },
+      { key: 'lang',      label: 'Language',       type: 'lang' },
+    ],
+  },
+  {
+    id: 'svc-filter',
+    name: 'Filter Options',
+    path: 'api/v1/Service/GetFilterResponse',
+    method: 'GET',
+    params: [
+      { key: 'featureCategoryId', label: 'Category ID', type: 'fcId' },
+      { key: 'lang',              label: 'Language',    type: 'lang' },
+    ],
+  },
+  {
+    id: 'svc-amenities',
+    name: 'Service Amenities',
+    path: 'api/v1/Service/GetServiceAmenities',
+    method: 'GET',
+    params: [
+      { key: 'featureCategoryId', label: 'Category ID', type: 'fcId' },
+      { key: 'lang',              label: 'Language',    type: 'lang' },
+    ],
+  },
+  {
+    id: 'svc-offers',
+    name: 'Service Offers',
+    path: 'api/v1/Offers/GetTrandingServiceOffer',
+    method: 'GET',
+    params: [
+      { key: 'featureCategoryId', label: 'Category ID', type: 'fcId' },
+      { key: 'size',              label: 'Size',        type: 'size' },
+      { key: 'count',             label: 'Offset',      type: 'number', default: '0' },
+      { key: 'lang',              label: 'Language',    type: 'lang' },
+    ],
+  },
+];
+
+// ─── Build Service Section UI ─────────────────────────────────────────────────
+function buildServiceSection(sectionKey) {
+  const cfg  = SERVICE_SECTION_CFG[sectionKey];
+  const list = document.getElementById(`list-${sectionKey}`);
+  list.innerHTML = '';
+
+  SERVICE_ENDPOINTS.forEach(ep => {
+    const cardId = `card-${sectionKey}-${ep.id}`;
+    const card   = document.createElement('div');
+    card.className = 'ep-card';
+    card.id = cardId;
+
+    let paramsHtml = '';
+    if (ep.params.length > 0) {
+      paramsHtml = `<div class="params-grid">`;
+      ep.params.forEach(p => {
+        const inputId = `param-${sectionKey}-${ep.id}-${p.key}`;
+        if (p.type === 'fcId') {
+          paramsHtml += `<div class="param-row"><label>${p.label}</label><input type="number" id="${inputId}" value="${cfg.fcId}" /></div>`;
+        } else if (p.type === 'serviceId') {
+          paramsHtml += `<div class="param-row"><label>${p.label}</label><input type="number" id="${inputId}" value="${cfg.defaultServiceId}" /></div>`;
+        } else if (p.type === 'select') {
+          const opts = p.options.map(o => `<option value="${o}" ${o === (p.default||'') ? 'selected' : ''}>${o}</option>`).join('');
+          paramsHtml += `<div class="param-row"><label>${p.label}</label><select id="${inputId}">${opts}</select></div>`;
+        } else if (p.type === 'lang') {
+          paramsHtml += `<div class="param-row"><label>${p.label}</label><select id="${inputId}"><option value="en">en</option><option value="ar">ar</option></select></div>`;
+        } else if (p.type === 'size') {
+          paramsHtml += `<div class="param-row"><label>${p.label || 'Size'}</label><input type="number" id="${inputId}" value="10" /></div>`;
+        } else {
+          paramsHtml += `<div class="param-row"><label>${p.label}</label><input type="${p.type === 'number' ? 'number' : 'text'}" id="${inputId}" value="${p.default || ''}" /></div>`;
+        }
+      });
+      paramsHtml += `</div>`;
+    }
+    if (ep.note) {
+      paramsHtml += `<p id="note-${sectionKey}-${ep.id}" style="font-size:.73rem;color:var(--warn);margin-bottom:8px;">⚠ ${ep.note}</p>`;
+    }
+
+    const accentColor = `var(${cfg.accentVar})`;
+    const critical = ep.critical ? `<span style="font-size:.68rem;color:${accentColor};margin-left:4px;">★ KEY</span>` : '';
+
+    card.innerHTML = `
+      <div class="ep-head" onclick="toggleServiceCard('${sectionKey}','${ep.id}')">
+        <span class="ep-method" style="background:${accentColor}">${ep.method}</span>
+        <span class="ep-name">${ep.name}${critical}</span>
+        <span class="ep-path" title="${ep.path}">${ep.path}</span>
+        <span class="ep-status-pill" id="pill-${sectionKey}-${ep.id}">Pending</span>
+        <span class="expand-icon">▶</span>
+      </div>
+      <div class="ep-body" id="body-${sectionKey}-${ep.id}">
+        <div style="margin-top:8px">
+          ${paramsHtml}
+          <div class="ep-controls">
+            <button class="btn btn-sm" style="background:${accentColor};color:#fff"
+                    id="btn-${sectionKey}-${ep.id}"
+                    onclick="runServiceEndpoint('${sectionKey}','${ep.id}')">▶ Send</button>
+            <button class="btn btn-neutral btn-sm" onclick="clearServiceEndpoint('${sectionKey}','${ep.id}')">✕ Clear</button>
+            <button class="btn btn-neutral btn-sm" onclick="copyServiceUrl('${sectionKey}','${ep.id}')">⎘ Copy URL</button>
+            <span class="ep-timer" id="timer-${sectionKey}-${ep.id}"></span>
+          </div>
+          <div id="response-${sectionKey}-${ep.id}"></div>
+        </div>
+      </div>`;
+
+    list.appendChild(card);
+  });
+}
+
+function toggleServiceCard(sectionKey, epId) {
+  document.getElementById(`body-${sectionKey}-${epId}`).classList.toggle('open');
+}
+function expandServiceAll(sectionKey) {
+  document.querySelectorAll(`#list-${sectionKey} .ep-body`).forEach(b => b.classList.add('open'));
+}
+function collapseServiceAll(sectionKey) {
+  document.querySelectorAll(`#list-${sectionKey} .ep-body`).forEach(b => b.classList.remove('open'));
+}
+
+// ─── Service URL Builder ──────────────────────────────────────────────────────
+function buildServiceUrl(sectionKey, epId) {
+  const ep   = SERVICE_ENDPOINTS.find(e => e.id === epId);
+  const cfg  = SERVICE_SECTION_CFG[sectionKey];
+  const base = document.getElementById('baseUrlInput').value.replace(/\/$/, '');
+  const qs   = new URLSearchParams();
+
+  ep.params.forEach(p => {
+    const inputId = `param-${sectionKey}-${ep.id}-${p.key}`;
+    let val;
+    if (p.type === 'lang') {
+      val = document.getElementById(inputId)?.value || document.getElementById('globalLang').value;
+    } else if (p.type === 'size') {
+      val = document.getElementById(inputId)?.value || document.getElementById('globalSize').value;
+    } else {
+      val = document.getElementById(inputId)?.value ?? p.default ?? '';
+    }
+    if (val !== '' && val !== null && val !== undefined) qs.set(p.key, val);
+  });
+
+  const qStr      = qs.toString();
+  const directUrl = `${base}/${ep.path}${qStr ? '?' + qStr : ''}`;
+  return isProxyEnabled() ? `${CORS_PROXY}${encodeURIComponent(directUrl)}` : directUrl;
+}
+
+function buildServiceDirectUrl(sectionKey, epId) {
+  const ep   = SERVICE_ENDPOINTS.find(e => e.id === epId);
+  const base = document.getElementById('baseUrlInput').value.replace(/\/$/, '');
+  const qs   = new URLSearchParams();
+  ep.params.forEach(p => {
+    const inputId = `param-${sectionKey}-${ep.id}-${p.key}`;
+    let val;
+    if (p.type === 'lang')      val = document.getElementById(inputId)?.value || document.getElementById('globalLang').value;
+    else if (p.type === 'size') val = document.getElementById(inputId)?.value || document.getElementById('globalSize').value;
+    else                        val = document.getElementById(inputId)?.value ?? p.default ?? '';
+    if (val !== '' && val !== null && val !== undefined) qs.set(p.key, val);
+  });
+  const qStr = qs.toString();
+  return `${base}/${ep.path}${qStr ? '?' + qStr : ''}`;
+}
+
+function copyServiceUrl(sectionKey, epId) {
+  navigator.clipboard.writeText(buildServiceDirectUrl(sectionKey, epId))
+    .then(() => setGlobalStatus('URL copied!', 2000));
+}
+
+// ─── Run single service endpoint ──────────────────────────────────────────────
+async function runServiceEndpoint(sectionKey, epId) {
+  const card    = document.getElementById(`card-${sectionKey}-${epId}`);
+  const pill    = document.getElementById(`pill-${sectionKey}-${epId}`);
+  const timer   = document.getElementById(`timer-${sectionKey}-${epId}`);
+  const respDiv = document.getElementById(`response-${sectionKey}-${epId}`);
+  const btn     = document.getElementById(`btn-${sectionKey}-${epId}`);
+  const body    = document.getElementById(`body-${sectionKey}-${epId}`);
+
+  body.classList.add('open');
+  card.className = 'ep-card status-run';
+  pill.className = 'ep-status-pill pill-run';
+  pill.innerHTML = '<span class="spinner"></span>';
+  btn.disabled   = true;
+  timer.textContent = '';
+
+  respDiv.innerHTML = `<div class="response-block">
+    <div class="response-meta"><span class="http-code code-0xx">…</span><span style="color:var(--muted);">Sending request…</span></div>
+  </div>`;
+
+  const t0        = performance.now();
+  const url       = buildServiceUrl(sectionKey, epId);
+  const directUrl = buildServiceDirectUrl(sectionKey, epId);
+
+  try {
+    const fetchOpts = { method: ep.method || 'GET', headers: { 'Accept': 'application/json' } };
+    const res  = await fetch(url, fetchOpts);
+    const ms   = Math.round(performance.now() - t0);
+    const text = await res.text();
+    let parsed, isJson = false;
+    try { parsed = JSON.parse(text); isJson = true; } catch { parsed = text; }
+
+    const codeClass = res.ok ? 'code-2xx' : (res.status >= 500 ? 'code-5xx' : 'code-4xx');
+    let envelopeStatus = null, dataCount = null;
+    if (isJson && typeof parsed === 'object' && parsed !== null) {
+      envelopeStatus = parsed.StatusCode ?? parsed.statusCode ?? null;
+      const data = parsed.Data ?? parsed.data ?? parsed.Result ?? parsed.result;
+      if (Array.isArray(data)) dataCount = data.length;
+    }
+
+    card.className = `ep-card ${res.ok ? 'status-ok' : 'status-err'}`;
+    pill.className = `ep-status-pill ${res.ok ? 'pill-ok' : 'pill-err'}`;
+    pill.textContent = res.ok
+      ? (envelopeStatus ? `${res.status} · Env:${envelopeStatus}` : `${res.status} OK`)
+      : `${res.status} Error`;
+    timer.textContent = `${ms}ms${dataCount !== null ? ` · ${dataCount} items` : ''}`;
+
+    state[sectionKey][epId] = { ok: res.ok, status: res.status, ms, dataCount };
+    updateServiceSummary(sectionKey);
+
+    // Auto-fill serviceId from search results
+    if (res.ok && isJson && parsed && epId === 'svc-search') {
+      const rows = parsed.result ?? parsed.Result ?? parsed.data ?? parsed.Data;
+      if (Array.isArray(rows) && rows.length > 0) {
+        const first = rows[0];
+        const sId = first.serviceId ?? first.ServiceId;
+        if (sId) {
+          autoFillService(sectionKey, 'svc-details',  'serviceId', sId);
+          autoFillService(sectionKey, 'svc-related',  'serviceId', sId);
+        }
+      }
+    }
+
+    respDiv.innerHTML = `
+      <div class="response-block">
+        <div class="tab-bar">
+          <button class="tab-btn active" onclick="switchTab(this,'body-tab-${sectionKey}-${epId}')">Response Body</button>
+          <button class="tab-btn" onclick="switchTab(this,'url-tab-${sectionKey}-${epId}')">URL</button>
+        </div>
+        <div class="response-meta">
+          <span class="http-code ${codeClass}">${res.status}</span>
+          <span style="color:var(--muted)">${res.statusText}</span>
+          <span style="color:var(--muted)">${ms}ms</span>
+          ${dataCount !== null ? `<span style="color:var(--ok)">★ ${dataCount} items</span>` : ''}
+          ${envelopeStatus !== null ? `<span style="color:${envelopeStatus===200||envelopeStatus==='200'?'var(--ok)':'var(--err)'}">Envelope: ${envelopeStatus}</span>` : ''}
+        </div>
+        <div id="body-tab-${sectionKey}-${epId}" class="tab-pane active">
+          <pre class="response-json">${isJson ? syntaxHighlight(parsed) : escHtml(text)}</pre>
+        </div>
+        <div id="url-tab-${sectionKey}-${epId}" class="tab-pane">
+          <pre class="response-json" style="color:var(--muted)">${escHtml(directUrl)}</pre>
+        </div>
+      </div>`;
+
+  } catch (err) {
+    const ms = Math.round(performance.now() - t0);
+    card.className = 'ep-card status-err';
+    pill.className = 'ep-status-pill pill-err';
+    pill.textContent = 'CORS/Net Error';
+    timer.textContent = `${ms}ms`;
+    state[sectionKey][epId] = { ok: false, status: 0, ms };
+    updateServiceSummary(sectionKey);
+    const hint = isProxyEnabled()
+      ? 'The CORS proxy itself may be down or rate-limited.\nTry opening the direct URL in a new tab.'
+      : (location.protocol === 'file:'
+          ? 'CORS is blocked from file:// origin.\n\n✅ Enable the "CORS Proxy" toggle above and retry.'
+          : 'Network error or CORS blocked.');
+    respDiv.innerHTML = `
+      <div class="response-block">
+        <div class="response-meta"><span class="http-code code-4xx">ERR</span><span style="color:var(--err)">${escHtml(err.message)}</span></div>
+        <pre class="response-json" style="color:var(--err)">${escHtml(hint)}\n\nDirect URL:\n${escHtml(directUrl)}</pre>
+      </div>`;
+  } finally {
+    btn.disabled = false;
+  }
+}
+
+function autoFillService(sectionKey, targetEpId, paramKey, value) {
+  const inputId = `param-${sectionKey}-${targetEpId}-${paramKey}`;
+  const el = document.getElementById(inputId);
+  if (!el) return;
+  el.value = value;
+  el.style.transition = 'background .3s';
+  el.style.background = 'color-mix(in srgb, var(--ok) 25%, var(--card))';
+  setTimeout(() => { el.style.background = ''; }, 1500);
+  const noteEl = document.getElementById(`note-${sectionKey}-${targetEpId}`);
+  if (noteEl) noteEl.style.display = 'none';
+}
+
+// ─── Run all service endpoints ────────────────────────────────────────────────
+async function runServiceAll(sectionKey) {
+  setGlobalStatus(`Running all ${sectionKey} endpoints…`);
+  for (const ep of SERVICE_ENDPOINTS) {
+    await runServiceEndpoint(sectionKey, ep.id);
+    await new Promise(r => setTimeout(r, 200));
+  }
+  setGlobalStatus('Done ✓');
+}
+
+function clearServiceEndpoint(sectionKey, epId) {
+  document.getElementById(`response-${sectionKey}-${epId}`).innerHTML = '';
+  document.getElementById(`pill-${sectionKey}-${epId}`).className = 'ep-status-pill';
+  document.getElementById(`pill-${sectionKey}-${epId}`).textContent = 'Pending';
+  document.getElementById(`timer-${sectionKey}-${epId}`).textContent = '';
+  document.getElementById(`card-${sectionKey}-${epId}`).className = 'ep-card';
+  delete state[sectionKey][epId];
+  updateServiceSummary(sectionKey);
+}
+
+function updateServiceSummary(sectionKey) {
+  const total   = SERVICE_ENDPOINTS.length;
+  const results = Object.values(state[sectionKey]);
+  const ok      = results.filter(r => r.ok).length;
+  const err     = results.filter(r => !r.ok).length;
+  const pending = total - results.length;
+  document.getElementById(`summary-${sectionKey}`).innerHTML =
+    `<span class="s-pend">Pending: ${pending}</span>
+     <span class="s-ok">OK: ${ok}</span>
+     <span class="s-err">Errors: ${err}</span>`;
+  document.getElementById(`badge-${sectionKey}`).textContent = `${results.length} / ${total}`;
+}
+
 // ─── Init ─────────────────────────────────────────────────────────────────────
 buildSection('restaurant');
 buildSection('retail');
+buildServiceSection('laundry');
+buildServiceSection('photography');
 
 // Show CORS banner when opened from file://
 if (location.protocol === 'file:') {
