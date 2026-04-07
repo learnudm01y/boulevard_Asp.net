@@ -33,8 +33,11 @@
                     </div>
 
                     <div class="col-sm-4 text-right">
-                        <a href="@Url.RouteUrl("Admin_Property_Information_Create_And_Update")" class="btn btn-success  waves-effect">
+                        <a href="@Url.RouteUrl("Admin_Property_Information_Create_And_Update")" class="btn btn-success waves-effect mr-2">
                             <i class="mdi mdi-plus"></i> Create Property Information
+                        </a>
+                        <a href="@Url.RouteUrl("Admin_AddServiceBulk", new { fCatagoryKey = "dd501b2d-fe22-4c31-b340-1b4237fab5cc" })" class="btn btn-info waves-effect">
+                            <i class="fa fa-upload"></i> Bulk Upload
                         </a>
                     </div>
                 </div>

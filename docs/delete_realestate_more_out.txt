@@ -1,0 +1,93 @@
+FeatureCategoryId=13
+Deleted dependent ServiceTypeAmenities rows.
+Deleted dependent ServiceTypeFiles rows.
+Deleted dependent ServiceImages rows.
+Deleted dependent ServiceOffers rows.
+Deleted rows from CartServices by ServiceTypeId for FeatureCategoryId=13
+Deleted rows from ProjectPlans by ServiceTypeId for FeatureCategoryId=13
+Deleted rows from ServiceOffers by ServiceTypeId for FeatureCategoryId=13
+Deleted rows from OrderRequestServiceDetails by ServiceTypeId for FeatureCategoryId=13
+Deleted rows from ServiceCategories by ServiceTypeId for FeatureCategoryId=13
+Deleted rows from ServiceTypes by ServiceTypeId for FeatureCategoryId=13
+Deleted rows from FavouriteServices by ServiceTypeId for FeatureCategoryId=13
+Deleted rows from PropertyInformations by ServiceTypeId for FeatureCategoryId=13
+Deleted rows from CartServices by ServiceId for FeatureCategoryId=13
+Deleted rows from OrderRequestServiceDetails by ServiceId for FeatureCategoryId=13
+Deleted rows from ServiceAmenities by ServiceId for FeatureCategoryId=13
+Deleted rows from ServiceCategories by ServiceId for FeatureCategoryId=13
+Deleted rows from ServiceLandmarks by ServiceId for FeatureCategoryId=13
+Deleted rows from AirportServices by ServiceId for FeatureCategoryId=13
+Deleted rows from FavouriteServices by ServiceId for FeatureCategoryId=13
+Tbl               DeletedCount        
+----------------- --------------------
+CustomerEnqueries 0                   
+Tbl               DeletedCount        
+----------------- --------------------
+CommonProductTags 0                   
+Tbl          DeletedCount        
+------------ --------------------
+TempProducts 0                   
+Tbl                          DeletedCount        
+---------------------------- --------------------
+MemberShipDiscountCategories 0                   
+Tbl          DeletedCount        
+------------ --------------------
+TempServices 0                   
+Tbl              DeletedCount        
+---------------- --------------------
+TempServiceTypes 0                   
+Tbl    DeletedCount        
+------ --------------------
+Brands 0                   
+Tbl          DeletedCount        
+------------ --------------------
+CartServices 0                   
+Tbl                    DeletedCount        
+---------------------- --------------------
+GolbalMemberCategories 0                   
+Tbl   DeletedCount        
+----- --------------------
+Carts 0                   
+Tbl        DeletedCount        
+---------- --------------------
+Categories 0                   
+Tbl               DeletedCount        
+----------------- --------------------
+OfferInformations 0                   
+Tbl               DeletedCount        
+----------------- --------------------
+CrosssellFeatures 0                   
+Tbl            DeletedCount        
+-------------- --------------------
+UpsellFeatures 0                   
+Tbl                  DeletedCount        
+-------------------- --------------------
+OrderRequestProducts 0                   
+Tbl                  DeletedCount        
+-------------------- --------------------
+OrderRequestServices 0                   
+Tbl      DeletedCount        
+-------- --------------------
+Products 0                   
+Tbl      DeletedCount        
+-------- --------------------
+Services 3335                
+Tbl      DeletedCount        
+-------- --------------------
+WebHtmls 0                   
+Tbl               DeletedCount        
+----------------- --------------------
+FavouriteProducts 0                   
+Tbl       DeletedCount        
+--------- --------------------
+StockLogs 0                   
+Tbl               DeletedCount        
+----------------- --------------------
+FavouriteServices 0                   
+Tbl              DeletedCount        
+---------------- --------------------
+DeliverySettings 0                   
+Deleted OrderRequestServiceDetails for FeatureCategoryId=13
+Deleted OrderRequestService rows for FeatureCategoryId=13
+Deleted FeatureCategories row for GUID if existed.
+Script complete.

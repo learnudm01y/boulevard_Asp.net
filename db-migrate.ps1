@@ -4,16 +4,13 @@
 
 .DESCRIPTION
     Applies all recent database changes:
-      - IcvBoulevardScore column on Products and TempProducts
-      - CommissionRate column on FeatureCategories
-      - Commission rate seed data for all 12 portals
-      - Performance indexes on main tables
+      - Origin column on Products and TempProducts (Social Impact)
 
     Usage:
       powershell -ExecutionPolicy Bypass -File db-migrate.ps1 -DryRun
       powershell -ExecutionPolicy Bypass -File db-migrate.ps1
       powershell -ExecutionPolicy Bypass -File db-migrate.ps1 -Server "MYSERVER\SQL2019" -Database "BoulevardDb"
-      powershell -ExecutionPolicy Bypass -File db-migrate.ps1 -ForceCommissionRates
+      powershell -ExecutionPolicy Bypass -File db-migrate.ps1
 #>
 
 [CmdletBinding()]
@@ -23,9 +20,7 @@ param(
     [string]$Database = "",
     [string]$Username = "",
     [string]$Password = "",
-    [switch]$ForceCommissionRates,
-    [switch]$SkipMigrations,
-    [switch]$SkipIndexes
+    [switch]$SkipMigrations
 )
 
 Set-StrictMode -Version Latest
@@ -74,14 +69,6 @@ if ($Server   -eq "") {
     exit 1
 }
 
-$MIGRATE_CANDIDATES = @(
-    "$WEB_ROOT\bin\migrate.exe",
-    "$PSScriptRoot\bin\migrate.exe",
-    "$PSScriptRoot\packages\EntityFramework.6.5.1\tools\migrate.exe",
-    "$PSScriptRoot\packages\EntityFramework.6.4.4\tools\migrate.exe",
-    "$PSScriptRoot\packages\EntityFramework.6.2.0\tools\migrate.exe"
-)
-
 # Build ADO.NET connection string — uses .NET built into Windows, no sqlcmd install needed
 if ($Username -ne "") {
     $ConnStr = "Data Source=$Server;Initial Catalog=$Database;User ID=$Username;Password=$Password;MultipleActiveResultSets=True;Connect Timeout=30;"
@@ -109,14 +96,6 @@ function Invoke-SqlBatches { param([string]$Label, [string]$Sql)
     } finally {
         $conn.Close(); $conn.Dispose()
     }
-}
-
-function Invoke-SqlFile { param([string]$Label, [string]$FilePath)
-    if (-not (Test-Path $FilePath)) { Write-Warn "File not found, skipping: $FilePath"; return }
-    Log "SQL-FILE: $Label"
-    if ($DryRun) { Write-Info "[DRY] $Label ($FilePath)"; return }
-    $sql = [System.IO.File]::ReadAllText($FilePath, [System.Text.Encoding]::UTF8)
-    Invoke-SqlBatches $Label $sql
 }
 
 function Invoke-SqlQuery { param([string]$Sql)
@@ -169,32 +148,6 @@ function Exit-Fail { param([string]$m)
     exit 1
 }
 
-function Run-SQL { param([string]$Label, [string]$Sql)
-    Log "[SQL] $Label"
-    if ($DryRun) { Write-Info "[DRY] $Label"; return }
-    $tmp = [System.IO.Path]::GetTempFileName() + ".sql"
-    try {
-        [System.IO.File]::WriteAllText($tmp, $Sql, [System.Text.Encoding]::UTF8)
-        $out = & $SQLCMD @SqlArgs -i $tmp -b 2>&1
-        if ($LASTEXITCODE -ne 0) {
-            Log "SQL-ERR: $out"
-            Exit-Fail "SQL failed: $Label `n$out"
-        }
-        Write-OK $Label
-    } finally {
-        Remove-Item $tmp -Force -ErrorAction SilentlyContinue
-    }
-}
-
-function Run-SQLFile { param([string]$Label, [string]$FilePath)
-    if (-not (Test-Path $FilePath)) { Write-Warn "File not found, skipping: $FilePath"; return }
-    Log "SQL-FILE: $Label"
-    if ($DryRun) { Write-Info "[DRY] $Label ($FilePath)"; return }
-    $out = & $SQLCMD @SqlArgs -i $FilePath -b 2>&1
-    if ($LASTEXITCODE -ne 0) { Log "SQL-ERR: $out"; Exit-Fail "SQL file failed: $Label `n$out" }
-    Write-OK $Label
-}
-
 # ================================================================
 Init-Log
 
@@ -223,13 +176,6 @@ try {
     Exit-Fail "Cannot connect to [$Server][$Database] --- $_"
 }
 
-$migrateTool = $null
-foreach ($c in $MIGRATE_CANDIDATES) {
-    if (Test-Path $c) { $migrateTool = $c; break }
-}
-if ($migrateTool) { Write-OK "migrate.exe found: $migrateTool" }
-else { Write-Warn "migrate.exe not found - Phase 1 will be skipped"; $SkipMigrations = $true }
-
 # ================================================================
 # PHASE 1 - EF Migrations
 # ================================================================
@@ -238,114 +184,40 @@ Write-Step "PHASE 1: EF Migrations"
 if ($SkipMigrations) {
     Write-Warn "Skipping EF Migrations - run Update-Database from Visual Studio manually"
 } else {
-    $configFile = Join-Path $WEB_ROOT "bin\Boulevard.dll.config"
-    if (-not (Test-Path $configFile)) {
-        $configFile = Join-Path $PSScriptRoot "bin\Boulevard.dll.config"
-    }
-    if ($DryRun) {
-        Write-Info "[DRY] Would run migrate.exe Boulevard.dll"
-    } else {
-        Write-Info "Running migrate.exe..."
-        Push-Location (Split-Path $migrateTool -Parent)
-        try {
-            if (Test-Path $configFile) {
-                $out = & $migrateTool "Boulevard.dll" "/startupConfigurationFile=$configFile" 2>&1
-            } else {
-                $out = & $migrateTool "Boulevard.dll" 2>&1
-            }
-            Log "MIGRATE: $out"
-            if ($LASTEXITCODE -ne 0) { Exit-Fail "migrate.exe failed --- $out" }
-            Write-OK "EF Migrations applied"
-        } finally { Pop-Location }
-    }
+    Write-Warn "migrate.exe not available - skipping EF migrations"
 }
 
 # ================================================================
-# PHASE 2 - IcvBoulevardScore
+# PHASE 2 - Origin (Social Impact)
 # ================================================================
-Write-Step "PHASE 2: IcvBoulevardScore column (Products & TempProducts)"
+Write-Step "PHASE 2: Origin column (Products & TempProducts)"
 
-$sqlIcv = "IF NOT EXISTS (SELECT 1 FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME='Products' AND COLUMN_NAME='IcvBoulevardScore') BEGIN ALTER TABLE dbo.Products ADD IcvBoulevardScore NVARCHAR(50) NULL; PRINT 'Added to Products.'; END ELSE PRINT 'Products.IcvBoulevardScore already exists.'; IF NOT EXISTS (SELECT 1 FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME='TempProducts' AND COLUMN_NAME='IcvBoulevardScore') BEGIN ALTER TABLE dbo.TempProducts ADD IcvBoulevardScore NVARCHAR(50) NULL; PRINT 'Added to TempProducts.'; END ELSE PRINT 'TempProducts.IcvBoulevardScore already exists.';"
+$sqlOrigin = @"
+IF NOT EXISTS (SELECT 1 FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME='Products' AND COLUMN_NAME='Origin')
+  BEGIN ALTER TABLE dbo.Products ADD Origin NVARCHAR(100) NULL; PRINT 'Added Origin to Products.'; END
+ELSE PRINT 'Products.Origin already exists.';
 
-Invoke-SqlBatches "Add IcvBoulevardScore column" $sqlIcv
+IF NOT EXISTS (SELECT 1 FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME='TempProducts' AND COLUMN_NAME='Origin')
+  BEGIN ALTER TABLE dbo.TempProducts ADD Origin NVARCHAR(100) NULL; PRINT 'Added Origin to TempProducts.'; END
+ELSE PRINT 'TempProducts.Origin already exists.';
+"@
 
-# ================================================================
-# PHASE 3 - CommissionRate + seed data
-# ================================================================
-Write-Step "PHASE 3: CommissionRate column + 12 portal rates"
-
-$sqlAddCol = "IF NOT EXISTS (SELECT 1 FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME='FeatureCategories' AND COLUMN_NAME='CommissionRate') BEGIN ALTER TABLE dbo.FeatureCategories ADD CommissionRate DECIMAL(5,2) NULL; PRINT 'CommissionRate added.'; END ELSE PRINT 'CommissionRate already exists.';"
-
-Invoke-SqlBatches "Add CommissionRate column" $sqlAddCol
-
-if ($ForceCommissionRates) { $cond = "1=1" } else { $cond = "(CommissionRate IS NULL OR CommissionRate = 0)" }
-
-$lines = @(
-    "UPDATE dbo.FeatureCategories SET CommissionRate=3.00  WHERE FeatureCategoryKey='3b317e3f-cb2f-4fdd-b9c8-3f2186695771' AND $cond;",
-    "UPDATE dbo.FeatureCategories SET CommissionRate=15.00 WHERE FeatureCategoryKey='E7B3A1C2-D4F5-4A6B-8C9D-1E2F3A4B5C6D' AND $cond;",
-    "UPDATE dbo.FeatureCategories SET CommissionRate=7.00  WHERE FeatureCategoryKey='F1A2B3C4-D5E6-4F70-8B9C-0D1E2F3A4B5C' AND $cond;",
-    "UPDATE dbo.FeatureCategories SET CommissionRate=15.00 WHERE FeatureCategoryKey='88d5d23e-470f-409a-bb6b-def7ab1346fa' AND $cond;",
-    "UPDATE dbo.FeatureCategories SET CommissionRate=10.00 WHERE FeatureCategoryKey='f4309df5-9121-41ad-831a-994c46b62766' AND $cond;",
-    "UPDATE dbo.FeatureCategories SET CommissionRate=5.00  WHERE FeatureCategoryKey='c286a46b-5b9a-4519-bb10-8d47ec254ffb' AND $cond;",
-    "UPDATE dbo.FeatureCategories SET CommissionRate=15.00 WHERE FeatureCategoryKey='bbc98e2d-941b-44c6-8122-0e12a2645b87' AND $cond;",
-    "UPDATE dbo.FeatureCategories SET CommissionRate=15.00 WHERE FeatureCategoryKey='25d8c418-2d26-4159-9d7f-970e3b933b42' AND $cond;",
-    "UPDATE dbo.FeatureCategories SET CommissionRate=7.00  WHERE FeatureCategoryKey='b3e3e680-c8ef-4ab2-a4ac-d75bb48a3647' AND $cond;",
-    "UPDATE dbo.FeatureCategories SET CommissionRate=5.00  WHERE FeatureCategoryKey='DD501B2D-FE22-4C31-B340-1B4237FAB5CC' AND $cond;",
-    "UPDATE dbo.FeatureCategories SET CommissionRate=0.00  WHERE FeatureCategoryKey='3c4d5e6f-7a8b-9c0d-ef12-345678901abc' AND CommissionRate IS NULL;",
-    "UPDATE dbo.FeatureCategories SET CommissionRate=0.00  WHERE FeatureCategoryKey='4d5e6f7a-8b9c-0d1e-f234-5678901abcde' AND CommissionRate IS NULL;",
-    "PRINT 'Commission rates seeded.';"
-)
-$sqlRates = $lines -join "`r`n"
-
-Invoke-SqlBatches "Seed commission rates (12 portals)" $sqlRates
+Invoke-SqlBatches "Add Origin column" $sqlOrigin
 
 # ================================================================
-# PHASE 4 - Performance Indexes
+# PHASE 3 - Verification
 # ================================================================
-Write-Step "PHASE 4: Performance Indexes"
-
-if ($SkipIndexes) {
-    Write-Warn "Skipping indexes"
-} else {
-    # Look for the SQL file next to the script first, then in the web root
-    $indexFile = Join-Path $PSScriptRoot "db_indexes_to_apply.sql"
-    if (-not (Test-Path $indexFile)) { $indexFile = Join-Path $WEB_ROOT "db_indexes_to_apply.sql" }
-    if (Test-Path $indexFile) {
-        Invoke-SqlFile "Apply performance indexes from db_indexes_to_apply.sql" $indexFile
-    } else {
-        $idxLines = @(
-            "IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name='IX_OrderRequestProducts_MemberId' AND object_id=OBJECT_ID('dbo.OrderRequestProducts')) CREATE INDEX IX_OrderRequestProducts_MemberId ON dbo.OrderRequestProducts (MemberId) INCLUDE (OrderStatusId, CreateDate);",
-            "IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name='IX_OrderRequestProducts_IsSound' AND object_id=OBJECT_ID('dbo.OrderRequestProducts')) CREATE INDEX IX_OrderRequestProducts_IsSound ON dbo.OrderRequestProducts (IsSound) WHERE IsSound=0;",
-            "IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name='IX_OrderRequestServices_MemberId' AND object_id=OBJECT_ID('dbo.OrderRequestServices')) CREATE INDEX IX_OrderRequestServices_MemberId ON dbo.OrderRequestServices (MemberId) INCLUDE (OrderStatusId, CreateDate);",
-            "IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name='IX_OrderRequestServices_IsSound' AND object_id=OBJECT_ID('dbo.OrderRequestServices')) CREATE INDEX IX_OrderRequestServices_IsSound ON dbo.OrderRequestServices (IsSound) WHERE IsSound=0;",
-            "IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name='IX_Members_PhoneNumber' AND object_id=OBJECT_ID('dbo.Members')) CREATE INDEX IX_Members_PhoneNumber ON dbo.Members (PhoneNumber) INCLUDE (FirstName, LastName, Email, Status);",
-            "IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name='IX_Members_MemberKey' AND object_id=OBJECT_ID('dbo.Members')) CREATE UNIQUE INDEX IX_Members_MemberKey ON dbo.Members (MemberKey) WHERE MemberKey IS NOT NULL;",
-            "IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name='IX_Products_Status_FeatureCategoryId' AND object_id=OBJECT_ID('dbo.Products')) CREATE INDEX IX_Products_Status_FeatureCategoryId ON dbo.Products (Status, FeatureCategoryId) INCLUDE (ProductName, Price, IcvBoulevardScore);",
-            "PRINT 'Core indexes applied.';"
-        )
-        $sqlIdx = $idxLines -join "`r`n"
-        Invoke-SqlBatches "Add core performance indexes" $sqlIdx
-        Write-Warn "db_indexes_to_apply.sql not found - only core indexes applied"
-    }
-}
-
-# ================================================================
-# PHASE 5 - Verification
-# ================================================================
-Write-Step "PHASE 5: Verification"
+Write-Step "PHASE 3: Verification"
 
 if (-not $DryRun) {
     try {
-        $vOut1 = Invoke-SqlQuery "SELECT TABLE_NAME, COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE COLUMN_NAME='IcvBoulevardScore'"
-        $vOut2 = Invoke-SqlQuery "SELECT Name, CommissionRate FROM dbo.FeatureCategories WHERE IsDelete=0 AND CommissionRate IS NOT NULL ORDER BY Name"
-        $vOut3 = Invoke-SqlQuery "SELECT TOP 1 MigrationId FROM dbo.__MigrationHistory ORDER BY MigrationId DESC"
+        $vOut1 = Invoke-SqlQuery "SELECT TABLE_NAME, COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE COLUMN_NAME='Origin' ORDER BY TABLE_NAME"
+        $vOut2 = Invoke-SqlQuery "SELECT TOP 1 MigrationId FROM dbo.__MigrationHistory ORDER BY MigrationId DESC"
         Write-Host ""
-        Write-Host "-- IcvBoulevardScore columns --" -ForegroundColor White
+        Write-Host "-- Origin column --" -ForegroundColor White
         Write-Host $vOut1 -ForegroundColor White
-        Write-Host "-- Commission Rates --" -ForegroundColor White
-        Write-Host $vOut2 -ForegroundColor White
         Write-Host "-- Last Migration --" -ForegroundColor White
-        Write-Host $vOut3 -ForegroundColor White
+        Write-Host $vOut2 -ForegroundColor White
         Log "VERIFY OK"
     } catch { Write-Warn "Verification query failed: $_" }
 }

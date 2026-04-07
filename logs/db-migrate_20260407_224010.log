@@ -1,0 +1,21 @@
+﻿[20260407_224010] Boulevard DB Migration Started
+22:40:10 [STEP] PHASE 0: Pre-flight Checks
+22:40:10 [OK]   DB connection OK: .\SQLEXPRESS / BoulevardDb
+22:40:10 [WARN] migrate.exe not found - Phase 1 will be skipped
+22:40:10 [STEP] PHASE 1: EF Migrations
+22:40:10 [WARN] Skipping EF Migrations - run Update-Database from Visual Studio manually
+22:40:10 [STEP] PHASE 2: IcvBoulevardScore column (Products & TempProducts)
+22:40:10 [SQL] Add IcvBoulevardScore column
+22:40:10 [INFO] [DRY] Add IcvBoulevardScore column
+22:40:10 [STEP] PHASE 2b: Origin column (Products & TempProducts)
+22:40:10 [SQL] Add Origin column
+22:40:10 [INFO] [DRY] Add Origin column
+22:40:10 [STEP] PHASE 3: CommissionRate column + 12 portal rates
+22:40:10 [SQL] Add CommissionRate column
+22:40:10 [INFO] [DRY] Add CommissionRate column
+22:40:10 [SQL] Seed commission rates (12 portals)
+22:40:10 [INFO] [DRY] Seed commission rates (12 portals)
+22:40:10 [STEP] PHASE 4: Performance Indexes
+22:40:10 SQL-FILE: Apply performance indexes from db_indexes_to_apply.sql
+22:40:10 [INFO] [DRY] Apply performance indexes from db_indexes_to_apply.sql (I:\entire system - boulevard\SourceCode of ADmin\Boulevard\Boulevard\db_indexes_to_apply.sql)
+22:40:10 [STEP] PHASE 5: Verification

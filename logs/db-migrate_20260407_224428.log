@@ -1,0 +1,9 @@
+﻿[20260407_224428] Boulevard DB Migration Started
+22:44:28 [STEP] PHASE 0: Pre-flight Checks
+22:44:28 [OK]   DB connection OK: .\SQLEXPRESS / BoulevardDb
+22:44:28 [STEP] PHASE 1: EF Migrations
+22:44:28 [WARN] migrate.exe not available - skipping EF migrations
+22:44:28 [STEP] PHASE 2: Origin column (Products & TempProducts)
+22:44:28 [SQL] Add Origin column
+22:44:28 [INFO] [DRY] Add Origin column
+22:44:28 [STEP] PHASE 3: Verification

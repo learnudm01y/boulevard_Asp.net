@@ -9,15 +9,7 @@
         position: fixed;
         width: 100vw;
         height: 100vh;
-        background-image: url(/Areas/Admin/Content/assets/images/login-background.jpg);
-        background-position: center center;
-        background-repeat: no-repeat;
-        background-attachment: fixed;
-        -webkit-background-size: cover;
-        background-size: cover;
-        -webkit-filter: blur(10px);
-        -moz-filter: blur(10px);
-        filter: blur(10px);
+        background-color: #000000;
     }
 
 .contact-form {

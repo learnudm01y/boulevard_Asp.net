@@ -46,7 +46,14 @@
 
                     <div class="col-sm-7 text-right">
                         <ol class="breadcrumb">
-                            <li class="breadcrumb-item"><a target="_blank" href="~/Content/ExcelFile/ServiceEntry.xlsx" class="btn btn-info btn-rounded"><i class="fa fa-download"></i> Download Sample</a></li>
+                            @if (ViewBag.FCatagoryKey != null && ViewBag.FCatagoryKey.ToString().ToLower() == "dd501b2d-fe22-4c31-b340-1b4237fab5cc")
+                            {
+                                <li class="breadcrumb-item"><a target="_blank" href="~/Content/ExcelFile/RealStateServiceEntry.xlsx" class="btn btn-info btn-rounded"><i class="fa fa-download"></i> Download Sample (Real Estate)</a></li>
+                            }
+                            else
+                            {
+                                <li class="breadcrumb-item"><a target="_blank" href="~/Content/ExcelFile/ServiceEntry.xlsx" class="btn btn-info btn-rounded"><i class="fa fa-download"></i> Download Sample</a></li>
+                            }
                         </ol>
                     </div>
                 </div>
