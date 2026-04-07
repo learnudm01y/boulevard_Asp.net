@@ -1383,6 +1383,7 @@
     <Content Include="Areas\Admin\Content\assets\css\Report.css" />
     <Content Include="Areas\Admin\Content\assets\css\spinners.css" />
     <Content Include="Areas\Admin\Content\assets\css\style.css" />
+    <Content Include="Areas\Admin\Content\assets\css\style2.min.css" />
     <Content Include="Areas\Admin\Content\assets\css\swiper-bundle.min.css" />
     <Content Include="Areas\Admin\Content\assets\css\Test.css" />
     <Content Include="Areas\Admin\Content\assets\custom_custom.js" />
