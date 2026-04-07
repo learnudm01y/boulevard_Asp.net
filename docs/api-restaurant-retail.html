@@ -1243,6 +1243,7 @@
     "brandInfo": { "title": "NatureFirst", ... },
     "discountInformation": null,
     <strong>"icvBoulevardScore": "100%"</strong>,
+    <strong>"origin": "Local"</strong>,
     "avrageRatings": 0,
     "totalReview": 0
     <span style="color:#999;">// … other product fields …</span>
@@ -1264,20 +1265,36 @@
         </tr>
       </table>
 
+      <p class="label">Origin Field (Social Impact)</p>
+      <table>
+        <tr><th>Field</th><th>Type</th><th>Source</th><th>Description</th></tr>
+        <tr>
+          <td class="param-name">origin</td>
+          <td class="param-type">string | null</td>
+          <td>Excel column "Origin" — optional</td>
+          <td>
+            Product origin for Social Impact tracking (e.g. <code>"Local"</code>, <code>"Imported"</code>).
+            Populated at bulk import time via the Admin → Add Bulk Products Excel upload
+            for all four portals: Grocery, Dessert &amp; Flowers, Restaurant, Retail.
+            Returns <code>null</code> or empty string when not set.
+          </td>
+        </tr>
+      </table>
+
       <p class="label">Pipeline — how the value reaches the response</p>
       <ol style="font-size:13px;line-height:1.8;margin:0 0 0 16px;color:#374151;">
         <li>Admin uploads an Excel file through any of the four portals (Grocery / Dessert &amp; Flower / Retail / Restaurant) via <code>Admin/Product/AddBulk</code>.</li>
-        <li><code>ProductController.AddBulk</code> reads the optional column <em>"ICV Boulevard Score"</em> (column AE, header-name matched — case-insensitive, whitespace-tolerant) using OleDB and writes it as an XML attribute <code>icvBoulevardScore</code> in the intermediate XML string.</li>
-        <li><code>TempProductDataAccess.AddTempProduct()</code> parses the XML attribute and stores it in <code>dbo.TempProducts.IcvBoulevardScore</code> (NVARCHAR 50).</li>
-        <li><code>TempProductDataAccess.AddProduct()</code> copies the value to <code>dbo.Products.IcvBoulevardScore</code>.</li>
-        <li>The Web API method <code>ProductServiceAccess.getSmallDetailsProducts()</code> maps <code>products.IcvBoulevardScore</code> → <code>ProductSmallDetailsResponse.IcvBoulevardScore</code>, which is serialised as <code>icvBoulevardScore</code> in the JSON response.</li>
-        <li>The mobile UI (<code>grocery-mobile.html</code>) reads <code>p.icvBoulevardScore</code> from the list response and renders a bottom-left badge on the product card (price-tag SVG icon + score text).</li>
+        <li><code>ProductController.AddBulk</code> reads the optional columns <em>"ICV Boulevard Score"</em> and <em>"Origin"</em> (header-name matched — case-insensitive, whitespace-tolerant) using OleDB and writes them as XML attributes <code>icvBoulevardScore</code> and <code>origin</code> in the intermediate XML string.</li>
+        <li><code>TempProductDataAccess.AddTempProduct()</code> parses the XML attributes and stores them in <code>dbo.TempProducts.IcvBoulevardScore</code> (NVARCHAR 50) and <code>dbo.TempProducts.Origin</code> (NVARCHAR 100).</li>
+        <li><code>TempProductDataAccess.AddProduct()</code> copies the values to <code>dbo.Products.IcvBoulevardScore</code> and <code>dbo.Products.Origin</code>.</li>
+        <li>The Web API method <code>ProductServiceAccess.getSmallDetailsProducts()</code> maps both fields to <code>ProductSmallDetailsResponse</code>, which is serialised as <code>icvBoulevardScore</code> and <code>origin</code> in the JSON response.</li>
+        <li>The mobile UI (<code>grocery-mobile.html</code>) reads <code>p.icvBoulevardScore</code> and <code>p.origin</code> from the response and renders corresponding badges on the product card.</li>
       </ol>
 
       <div style="background:#fffbeb;border-left:3px solid #f59e0b;margin-top:14px;padding:10px 14px;font-size:12px;color:#92400e;border-radius:4px;">
-        <strong>Note:</strong> The column is <em>optional</em> in the Excel template.
-        Existing files that do not include column AE will continue to import normally — the field will simply be empty.
-        The column is detected by <strong>header name</strong> (case-insensitive, leading/trailing spaces ignored), not by position.
+        <strong>Note:</strong> Both columns are <em>optional</em> in the Excel template.
+        Existing files that do not include them will continue to import normally — the fields will simply be empty.
+        Columns are detected by <strong>header name</strong> (case-insensitive, leading/trailing spaces ignored), not by position.
       </div>
     </div>
   </div>

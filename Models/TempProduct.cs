@@ -64,5 +64,11 @@ namespace Boulevard.Models
         [StringLength(50)]
         public string IcvBoulevardScore { get; set; }
 
+        /// <summary>
+        /// Product origin (e.g. "Local", "Imported") — read from optional Excel column "Origin".
+        /// </summary>
+        [StringLength(100)]
+        public string Origin { get; set; }
+
     }
 }

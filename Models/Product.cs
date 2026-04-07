@@ -149,5 +149,12 @@ namespace Boulevard.Models
         [StringLength(50)]
         public string IcvBoulevardScore { get; set; }
 
+        /// <summary>
+        /// Product origin (e.g. "Local", "Imported") — imported from Excel column "Origin".
+        /// Used by the Social Impact Tracker.
+        /// </summary>
+        [StringLength(100)]
+        public string Origin { get; set; }
+
     }
 }

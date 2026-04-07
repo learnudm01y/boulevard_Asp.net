@@ -584,6 +584,43 @@ namespace Boulevard.Areas.Admin.Controllers
 
                             var dataTable = ds.Tables[0];
 
+                            #region Fix date-formatted price cells
+                            // OleDB returns the raw cell value, NOT the displayed text. When a
+                            // user accidentally formats the "Selling Price" column as a date
+                            // (e.g. format "m.d"), typing 4.8 causes Excel to store the date
+                            // serial 45755 (April 8, 2025) while displaying "4.8". OleDB reads
+                            // 45755. We use EPPlus to read the formatted text for every Selling
+                            // Price cell and overwrite the DataTable values when they differ.
+                            try
+                            {
+                                using (var epPkg = new ExcelPackage(new System.IO.FileInfo(path)))
+                                {
+                                    var ws = epPkg.Workbook.Worksheets[1];
+                                    // Find the "Selling Price" column index (1-based) in the Excel header row
+                                    int spColIdx = -1;
+                                    for (int c = 1; c <= ws.Dimension.Columns; c++)
+                                    {
+                                        if (string.Equals((ws.Cells[1, c].Text ?? "").Trim(),
+                                            "Selling Price", StringComparison.OrdinalIgnoreCase))
+                                        { spColIdx = c; break; }
+                                    }
+                                    if (spColIdx > 0)
+                                    {
+                                        // Map each DataTable row to the corresponding Excel row (row 2+)
+                                        for (int r = 0; r < dataTable.Rows.Count; r++)
+                                        {
+                                            string displayText = (ws.Cells[r + 2, spColIdx].Text ?? "").Trim();
+                                            if (!string.IsNullOrEmpty(displayText))
+                                            {
+                                                dataTable.Rows[r]["Selling Price"] = displayText;
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                            catch { /* EPPlus fallback: proceed with OleDB values if EPPlus fails */ }
+                            #endregion
+
                             #region Check Excel Column – validate required headers exist before processing
                             // Access row[0] purely to confirm the columns exist; throws if missing.
                             var _chk = new
@@ -633,6 +670,14 @@ namespace Boulevard.Areas.Admin.Controllers
                             {
                                 if (string.Equals(dc.ColumnName.Trim(), "ICV Boulevard Score", StringComparison.OrdinalIgnoreCase))
                                 { icvColName = dc.ColumnName; break; }
+                            }
+
+                            // Origin column lookup — case-insensitive + trim whitespace from header
+                            string originColName = null;
+                            foreach (DataColumn dc in dataTable.Columns)
+                            {
+                                if (string.Equals(dc.ColumnName.Trim(), "Origin", StringComparison.OrdinalIgnoreCase))
+                                { originColName = dc.ColumnName; break; }
                             }
 
                             int xmlRowCount = 0;
@@ -690,6 +735,9 @@ namespace Boulevard.Areas.Admin.Controllers
                                     // Column name matching is case-insensitive and whitespace-tolerant (icvColName resolved above).
                                     data.IcvBoulevardScore   = icvColName != null
                                                                ? (objDataRow[icvColName] ?? "").ToString().Trim() : "";
+                                    // Origin is optional — e.g. "Local", "Imported".
+                                    data.Origin              = originColName != null
+                                                               ? (objDataRow[originColName] ?? "").ToString().Trim() : "";
                                     data.ExcelCount          = counter;
                                     xmlRowCount++;
 
@@ -726,6 +774,7 @@ namespace Boulevard.Areas.Admin.Controllers
                                     writer.WriteAttributeString("miniCategory", data.MiniCategory ?? " ");
                                     writer.WriteAttributeString("miniCategoryArabic", data.MiniCategoryArabic ?? " ");
                                     writer.WriteAttributeString("icvBoulevardScore", data.IcvBoulevardScore ?? "");
+                                    writer.WriteAttributeString("origin", data.Origin ?? "");
                                     writer.WriteAttributeString("excelCount", data.ExcelCount.ToString());
                                     writer.WriteEndElement();
                                 }

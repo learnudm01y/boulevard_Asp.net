@@ -51,6 +51,7 @@ namespace Boulevard.Service.WebAPI
                     result.ProductTypeId = products.ProductType;
                     result.AvrageRatings = products.AvgRatings;
                     result.IcvBoulevardScore = products.IcvBoulevardScore;
+                    result.Origin = products.Origin;
                    var ptype = await uow.ProductTypeMasterRepository.Get().Where(s => s.ProductTypeId == products.ProductType).FirstOrDefaultAsync();
                     if (ptype != null)
                     {

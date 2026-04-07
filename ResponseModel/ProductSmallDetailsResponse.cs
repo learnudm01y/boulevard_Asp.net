@@ -75,5 +75,7 @@ namespace Boulevard.ResponseModel
 
         public string IcvBoulevardScore { get; set; }
 
+        public string Origin { get; set; }
+
     }
 }

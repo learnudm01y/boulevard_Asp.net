@@ -376,7 +376,7 @@ namespace Boulevard.Areas.Admin.Controllers
                     ProductName = p.ProductName,
                     ProductPrice = p.ProductPrice,
                     StockQuantity = p.StockQuantity,
-                    ProductImage = "https://boulevard.r-y-x.net/Areas/Admin/Content/assets/images/logoBlack.png",
+                    ProductImage = "https://boulevard.r-y-x.net/Areas/Admin/Content/assets/images/logo-dashboard.png",
                 })
                 .Take(10)
                 .ToList();

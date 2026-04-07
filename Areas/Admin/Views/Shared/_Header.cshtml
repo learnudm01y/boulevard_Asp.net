@@ -37,14 +37,16 @@
                 <i class="ti-menu ti-close"></i>
             </a>
             <style>
-                /* Logo swap: long when sidebar open, short when mini-sidebar (closed) */
-                #blvd-logo-long  { display: inline-block; height: 55px; }
-                #blvd-logo-short { display: none;         height: 55px; }
+                /* Logo swap: long when sidebar open, short when mini-sidebar (closed)
+                   Keep height to preserve layout but constrain width so very large images
+                   (like the provided new-logo-image.png) don't break the header. */
+                #blvd-logo-long  { display: inline-block; height: 40px; width: auto; max-width: 100%; object-fit: contain; }
+                #blvd-logo-short { display: none;         height: 55px; width: auto; max-width: 100%; object-fit: contain; }
                 #main-wrapper.mini-sidebar #blvd-logo-long  { display: none !important; }
                 #main-wrapper.mini-sidebar #blvd-logo-short { display: inline-block !important; }
             </style>
             <a class="navbar-brand justify-content-center" href="@Url.RouteUrl("Admin_Dashboard")">
-                <img id="blvd-logo-long"  src="~/Areas/Admin/Content/assets/images/logo-long-dashboard.jpeg" />
+                <img id="blvd-logo-long"  src="~/Areas/Admin/Content/assets/images/new-logo-image.png" alt="Boulevard logo" />
                 <img id="blvd-logo-short" src="~/Areas/Admin/Content/assets/images/logo-dashboard.png" />
             </a>
 

@@ -270,6 +270,7 @@ namespace Boulevard.Service.Admin
                             product.AttributeName = item.AttributeName;
                             product.AttributeNameArabic = item.AttributeNameArabic;
                             product.IcvBoulevardScore = item.IcvBoulevardScore;
+                            product.Origin = item.Origin;
 
                             // C4 fix: Stocks may be comma/semicolon-separated — take the total sum for the product-level stock
                             var stockParts = SplitValues(item.Stocks);
@@ -320,8 +321,13 @@ namespace Boulevard.Service.Admin
                             if (!string.IsNullOrWhiteSpace(item.IcvBoulevardScore))
                             {
                                 product.IcvBoulevardScore = item.IcvBoulevardScore;
-                                db.SaveChanges();
                             }
+                            // Always update Origin when a non-empty value is provided.
+                            if (!string.IsNullOrWhiteSpace(item.Origin))
+                            {
+                                product.Origin = item.Origin;
+                            }
+                            db.SaveChanges();
 
                             // Always run (new or existing): link product to ALL category nodes collected above.
                             // The Any() check prevents duplicate ProductCategory rows.
@@ -454,6 +460,8 @@ namespace Boulevard.Service.Admin
                         MiniCategoryArabic   = GetAttr("miniCategoryArabic"),
                         // ICV Boulevard Score (optional column AC in the Excel template).
                         IcvBoulevardScore    = GetAttr("icvBoulevardScore"),
+                        // Origin (e.g. "Local", "Imported") — optional Excel column.
+                        Origin               = GetAttr("origin"),
                         FeatureCategoryId    = feacherCategoryId,
                     };
                     db.TempProducts.Add(row);

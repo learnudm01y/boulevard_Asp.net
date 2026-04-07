@@ -1,10 +1,19 @@
 ﻿
+@model Boulevard.Models.OrderRequestProduct
 @{
     ViewBag.Title = "Invoice";
     var text = @"@media";
     Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+    var sellerGroups = Model.OrderRequestProduxtDetails
+        .Where(d => !string.IsNullOrEmpty(d.BrandName))
+        .GroupBy(d => d.BrandName)
+        .ToList();
+
+    /* Embed logo as base64 data-URI so it always appears in print/PDF */
+    var logoPath = Server.MapPath("~/Areas/Admin/Content/assets/images/logo-dashboard.png");
+    var logoBytes = System.IO.File.ReadAllBytes(logoPath);
+    var logoDataUri = "data:image/png;base64," + Convert.ToBase64String(logoBytes);
 }
-@model Boulevard.Models.OrderRequestProduct
 <style>
     table, th, td {
         border: 1px solid rgba(0,0,0,.8);
@@ -165,19 +174,152 @@
         print-color-adjust: exact !important;
     }
 
-    .column-border > tbody > tr:nth-of-type(odd) {
-        background-color: #f9f9f9;
-        -webkit-print-color-adjust: exact !important;
-        print-color-adjust: exact !important;
+    /*
+     * ═══════════════════════════════════════════════════════
+     *  STICKY SIDEBAR — Production Fix
+     *
+     *  Root cause 1: style.min.css sets:
+     *    #main-wrapper { overflow: hidden }
+     *  Any ancestor with overflow != visible silently kills
+     *  position:sticky. Fix: force visible on this page only.
+     *
+     *  Root cause 2: Bootstrap .row uses display:flex.
+     *  Without align-self:flex-start the column stretches to
+     *  the full height of its tallest sibling → sticky thinks
+     *  it has no room to scroll → never activates.
+     * ═══════════════════════════════════════════════════════
+     */
+    #main-wrapper,
+    .page-wrapper,
+    .container-fluid {
+        overflow: visible !important;
     }
 
+    #sidebar-col {
+        align-self: flex-start; /* CRITICAL: col must not stretch to row height */
+    }
+
+    .seller-sidebar {
+        position: -webkit-sticky;
+        position: sticky;
+        top: 78px;           /* initial fallback; set precisely by JS below */
+        max-height: calc(100vh - 90px);
+        overflow-y: auto;
+        z-index: 5;
+    }
+    .seller-nav-item {
+        cursor: pointer;
+        padding: 10px 14px;
+        border-left: 3px solid transparent;
+        transition: all .2s;
+        font-weight: 500;
+        color: #495057;
+        display: block;
+        text-decoration: none;
+    }
+    .seller-nav-item:hover {
+        border-left-color: #343a40;
+        background: #f1f3f5;
+        color: #000;
+        text-decoration: none;
+    }
+    .seller-nav-item.active {
+        border-left-color: #343a40;
+        background: #dee2e6;
+        color: #000;
+        font-weight: 700;
+        text-decoration: none;
+    }
+    .seller-nav-item.blvd-link {
+        border-left-color: #343a40;
+        background: #f8f9fa;
+        color: #343a40;
+        font-size: 12px;
+    }
+    .seller-nav-item.blvd-link:hover {
+        background: #e2e3e5;
+        color: #000;
+    }
+
+    /* ── Invoice section wrappers ── */
+    .invoice-section {
+        border: 1px solid #dee2e6;
+        border-radius: 6px;
+        margin-bottom: 28px;
+        overflow: hidden;
+    }
+    .invoice-section.hidden {
+        display: none !important;
+    }
+    .invoice-section-title {
+        background: #343a40;
+        color: #fff;
+        padding: 10px 18px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+    .invoice-section-title.seller-title {
+        background: #f8f9fa;
+        color: #212529;
+        border-bottom: 2px solid #343a40;
+    }
+    .invoice-section-title.seller-title strong {
+        font-size: 15px;
+        color: #212529;
+    }
+
+
+    /*  Print 
+     *  Clone-to-body: copies only the invoice section to a
+     *  clean #blvd-print-area, hides everything else.
+     *  Guarantees NO blank page from template min-heights.
+     *  */
+    @(text) page {
+        size: A4;
+        margin: 10mm;
+    }
+    @(text) print {
+        body.blvd-printing > *:not(#blvd-print-area) {
+            display: none !important;
+        }
+        html, body {
+            height: auto !important;
+            background: #fff !important;
+        }
+        #blvd-print-area {
+            display: block !important;
+            width: 100% !important;
+            margin: 0 !important;
+            padding: 0 !important;
+        }
+        #blvd-print-area .bg-dark,
+        #blvd-print-area .invoice-section-title {
+            background: #343a40 !important;
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
+        }
+        #blvd-print-area .invoice-section-title.seller-title { background: #f8f9fa !important; }
+        #blvd-print-area .text-white { color: #fff !important; }
+        #blvd-print-area table { width: 100% !important; }
+        #blvd-print-area table,
+        #blvd-print-area th,
+        #blvd-print-area td  { border: 1px solid #000 !important; }
+        #blvd-print-area .info-section { border: 1px solid #000 !important; }
+        #blvd-print-area .btn { display: none !important; }
+        #blvd-print-area hr  { display: none !important; }
+        #blvd-print-area img {
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
+            display: inline-block !important;
+            visibility: visible !important;
+        }
+    }
 </style>
 <div class="page-wrapper">
-
     <div class="container-fluid">
-        <!-- ============================================================== -->
-        <!-- Bread crumb and right sidebar toggle -->
-        <!-- ============================================================== -->
+
+        <!-- Breadcrumb -->
         <div class="row page-titles no-print">
             <div class="col-md-5 col-12 align-self-center">
                 <h3 class="text-themecolor mb-0">@Model.FeatureCategory.Name Order Details</h3>
@@ -185,48 +327,85 @@
             <div class="col-md-7 col-12 align-self-center d-none d-md-block">
                 <ol class="breadcrumb mb-0 p-0 bg-transparent float-right">
                     <li class="breadcrumb-item active"><a href="@Url.RouteUrl("Admin_Member")">Member</a></li>
-                    <li class="breadcrumb-item active">@Model.FeatureCategory.Name Order Details</li>
+                    <li class="breadcrumb-item active">Order Details</li>
                 </ol>
             </div>
         </div>
-        <!-- ============================================================== -->
-        <!-- End Bread crumb and right sidebar toggle -->
-        <!-- ============================================================== -->
-        <!--order list-->
+
         <div class="row">
-            <div class="col-12">
+
+            @* ── STICKY SIDEBAR ── *@
+            <div class="col-lg-2 col-md-3 no-print" id="sidebar-col">
+                <div class="seller-sidebar card p-0">
+                    <div class="card-header bg-dark text-white py-2 px-3">
+                        <small><i class="fas fa-receipt"></i> Invoices</small>
+                    </div>
+                    <div class="list-group list-group-flush">
+                        @* Boulevard link *@
+                        <a class="seller-nav-item blvd-link list-group-item list-group-item-action"
+                           onclick="showInvoice('section-boulevard', this)"
+                           href="javascript:void(0)">
+                            <i class="fas fa-building mr-1"></i> Boulevard
+                        </a>
+                        @* Seller links *@
+                        @{ int sIdx = 0; }
+                        @foreach (var sg in sellerGroups)
+                        {
+                            <a class="seller-nav-item list-group-item list-group-item-action"
+                               onclick="showInvoice('section-seller-@sIdx', this)"
+                               href="javascript:void(0)">
+                                <i class="fas fa-store mr-1"></i> @sg.Key
+                                <span class="badge badge-success float-right mt-1">@sg.Count()</span>
+                            </a>
+                            sIdx++;
+                        }
+                    </div>
+                </div>
+            </div>
+
+            @* ── MAIN CONTENT ── *@
+            <div class="col-lg-10 col-md-9">
                 <div class="card mb-0">
-                    <div class="card-body pb-0">
-                        <h4 class="card-title">@Model.FeatureCategory.Name Invoice Details</h4>
-                        <button class="btn btn-xs btn-success float-right no-print" style="margin-top: -36px;" id="btnPrint" onclick="Print()"><i class="fas fa-print"></i> print</button>
+                    <div class="card-body pb-0 no-print">
+                        <h4 class="card-title d-inline">@Model.FeatureCategory.Name Invoice Details</h4>
+                        @if (sellerGroups.Any())
+                        {
+                            <button class="btn btn-sm btn-success float-right no-print ml-2" onclick="PrintAllSellers()">
+                                <i class="fas fa-print"></i> Print All Seller Invoices
+                            </button>
+                        }
+                        <button class="btn btn-sm btn-secondary float-right no-print" onclick="PrintBoulevard()">
+                            <i class="fas fa-print"></i> Print Boulevard Invoice
+                        </button>
                     </div>
                     <hr>
-                    <div class="col-xl-8 col-lg-12 col-md-12 col-sm-12 col-12 mx-auto" id="print">
-                        <div class="card" style="border: 1px solid #000;">
-                            <div class="card-header p-4">
-                                <a><img style="height: 70px; width: 170px;" src="~/Areas/Admin/Content/assets/images/logoBlack.png"></a>
-                                <div class="float-right">
+
+                    @* ════════════════════════════════════════
+                       BOULEVARD INVOICE  (always visible)
+                       ════════════════════════════════════════ *@
+                    <div class="mx-3 mb-4 invoice-section boulevard-invoice hidden" id="section-boulevard">
+                        <div class="invoice-section-title">
+                            <span><i class="fas fa-building mr-2"></i><strong>Boulevard Master Invoice</strong>
+                                <small class="ml-2" style="opacity:.75;font-weight:normal">— @Model.ReadableOrderId</small>
+                            </span>
+                            <button class="btn btn-xs btn-outline-light no-print" onclick="PrintBoulevard()">
+                                <i class="fas fa-print"></i> Print
+                            </button>
+                        </div>
+                        <div id="boulevard-invoice-content">
+                            <div class="card-header p-4" style="display:flex;justify-content:space-between;align-items:flex-start;">
+                                <a><img style="height:84px;width:77px;" src="@logoDataUri"></a>
+                                <div style="text-align:left;">
                                     <h3 class="mb-0">Invoice No: @Model.ReadableOrderId</h3>
                                     <span>Date: <strong>@Model.OrderDateTime.ToString("dd/MM/yyyy")</strong></span>
                                     <p class="mb-0">Order Status : <strong>@Model.OrderStatus.Name</strong></p>
-
                                     <p class="mb-0">Payment Method : <strong>@Model.PaymentMethod.PaymentMethodName</strong></p>
+                                    <p class="mb-0">Seller : <strong>Boulevard</strong></p>
                                 </div>
                             </div>
                             <h3 class="bg-dark text-white text-center py-2 mb-0">Invoice</h3>
-                            <div class="card-body">
+                            <div class="p-3">
                                 <div class="d-flex justify-content-between flex-column">
-                                    @*<div class="shipment-details">
-            <div class="origin-dest">
-                <p><strong>Origin:</strong> @Model.MemberAddresses.City.CityName</p>
-                <p><strong>Dest:</strong> MUS</p>
-                <p><strong>Route:</strong> No Route</p>
-
-            </div>
-            <div class="tracking">
-                <p><strong>Tracking No:</strong> 1100023624955</p>
-            </div>
-        </div>*@
                                     <div class="info-section">
                                         <div class="info-text">
                                             <h5>Sender Info:</h5>
@@ -236,194 +415,378 @@
                                                 <p>@Model.MemberAddresses.AddressLine1,</p>
                                                 <p>@Model.MemberAddresses.AddressLine2</p>
                                                 if (Model.MemberAddresses.City != null)
-                                                {
-                                                    <div>@Model.MemberAddresses.City.CityName,</div>
-                                                }
+                                                { <div>@Model.MemberAddresses.City.CityName,</div> }
                                                 if (Model.MemberAddresses.Country != null)
-                                                {
-                                                    <div>@Model.MemberAddresses.Country.CountryName</div>
-                                                }
+                                                { <div>@Model.MemberAddresses.Country.CountryName</div> }
                                             }
                                             <p>Phone: @Model.Member.PhoneNumber</p>
-
                                         </div>
-
                                     </div>
-                                    <div class="info-section">
-                                        <div class="info-text">
-                                            <h5>Receiver Info</h5>
-                                            <h3>Boulvard</h3>
-
-                                        </div>
-
-                                    </div>
-
-                                    <div class="info-section">
-                                        <div class="info-text">
-                                            <h5>Order Date</h5>
-                                            <h3>@Model.OrderDateTime.ToShortDateString()</h3>
-
-                                        </div>
-
-                                    </div>
-
-                                    <div class="info-section">
-                                        <div class="info-text">
-                                            <h5>Delivery Date</h5>
-                                            <h3>@Model.DeliveryDateTime.ToShortDateString()</h3>
-
-                                        </div>
-
-                                    </div>
-                                    @*<div class="">
-            <h5 class="mb-3">Sender Info:</h5>
-            <h3 class="text-dark mb-1">@Model.Member.Name</h3>
-            <div>@Model.MemberAddresses.AddressLine1,</div>
-            <div>@Model.MemberAddresses.AddressLine2</div>
-            @if (Model.MemberAddresses.City != null)
-            {
-                <div>@Model.MemberAddresses.City.CityName,</div>
-            }
-
-            @if (Model.MemberAddresses.Country != null)
-            {
-                <div>@Model.MemberAddresses.Country.CountryName</div>
-            }
-
-            <div>Phone: @Model.Member.PhoneNumber</div>
-
-        </div>*@
-                                    @*<div class="">
-            <h5 class="mb-3">Receiver Info:</h5>
-            <h3 class="text-dark mb-1">Blue Bird</h3>
-
-
-        </div>*@
+                                    <div class="info-section"><div class="info-text"><h5>Receiver Info</h5><h3>Boulvard</h3></div></div>
+                                    <div class="info-section"><div class="info-text"><h5>Order Date</h5><h3>@Model.OrderDateTime.ToShortDateString()</h3></div></div>
+                                    <div class="info-section"><div class="info-text"><h5>Delivery Date</h5><h3>@Model.DeliveryDateTime.ToShortDateString()</h3></div></div>
                                 </div>
                                 <div class="table-responsive-sm">
-                                    <table class="table table-bordered" style="margin-bottom: 10px;">
+                                    <table class="table table-bordered" style="margin-bottom:10px;">
                                         <thead>
                                             <tr>
-                                                <th>Product Name</th>
-                                                <th>Brand Name</th>
-                                                <th>Product Price</th>
-                                                <th>Quantity</th>
-                                                <th>Price</th>
-
-                                                <th>Discount Name</th>
-                                                <th>Amount Discount</th>
-                                                <th>Gross Price</th>
+                                                <th>Product Name</th><th>Brand Name</th><th>Product Price</th>
+                                                <th>Quantity</th><th>Price</th><th>Discount Name</th>
+                                                <th>Amount Discount</th><th>Gross Price</th>
                                             </tr>
                                         </thead>
                                         <tbody>
                                             @foreach (var node in Model.OrderRequestProduxtDetails)
                                             {
-                                                var grossPrize = @node.GrossPrice * @node.Quantity;
+                                                var gp = node.GrossPrice * node.Quantity;
                                                 <tr>
                                                     <td>@node.Product.ProductName</td>
                                                     <td>@node.BrandName</td>
                                                     <td>@node.Product.ProductPrice</td>
                                                     <td>@node.Quantity</td>
-
-                                                    <td>@grossPrize</td>
+                                                    <td>@gp</td>
                                                     <td></td>
-                                                    @*@if (node.IsOffer == true)
-                   {
-                       <td>@node.OfferName</td>
-                   }
-        else
-          {
-              <td></td>
-            }*@
-
-                                                    @*@if (node.IsMemberShipOffer == true)
-           {
-        <td>@node.MemberShipName</td>
-            }*@
-
                                                     @if (!string.IsNullOrEmpty(node.OfferDiscountType))
                                                     {
                                                         if (node.OfferDiscountType == "Percentage")
-                                                        {
-                                                            <td>@node.DiscountAmount %</td>
-                                                        }
+                                                        { <td>@node.DiscountAmount %</td> }
                                                         else
-                                                        {
-                                                            <td>@node.DiscountAmount AED</td>
-                                                        }
+                                                        { <td>@node.DiscountAmount AED</td> }
                                                     }
-                                                    else
-                                                    {
-                                                        <td>@node.DiscountAmount</td>
-                                                    }
-
+                                                    else { <td>@node.DiscountAmount</td> }
                                                     <td>@node.GrossPrice</td>
-
                                                 </tr>
                                             }
                                         </tbody>
                                     </table>
                                 </div>
+                                <div class="d-flex justify-content-between">
+                                    <div></div>
+                                    <div>
+                                        <table class="table table-bordered table-sm" style="font-size:smaller">
+                                            <tbody>
+                                                <tr><td><strong>Total Quantity:</strong></td><td>@Model.OrderRequestProduxtDetails.Sum(t => t.Quantity)</td></tr>
+                                                <tr><td><strong>Delivery Charge:</strong></td><td>@Model.DeliveryCharge</td></tr>
+                                                <tr><td><strong>Total Price:</strong></td><td>@Model.TotalPrice</td></tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
 
+                    @* ════════════════════════════════════════
+                       SELLER INVOICES  (flat — no accordion)
+                       ════════════════════════════════════════ *@
+                    @{ int panelIdx = 0; }
+                    @foreach (var sellerGroup in sellerGroups)
+                    {
+                            var sTotalQty   = sellerGroup.Sum(x => x.Quantity);
+                            var sTotalPrice = sellerGroup.Sum(x => x.GrossPrice * x.Quantity);
+                            var sectionId   = "section-seller-" + panelIdx;
+                            var contentId   = "seller-content-" + panelIdx;
 
-                                <div class="row">
-                                    <div class="col-lg-12 col-md-12 col-sm-12">
-
+                            <div class="mx-3 mb-4 invoice-section hidden" id="@sectionId">
+                                <div class="invoice-section-title seller-title">
+                                    <span>
+                                        <i class="fas fa-store mr-2"></i>
+                                        <strong>@sellerGroup.Key</strong>
+                                        <span class="badge badge-secondary ml-2">@sellerGroup.Count() item@(sellerGroup.Count() != 1 ? "s" : "")</span>
+                                        <span class="badge badge-light text-dark border ml-1">@sTotalPrice.ToString("0.00") AED</span>
+                                    </span>
+                                    <button class="btn btn-xs btn-outline-dark no-print"
+                                            onclick="PrintSeller('@contentId')">
+                                        <i class="fas fa-print"></i> Print
+                                    </button>
+                                </div>
+                                <div class="seller-invoice-content" id="@contentId">
+                                    <div class="card-header p-4" style="display:flex;justify-content:space-between;align-items:flex-start;">
+                                        <a><img style="height:84px;width:77px;" src="@logoDataUri" /></a>
+                                        <div style="text-align:left;">
+                                            <h3 class="mb-0">Invoice No: @Model.ReadableOrderId</h3>
+                                            <span>Date: <strong>@Model.OrderDateTime.ToString("dd/MM/yyyy")</strong></span>
+                                            <p class="mb-0">Order Status : <strong>@Model.OrderStatus.Name</strong></p>
+                                            <p class="mb-0">Payment Method : <strong>@Model.PaymentMethod.PaymentMethodName</strong></p>
+                                            <p class="mb-0">Seller : <strong>@sellerGroup.Key</strong></p>
+                                        </div>
+                                    </div>
+                                    <h3 class="bg-dark text-white text-center py-2 mb-0">Invoice</h3>
+                                    <div class="p-3">
+                                        <div class="table-responsive-sm">
+                                            <table class="table table-bordered" style="margin-bottom:10px;">
+                                                <thead>
+                                                    <tr>
+                                                        <th>Product Name</th><th>Brand Name</th><th>Product Price</th>
+                                                        <th>Quantity</th><th>Price</th><th>Discount Name</th>
+                                                        <th>Amount Discount</th><th>Gross Price</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    @foreach (var node in sellerGroup)
+                                                    {
+                                                        var grossPrize = node.GrossPrice * node.Quantity;
+                                                        <tr>
+                                                            <td>@node.Product.ProductName</td>
+                                                            <td>@node.BrandName</td>
+                                                            <td>@node.Product.ProductPrice</td>
+                                                            <td>@node.Quantity</td>
+                                                            <td>@grossPrize</td>
+                                                            <td></td>
+                                                            @if (!string.IsNullOrEmpty(node.OfferDiscountType))
+                                                            {
+                                                                if (node.OfferDiscountType == "Percentage")
+                                                                { <td>@node.DiscountAmount %</td> }
+                                                                else
+                                                                { <td>@node.DiscountAmount AED</td> }
+                                                            }
+                                                            else { <td>@node.DiscountAmount</td> }
+                                                            <td>@node.GrossPrice</td>
+                                                        </tr>
+                                                    }
+                                                </tbody>
+                                            </table>
+                                        </div>
                                         <div class="d-flex justify-content-between">
-
-                                            <p style="font-size:smaller;width:50%"> <strong>Comments :  @Model.Comments</strong>  </p>
-
+                                            <div></div>
                                             <div>
                                                 <table class="table table-bordered table-sm" style="font-size:smaller">
                                                     <tbody>
-                                                        <tr>
-                                                            <td class="left">
-                                                                <strong class="text-dark">Total Quantity:</strong>
-                                                            </td>
-                                                            <td class="right">@Model.OrderRequestProduxtDetails.Sum(t => t.Quantity)</td>
-                                                        </tr>
-
-                                                        <tr>
-                                                            <td class="left">
-                                                                <strong class="text-dark">Delivery Charge :</strong>
-                                                            </td>
-                                                            <td class="right">@Model.DeliveryCharge</td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td class="left">
-                                                                <strong class="text-dark">Total Price :</strong>
-                                                            </td>
-                                                            <td class="right">@Model.TotalPrice</td>
-                                                        </tr>
+                                                        <tr><td><strong>Total Quantity:</strong></td><td>@sTotalQty</td></tr>
+                                                        <tr><td><strong>Seller Total:</strong></td><td>@sTotalPrice.ToString("0.00") AED</td></tr>
                                                     </tbody>
                                                 </table>
                                             </div>
                                         </div>
                                     </div>
-
                                 </div>
-
-
                             </div>
-                        </div>
-                    </div>
+                            panelIdx++;
+                        }
+
                 </div>
             </div>
         </div>
-
     </div>
 </div>
 
-<script src="~/Areas/Admin/MainContent/assets/libs/jquery/dist/jquery.min.js"></script>
+<script src="~/Scripts/jquery-3.7.0.min.js"></script>
+<script src="~/Scripts/html2canvas.min.js"></script>
+<script src="~/Scripts/jspdf.umd.min.js"></script>
 <script>
-    function Print() {
-        var divElement = document.getElementById('print').innerHTML;
-        var fullPage = document.body.innerHTML;
+    /* ──────────────────────────────────────────────────────
+     *  Dynamically set sidebar top offset = exact topbar height.
+     *  Re-runs on window resize and admin-sidebar toggle so
+     *  the value is always correct regardless of screen size.
+     * ────────────────────────────────────────────────────── */
+    (function () {
+        var GAP = 8; // px gap between topbar bottom and sticky element
 
-        document.body.innerHTML = divElement;
+        function applyStickyOffset() {
+            var topbar = document.querySelector('.topbar');
+            var sidebar = document.querySelector('.seller-sidebar');
+            if (!topbar || !sidebar) return;
+            var h = Math.ceil(topbar.getBoundingClientRect().height || topbar.offsetHeight);
+            var offset = h + GAP;
+            sidebar.style.top       = offset + 'px';
+            sidebar.style.maxHeight = 'calc(100vh - ' + (offset + 12) + 'px)';
+        }
 
-        window.print();
-        document.body.innerHTML = fullPage;
+        document.addEventListener('DOMContentLoaded', function () {
+            applyStickyOffset();
+
+            // Show default invoice
+            showInvoice('section-boulevard', document.querySelector('.seller-nav-item.blvd-link'));
+
+            // Re-apply after viewport resize (responsive breakpoints)
+            window.addEventListener('resize', applyStickyOffset, { passive: true });
+
+            // Re-apply after admin sidebar collapse transition (~300 ms)
+            var toggler = document.querySelector('.sidebartoggler');
+            if (toggler) {
+                toggler.addEventListener('click', function () {
+                    setTimeout(applyStickyOffset, 320);
+                });
+            }
+        });
+    }());
+
+    /* Show ONE invoice and hide all others */
+    function showInvoice(sectionId, navEl) {
+        document.querySelectorAll('.seller-nav-item').forEach(function(el) { el.classList.remove('active'); });
+        if (navEl) navEl.classList.add('active');
+        document.querySelectorAll('.invoice-section').forEach(function(sec) { sec.classList.add('hidden'); });
+        var target = document.getElementById(sectionId);
+        if (target) target.classList.remove('hidden');
+    }
+
+
+    /* 
+     *  PDF Export Engine — html2canvas + jsPDF
+     *  Renders invoice section(s) to canvas, then exports as PDF
+     *  with proper filename. No print dialog needed.
+     *  */
+    function _buildPrintArea(sections) {
+        var area = document.createElement('div');
+        area.id = 'blvd-print-area';
+        area.style.cssText = 'width:794px;padding:30px;background:#fff;font-family:Arial,sans-serif;font-size:14px;color:#000;box-sizing:border-box;';
+
+        sections.forEach(function(sec, idx) {
+            if (!sec) return;
+            var clone = sec.cloneNode(true);
+            clone.classList.remove('hidden');
+            clone.style.cssText = 'display:block;border:none;margin:0 0 40px 0;background:#fff;';
+            if (idx > 0) clone.style.marginTop = '40px';
+
+            /* Remove buttons, hr, no-print elements */
+            clone.querySelectorAll('.btn, .no-print, hr').forEach(function(b) { b.remove(); });
+
+            /* Fix section title bar */
+            clone.querySelectorAll('.invoice-section-title').forEach(function(el) {
+                el.style.cssText = 'background:#343a40;color:#fff;padding:10px 15px;font-size:14px;display:flex;justify-content:space-between;align-items:center;';
+            });
+            clone.querySelectorAll('.invoice-section-title.seller-title').forEach(function(el) {
+                el.style.cssText = 'background:#f8f9fa;color:#333;padding:10px 15px;font-size:14px;border:1px solid #dee2e6;display:flex;justify-content:space-between;align-items:center;';
+            });
+
+            /* Fix invoice header (logo + info) */
+            clone.querySelectorAll('.card-header').forEach(function(el) {
+                el.style.cssText = 'display:flex;justify-content:space-between;align-items:flex-start;padding:20px;background:#fff;';
+            });
+
+            /* Fix the "Invoice" bar */
+            clone.querySelectorAll('.bg-dark.text-white').forEach(function(el) {
+                el.style.cssText = 'background:#343a40;color:#fff;text-align:center;padding:10px;margin:0;font-size:18px;';
+            });
+
+            /* Fix info sections */
+            clone.querySelectorAll('.info-section').forEach(function(el) {
+                el.style.cssText = 'border:1px solid #000;padding:8px 12px;margin-bottom:8px;';
+            });
+
+            /* Fix d-flex containers */
+            clone.querySelectorAll('.d-flex').forEach(function(el) {
+                el.style.display = 'flex';
+            });
+            clone.querySelectorAll('.justify-content-between').forEach(function(el) {
+                el.style.justifyContent = 'space-between';
+            });
+            clone.querySelectorAll('.flex-column').forEach(function(el) {
+                el.style.flexDirection = 'column';
+            });
+
+            /* Fix tables */
+            clone.querySelectorAll('table').forEach(function(tbl) {
+                tbl.style.cssText = 'width:100%;border-collapse:collapse;font-size:12px;';
+            });
+            clone.querySelectorAll('th').forEach(function(th) {
+                th.style.cssText = 'border:1px solid #000;padding:6px 8px;text-align:center;background:#f5f5f5;font-weight:bold;font-size:11px;';
+            });
+            clone.querySelectorAll('td').forEach(function(td) {
+                td.style.cssText = 'border:1px solid #000;padding:5px 8px;text-align:center;font-size:11px;';
+            });
+
+            /* Fix totals: push to right */
+            var totalsContainers = clone.querySelectorAll('.d-flex.justify-content-between');
+            totalsContainers.forEach(function(c) {
+                if (c.querySelector('table.table-sm')) {
+                    c.style.cssText = 'display:flex;justify-content:flex-end;margin-top:5px;';
+                }
+            });
+
+            /* Fix padding containers */
+            clone.querySelectorAll('.p-3').forEach(function(el) {
+                el.style.padding = '15px';
+            });
+            clone.querySelectorAll('.p-4').forEach(function(el) {
+                el.style.padding = '20px';
+            });
+
+            /* Fix badges */
+            clone.querySelectorAll('.badge').forEach(function(el) {
+                el.style.cssText = 'display:inline-block;padding:3px 8px;font-size:11px;border-radius:4px;margin-left:8px;';
+            });
+            clone.querySelectorAll('.badge-secondary').forEach(function(el) {
+                el.style.backgroundColor = '#6c757d';
+                el.style.color = '#fff';
+            });
+
+            area.appendChild(clone);
+        });
+        return area;
+    }
+
+    function _exportPDF(sections, pdfTitle) {
+        var area = _buildPrintArea(sections);
+        area.style.position = 'absolute';
+        area.style.left = '-9999px';
+        area.style.top = '0';
+        document.body.appendChild(area);
+
+        html2canvas(area, {
+            scale: 2,
+            useCORS: true,
+            backgroundColor: '#ffffff',
+            logging: false,
+            width: 794,
+            windowWidth: 794
+        }).then(function(canvas) {
+            document.body.removeChild(area);
+
+            var imgData = canvas.toDataURL('image/jpeg', 0.95);
+            var pdf = new jspdf.jsPDF('p', 'mm', 'a4');
+            var pageWidth = pdf.internal.pageSize.getWidth();   // 210
+            var pageHeight = pdf.internal.pageSize.getHeight();  // 297
+            var margin = 10;
+            var usableWidth = pageWidth - (margin * 2);   // 190
+            var usableHeight = pageHeight - (margin * 2); // 277
+            var imgWidth = usableWidth;
+            var imgHeight = (canvas.height * imgWidth) / canvas.width;
+
+            var heightLeft = imgHeight;
+            var yOffset = margin;
+
+            pdf.addImage(imgData, 'JPEG', margin, yOffset, imgWidth, imgHeight);
+            heightLeft -= usableHeight;
+
+            while (heightLeft > 0) {
+                pdf.addPage();
+                yOffset = margin - (imgHeight - heightLeft);
+                pdf.addImage(imgData, 'JPEG', margin, yOffset, imgWidth, imgHeight);
+                heightLeft -= usableHeight;
+            }
+
+            pdf.save(pdfTitle + '.pdf');
+        });
+    }
+
+    /* Export Boulevard master invoice */
+    function PrintBoulevard() {
+        var sec = document.getElementById('section-boulevard');
+        _exportPDF([sec], 'Boulevard - Invoice No @Model.ReadableOrderId');
+    }
+
+    /* Export single seller invoice */
+    function PrintSeller(contentId) {
+        var content = document.getElementById(contentId);
+        if (!content) return;
+        var sec = content.closest
+            ? content.closest('.invoice-section')
+            : (function(el) {
+                  while (el && !el.classList.contains('invoice-section')) el = el.parentElement;
+                  return el;
+              })(content.parentElement);
+        var nameEl = sec ? sec.querySelector('.invoice-section-title strong') : null;
+        var name   = nameEl ? nameEl.textContent.trim() : 'Seller';
+        _exportPDF([sec], name + ' - Invoice No @Model.ReadableOrderId');
+    }
+
+    /* Export ALL seller invoices */
+    function PrintAllSellers() {
+        var secs = Array.prototype.slice.call(
+            document.querySelectorAll('.invoice-section:not(.boulevard-invoice)')
+        );
+        _exportPDF(secs, 'All Sellers - Invoice No @Model.ReadableOrderId');
     }
 </script>
 

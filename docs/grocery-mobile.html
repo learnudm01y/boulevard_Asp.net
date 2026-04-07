@@ -335,6 +335,33 @@
       stroke-linecap: round;
       stroke-linejoin: round;
     }
+    .prod-origin-badge {
+      position: absolute;
+      bottom: 6px;
+      right: 6px;
+      background: rgba(13, 110, 75, 0.88);
+      backdrop-filter: blur(4px);
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 6px;
+      padding: 3px 7px;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 10px;
+      font-weight: 700;
+      color: #fff;
+      line-height: 1;
+    }
+    .prod-origin-badge svg {
+      width: 11px;
+      height: 11px;
+      flex-shrink: 0;
+      fill: none;
+      stroke: #fff;
+      stroke-width: 1.6;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
     .prod-body {
       padding: 10px 10px 12px;
       display: flex;
@@ -961,7 +988,19 @@ function buildProdCard(p) {
   const bi     = p.brandInfo || p.BrandInfo;
   const brand  = bi ? t(bi.title || bi.Title || '', bi.titleAr || bi.TitleAr || '') : '';
   const attr   = p.attributeName || p.AttributeName || '';
-  const icvScore = (p.icvBoulevardScore || p.IcvBoulevardScore || '').trim();
+  const icvRaw = (p.icvBoulevardScore || p.IcvBoulevardScore || '').toString().trim();
+  const originVal = (p.origin || p.Origin || '').trim();
+
+  // Convert ICV score to percentage display: "1" → "100%", "0.75" → "75%"
+  let icvScore = '';
+  if (icvRaw) {
+    const num = parseFloat(icvRaw);
+    if (!isNaN(num)) {
+      icvScore = (num <= 1 ? Math.round(num * 100) : Math.round(num)) + '%';
+    } else {
+      icvScore = icvRaw;
+    }
+  }
 
   let discountPct = '';
   const di = p.discountInformation || p.DiscountInformation;
@@ -995,6 +1034,18 @@ function buildProdCard(p) {
       </div>`
     : '';
 
+  // Origin badge — bottom-right of image (globe icon + origin value)
+  const originBadge = originVal
+    ? `<div class="prod-origin-badge" title="Origin">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <circle cx="12" cy="12" r="10"/>
+          <line x1="2" y1="12" x2="22" y2="12"/>
+          <path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10A15.3 15.3 0 0112 2z"/>
+        </svg>
+        ${escHtml(originVal)}
+      </div>`
+    : '';
+
   return `
     <div class="prod-card">
       <div class="prod-img-wrap">
@@ -1002,6 +1053,7 @@ function buildProdCard(p) {
         <div class="prod-img-placeholder" style="${img ? 'display:none' : 'display:flex'}">🛍️</div>
         ${discountPct ? `<div class="prod-discount-badge">${escHtml(discountPct)}</div>` : ''}
         ${icvBadge}
+        ${originBadge}
       </div>
       <div class="prod-body">
         ${brand ? `<div class="prod-brand">${escHtml(brand)}</div>` : ''}
