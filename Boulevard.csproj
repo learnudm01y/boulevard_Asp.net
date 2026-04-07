@@ -253,6 +253,8 @@
     <Compile Include="Areas\Admin\Controllers\ServiceTypeController.cs" />
     <Compile Include="Areas\Admin\Controllers\ServiceController.cs" />
     <Compile Include="Areas\Admin\Controllers\BrandController.cs" />
+    <Compile Include="Areas\Admin\Controllers\DeliveryManagementController.cs" />
+    <Compile Include="Areas\Admin\Controllers\SocialImpactTrackerController.cs" />
     <Compile Include="Areas\Admin\Controllers\CategoryController.cs" />
     <Compile Include="Areas\Admin\Controllers\CityController.cs" />
     <Compile Include="Areas\Admin\Controllers\CountryController.cs" />
@@ -299,6 +301,7 @@
     <Compile Include="Controllers\CategoryController.cs" />
     <Compile Include="Controllers\FakeController.cs" />
     <Compile Include="Controllers\FeatureCategoryController.cs" />
+    <Compile Include="Controllers\SocialImpactController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\MemberController.cs" />
     <Compile Include="Controllers\MembershipController.cs" />
@@ -7351,6 +7354,8 @@
     <Content Include="Areas\Admin\Views\Brand\Create.cshtml" />
     <Content Include="Areas\Admin\Views\Brand\Index.cshtml" />
     <Content Include="Areas\Admin\Views\Brand\Index.cshtml" />
+    <Content Include="Areas\Admin\Views\DeliveryManagement\Index.cshtml" />
+    <Content Include="Areas\Admin\Views\SocialImpactTracker\Index.cshtml" />
     <Content Include="Areas\Admin\Views\City\CreateAndUpdate.cshtml" />
     <Content Include="Areas\Admin\Views\City\Index.cshtml" />
     <Content Include="Areas\Admin\Views\Country\CreateAndUpdate.cshtml" />

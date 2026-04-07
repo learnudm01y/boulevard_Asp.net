@@ -52,5 +52,17 @@ namespace Boulevard.Models
 
         public string SubSubCategoryImage { get; set; }
 
+        // 4th-level category (child of SubSubCategory).
+        // NOTE: commas in any category name field are part of the name and are NEVER
+        // used as value separators — only Quantity/Price/Stocks fields use ; or , separators.
+        public string MiniCategory { get; set; }
+        public string MiniCategoryArabic { get; set; }
+
+        /// <summary>
+        /// ICV Boulevard Score — read from optional Excel column "ICV Boulevard Score" (e.g. "100%").
+        /// </summary>
+        [StringLength(50)]
+        public string IcvBoulevardScore { get; set; }
+
     }
 }

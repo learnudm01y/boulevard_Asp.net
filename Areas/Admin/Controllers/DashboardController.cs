@@ -34,7 +34,7 @@ namespace Boulevard.Areas.Admin.Controllers
                     .OrderByDescending(s => s.MemberId)
                     .Take(10).ToListAsync();
                 vm.Categories = await uow.FeatureCategoryRepository
-                    .GetAll(s => s.IsActive == true)
+                    .GetAll(s => s.IsActive == true && !s.IsDelete)
                     .OrderBy(s => s.FeatureCategoryId).ToListAsync();
                 return View(vm);
             }

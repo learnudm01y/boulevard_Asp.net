@@ -1,0 +1,379 @@
+@{
+    ViewBag.Title = "Social Impact Tracker";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+@model IEnumerable<Boulevard.Models.FeatureCategory>
+
+<style>
+    /* ── Card wrapper ─────────────────────────────────────── */
+    .sit-card {
+        background: #fff;
+        border-radius: 10px;
+        box-shadow: 0 2px 12px rgba(0,0,0,.06);
+        overflow: hidden;
+    }
+    .sit-header {
+        padding: 24px 28px 18px;
+        border-bottom: 1px solid #f0f0f0;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+    .sit-header-left h4 {
+        font-size: 1.2rem;
+        font-weight: 700;
+        color: #111;
+        margin: 0 0 3px;
+    }
+    .sit-header-left p {
+        font-size: .82rem;
+        color: #aaa;
+        margin: 0;
+    }
+    .sit-badge-count {
+        background: #111;
+        color: #fff;
+        font-size: .75rem;
+        font-weight: 700;
+        padding: 4px 12px;
+        border-radius: 20px;
+        letter-spacing: .4px;
+    }
+
+    /* ── Table ────────────────────────────────────────────── */
+    .sit-table {
+        width: 100%;
+        border-collapse: collapse;
+        table-layout: fixed;
+    }
+    .sit-table colgroup col:nth-child(1) { width: 56px; }
+    .sit-table colgroup col:nth-child(2) { width: auto; }
+    .sit-table colgroup col:nth-child(3) { width: 260px; }
+
+    .sit-table thead tr {
+        background: #1a1a1a;
+    }
+    .sit-table thead th {
+        padding: 13px 20px;
+        font-weight: 600;
+        font-size: .72rem;
+        color: #fff !important;
+        letter-spacing: .8px;
+        text-transform: uppercase;
+        border: none;
+        white-space: nowrap;
+    }
+    .sit-table thead th:first-child { text-align: center; }
+
+    .sit-table tbody tr {
+        border-bottom: 1px solid #f4f4f4;
+        transition: background .12s;
+    }
+    .sit-table tbody tr:last-child { border-bottom: none; }
+    .sit-table tbody tr:hover { background: #fafafa; }
+
+    .sit-table tbody td {
+        padding: 14px 20px;
+        font-size: .875rem;
+        color: #222 !important;
+        vertical-align: middle;
+        border: none;
+    }
+    .sit-row-num {
+        text-align: center;
+        font-size: .72rem;
+        font-weight: 700;
+        color: #ccc !important;
+        width: 56px;
+    }
+
+    /* ── Category cell ────────────────────────────────────── */
+    .cat-cell {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+    }
+    .cat-thumb-wrap {
+        flex-shrink: 0;
+        width: 52px;
+        height: 52px;
+        border-radius: 10px;
+        overflow: hidden;
+        background: #f3f4f6;
+        border: 1px solid #ebebeb;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    .cat-thumb {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+    }
+    .cat-thumb-placeholder {
+        width: 100%;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: linear-gradient(135deg, #1a1a1a 0%, #444 100%);
+        color: #fff;
+        font-size: 1.2rem;
+        font-weight: 700;
+        letter-spacing: .5px;
+    }
+    .cat-info-name {
+        font-weight: 700;
+        font-size: .92rem;
+        color: #111 !important;
+        margin-bottom: 3px;
+        line-height: 1.2;
+    }
+    .cat-info-ar {
+        font-size: .78rem;
+        color: #aaa !important;
+        line-height: 1.2;
+        direction: rtl;
+        text-align: left;
+    }
+
+    /* ── Commission editor ────────────────────────────────── */
+    .commission-cell {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    .commission-field-wrap {
+        position: relative;
+        display: flex;
+        align-items: center;
+    }
+    .commission-input {
+        width: 86px;
+        border: 1.5px solid #e0e0e0;
+        border-radius: 7px;
+        padding: 8px 28px 8px 12px;
+        font-size: .9rem;
+        font-weight: 700;
+        color: #111;
+        outline: none;
+        background: #fafafa;
+        transition: border-color .15s, background .15s;
+        -moz-appearance: textfield;
+    }
+    .commission-input::-webkit-outer-spin-button,
+    .commission-input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+    .commission-input:focus {
+        border-color: #111;
+        background: #fff;
+    }
+    .commission-pct-suffix {
+        position: absolute;
+        right: 10px;
+        font-size: .78rem;
+        font-weight: 700;
+        color: #aaa;
+        pointer-events: none;
+    }
+
+    .btn-save {
+        padding: 8px 20px;
+        background: #111;
+        color: #fff;
+        border: none;
+        border-radius: 7px;
+        font-size: .8rem;
+        font-weight: 600;
+        cursor: pointer;
+        letter-spacing: .3px;
+        transition: background .15s, transform .1s;
+        white-space: nowrap;
+    }
+    .btn-save:hover    { background: #333; }
+    .btn-save:active   { transform: scale(.97); }
+    .btn-save:disabled { background: #d4d4d4; cursor: not-allowed; transform: none; }
+
+    .save-feedback {
+        font-size: .75rem;
+        font-weight: 700;
+        min-width: 52px;
+        display: none;
+    }
+    .save-feedback.ok  { color: #16a34a; display: inline; }
+    .save-feedback.err { color: #dc2626; display: inline; }
+</style>
+
+<div class="page-wrapper">
+    <div class="container-fluid">
+
+        <div class="row page-titles">
+            <div class="col-md-5 col-12 align-self-center">
+                <h3 class="text-themecolor mb-0">Social Impact Tracker</h3>
+            </div>
+            <div class="col-md-7 col-12 align-self-center d-none d-md-block">
+                <ol class="breadcrumb mb-0 p-0 bg-transparent float-right">
+                    <li class="breadcrumb-item"><a href="@Url.RouteUrl("Admin_Dashboard")">Dashboard</a></li>
+                    <li class="breadcrumb-item active">Social Impact Tracker</li>
+                </ol>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-12">
+                <div class="sit-card">
+
+                    <div class="sit-header">
+                        <div class="sit-header-left">
+                            <h4>Commission Rate Management</h4>
+                            <p>Set the commission % for each central category — saved instantly to the database.</p>
+                        </div>
+                        <span class="sit-badge-count">@Model.Count() Categories</span>
+                    </div>
+
+                    <div class="table-responsive">
+                        <table class="sit-table" id="commissionTable">
+                            <colgroup>
+                                <col />
+                                <col />
+                                <col />
+                            </colgroup>
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>Category</th>
+                                    <th>Commission Rate</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @{ int rowNum = 1; }
+                                @foreach (var cat in Model)
+                                {
+                                    /*
+                                     * Image path fix:
+                                     * DB stores paths like "/Content/Upload/FeatureCategory/..."
+                                     * We strip the leading "/" and prefix "~/" so Url.Content
+                                     * correctly handles IIS virtual directory (app root).
+                                     */
+                                    string imgUrl = null;
+                                    if (!string.IsNullOrWhiteSpace(cat.Image))
+                                    {
+                                        var cleaned = cat.Image.TrimStart('/', '~');
+                                        imgUrl = Url.Content("~/" + cleaned);
+                                    }
+                                    string fallbackUrl = Url.Content("~/Areas/Admin/Content/assets/images/menu_icon/Dashboard.png");
+
+                                    // First letter of name for the text placeholder
+                                    string letter = (!string.IsNullOrWhiteSpace(cat.Name) && cat.Name.Length > 0)
+                                        ? cat.Name.Substring(0, 1).ToUpper()
+                                        : "?";
+
+                                    <tr data-id="@cat.FeatureCategoryId">
+                                        <td class="sit-row-num">@(rowNum++)</td>
+                                        <td>
+                                            <div class="cat-cell">
+                                                <div class="cat-thumb-wrap">
+                                                    @if (!string.IsNullOrEmpty(imgUrl))
+                                                    {
+                                                        <img class="cat-thumb"
+                                                             src="@imgUrl"
+                                                             alt="@cat.Name"
+                                                             onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />
+                                                        <div class="cat-thumb-placeholder" style="display:none;">@letter</div>
+                                                    }
+                                                    else
+                                                    {
+                                                        <div class="cat-thumb-placeholder">@letter</div>
+                                                    }
+                                                </div>
+                                                <div>
+                                                    <div class="cat-info-name">@cat.Name</div>
+                                                    @if (!string.IsNullOrWhiteSpace(cat.NameAr))
+                                                    {
+                                                        <div class="cat-info-ar">@cat.NameAr</div>
+                                                    }
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="commission-cell">
+                                                <div class="commission-field-wrap">
+                                                    <input type="number"
+                                                           class="commission-input"
+                                                           value="@(cat.CommissionRate.HasValue ? cat.CommissionRate.Value.ToString("0.##") : "0")"
+                                                           min="0" max="100" step="0.01"
+                                                           data-id="@cat.FeatureCategoryId" />
+                                                    <span class="commission-pct-suffix">%</span>
+                                                </div>
+                                                <button class="btn-save" data-id="@cat.FeatureCategoryId">Save</button>
+                                                <span class="save-feedback" id="fb-@cat.FeatureCategoryId"></span>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+@section scripts {
+<script>
+$(function () {
+
+    function showFeedback(id, ok, msg) {
+        var el = $('#fb-' + id);
+        el.removeClass('ok err').addClass(ok ? 'ok' : 'err').text(msg).show();
+        setTimeout(function () { el.fadeOut(300); }, 3000);
+    }
+
+    $('#commissionTable').on('click', '.btn-save', function () {
+        var btn   = $(this);
+        var id    = btn.data('id');
+        var input = $('input.commission-input[data-id="' + id + '"]');
+        var rate  = parseFloat(input.val());
+
+        if (isNaN(rate) || rate < 0 || rate > 100) {
+            showFeedback(id, false, 'Must be 0–100');
+            return;
+        }
+
+        btn.prop('disabled', true).text('…');
+        $('#fb-' + id).hide();
+
+        $.ajax({
+            url: '@Url.RouteUrl("Admin_SocialImpact_UpdateCommission")',
+            type: 'POST',
+            data: { id: id, rate: rate },
+            success: function (res) {
+                if (res.success) {
+                    showFeedback(id, true, '✓ Saved');
+                } else {
+                    showFeedback(id, false, res.message || 'Error');
+                }
+            },
+            error: function () {
+                showFeedback(id, false, 'Failed');
+            },
+            complete: function () {
+                btn.prop('disabled', false).text('Save');
+            }
+        });
+    });
+
+    $('#commissionTable').on('keydown', '.commission-input', function (e) {
+        if (e.key === 'Enter') {
+            var id = $(this).data('id');
+            $('.btn-save[data-id="' + id + '"]').trigger('click');
+        }
+    });
+});
+</script>
+}

@@ -62,23 +62,22 @@ namespace Boulevard
 
         protected void Application_BeginRequest()
         {
-            // Allow CORS for all API routes (supports file:// and any origin)
-            if (Request.Path.StartsWith("/api/", StringComparison.OrdinalIgnoreCase))
+            // Handle CORS preflight (OPTIONS) for API routes.
+            // NOTE: actual CORS headers (Access-Control-Allow-Origin etc.) are set by
+            // Web.config <customHeaders> — do NOT set them here again or the browser
+            // will see duplicate headers and block the request.
+            if (Request.HttpMethod == "OPTIONS" &&
+                Request.Path.StartsWith("/api/", StringComparison.OrdinalIgnoreCase))
             {
-                var origin = Request.Headers["Origin"];
-                Response.Headers.Set("Access-Control-Allow-Origin",
-                    string.IsNullOrEmpty(origin) ? "*" : origin);
-                Response.Headers.Set("Access-Control-Allow-Headers",
+                Response.StatusCode = 200;
+                // Ensure CORS headers are present on the OPTIONS response too
+                Response.AppendHeader("Access-Control-Allow-Origin", "*");
+                Response.AppendHeader("Access-Control-Allow-Headers",
                     "Content-Type, Accept, Authorization, X-Requested-With");
-                Response.Headers.Set("Access-Control-Allow-Methods",
+                Response.AppendHeader("Access-Control-Allow-Methods",
                     "GET, POST, PUT, DELETE, OPTIONS");
-
-                if (Request.HttpMethod == "OPTIONS")
-                {
-                    Response.StatusCode = 200;
-                    Response.End();
-                    return;
-                }
+                Response.End();
+                return;
             }
         }
 

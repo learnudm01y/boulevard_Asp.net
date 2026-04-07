@@ -11,7 +11,7 @@
     }
 }
 
-@using (Html.BeginForm("AddBulkProduct", "FileImport", FormMethod.Post, new { enctype = "multipart/form-data", id = "ImporeForm" }))
+@using (Html.BeginForm("AddBulk", "Product", new { area = "Admin" }, FormMethod.Post, new { enctype = "multipart/form-data", id = "ImporeForm" }))
 {
     @Html.AntiForgeryToken()
 

@@ -28,6 +28,22 @@ namespace Boulevard.App_Start
             );
             #endregion
 
+            #region Social Impact Tracker
+
+            config.Routes.MapHttpRoute(
+               "SocialImpact_GetCommissions",
+               "api/v1/social-impact/commissions",
+               new { controller = "SocialImpact", action = "GetCommissions", id = RouteParameter.Optional }
+            );
+
+            config.Routes.MapHttpRoute(
+               "SocialImpact_GetCommissionByKey",
+               "api/v1/social-impact/commissions/{key}",
+               new { controller = "SocialImpact", action = "GetCommissionByKey" }
+            );
+
+            #endregion
+
             #region Member
 
             config.Routes.MapHttpRoute(

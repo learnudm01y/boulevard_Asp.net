@@ -50,6 +50,7 @@ namespace Boulevard.Service.WebAPI
                     result.IsScheduled = products.IsScheduled;
                     result.ProductTypeId = products.ProductType;
                     result.AvrageRatings = products.AvgRatings;
+                    result.IcvBoulevardScore = products.IcvBoulevardScore;
                    var ptype = await uow.ProductTypeMasterRepository.Get().Where(s => s.ProductTypeId == products.ProductType).FirstOrDefaultAsync();
                     if (ptype != null)
                     {

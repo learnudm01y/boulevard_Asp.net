@@ -47,6 +47,6 @@ namespace Boulevard.Models
         public string TitleAr { get; set; }
         public string DetailsAr { get; set; }
 
-
+        public bool IsDeliveryEnabled { get; set; }
     }
 }

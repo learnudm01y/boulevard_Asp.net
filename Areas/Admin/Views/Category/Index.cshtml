@@ -5,6 +5,7 @@
     string parentCheck = "";
     string childCheck = "";
     string grandChildCheck = "";
+    string miniChildCheck = "";
 }
 
 @using (Html.BeginForm("Create", "Category", FormMethod.Post, new { enctype = "multipart/form-data", @id = "myForm" }))
@@ -121,16 +122,38 @@
                                                                                                     @foreach (var grandchild in childCategory.ChildCategories)
                                                                                                     {
                                                                                                         grandChildCheck = "";
-
                                                                                                         if (grandchild.CategoryId == ViewBag.categoryId)
                                                                                                         {
                                                                                                             grandChildCheck = "jstree-clicked";
                                                                                                         }
-                                                                                                        <li class="item text-truncate" data-jstree='{"icon":"bi bi-chevron-right"}'>
-                                                                                                            <a href="javascript:;" class="menu-link @grandChildCheck" onclick="TreeClick('@grandchild.CategoryKey')">
-                                                                                                                @grandchild.CategoryName<span class=""></span>
-                                                                                                            </a>
-                                                                                                        </li>
+
+                                                                                                        if (grandchild.ChildCategories != null && grandchild.ChildCategories.Count > 0)
+                                                                                                        {
+                                                                                                            <li class="item text-truncate" data-jstree='{"opened":true,"icon":"fas fa-folder-open"}'>
+                                                                                                                <a href="javascript:;" class="menu-link @grandChildCheck" onclick="TreeClick('@grandchild.CategoryKey')">
+                                                                                                                    @grandchild.CategoryName <span class="">(@grandchild.ChildCategories.Count)</span>
+                                                                                                                </a>
+                                                                                                                <ul class="inner-menu">
+                                                                                                                    @foreach (var miniCat in grandchild.ChildCategories)
+                                                                                                                    {
+                                                                                                                        miniChildCheck = miniCat.CategoryId == ViewBag.categoryId ? "jstree-clicked" : "";
+                                                                                                                        <li class="item text-truncate" data-jstree='{"icon":"bi bi-chevron-right"}'>
+                                                                                                                            <a href="javascript:;" class="menu-link @miniChildCheck" onclick="TreeClick('@miniCat.CategoryKey')">
+                                                                                                                                @miniCat.CategoryName<span class=""></span>
+                                                                                                                            </a>
+                                                                                                                        </li>
+                                                                                                                    }
+                                                                                                                </ul>
+                                                                                                            </li>
+                                                                                                        }
+                                                                                                        else
+                                                                                                        {
+                                                                                                            <li class="item text-truncate" data-jstree='{"icon":"bi bi-chevron-right"}'>
+                                                                                                                <a href="javascript:;" class="menu-link @grandChildCheck" onclick="TreeClick('@grandchild.CategoryKey')">
+                                                                                                                    @grandchild.CategoryName<span class=""></span>
+                                                                                                                </a>
+                                                                                                            </li>
+                                                                                                        }
                                                                                                     }
                                                                                                 </ul>
                                                                                             </li>

@@ -32,6 +32,11 @@ namespace Boulevard.Models
         public double? DeliveryCharge { get; set; }
         public double? ServiceFee { get; set; }
 
+        /// <summary>
+        /// Commission percentage deducted from each order in this category (e.g. 3.00 = 3%)
+        /// </summary>
+        public decimal? CommissionRate { get; set; }
+
         [NotMapped]
         public int CategoryWiseOrderCount { get; set; }
 

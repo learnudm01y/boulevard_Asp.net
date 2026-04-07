@@ -1,0 +1,473 @@
+﻿@{
+    ViewBag.Title = "Delivery Management";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+    var sections = ViewBag.Sections as System.Collections.Generic.Dictionary<string, string>;
+    var firstKey = sections != null && sections.Count > 0 ? sections.Keys.First() : "";
+}
+
+<style>
+    .dm-card { background: #fff; border: none; border-radius: 6px; box-shadow: 0 1px 8px rgba(0,0,0,.06); }
+    .dm-title { font-size: 1.35rem; font-weight: 700; color: #111; letter-spacing: .2px; margin: 0 0 2px; }
+    .dm-sub   { font-size: .84rem; color: #999; margin: 0; }
+    .dm-divider { border: none; border-top: 1px solid #ececec; margin: 18px 0; }
+
+    .dm-tabs { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 20px; }
+    .dm-tab {
+        padding: 8px 22px; border: 2px solid #111; background: #fff; color: #111;
+        font-weight: 600; font-size: .84rem; cursor: pointer; border-radius: 4px;
+        transition: all .15s; outline: none; letter-spacing: .3px;
+    }
+    .dm-tab:hover:not(.active) { background: #f5f5f5; }
+    .dm-tab.active              { background: #111; color: #fff; }
+
+    .dm-controls { display: flex; gap: 10px; margin-bottom: 18px; flex-wrap: wrap; align-items: center; }
+    .dm-search {
+        flex: 1; max-width: 300px; border: 1.5px solid #ddd; border-radius: 4px;
+        padding: 8px 12px; font-size: .86rem; color: #111; outline: none; background: #fff;
+        transition: border-color .15s;
+    }
+    .dm-search:focus { border-color: #111; }
+    .dm-search::placeholder { color: #ccc; }
+    .dm-pagesize {
+        border: 1.5px solid #ddd; border-radius: 4px; padding: 8px 10px;
+        font-size: .86rem; color: #111; background: #fff; outline: none; cursor: pointer;
+        transition: border-color .15s;
+    }
+    .dm-pagesize:focus { border-color: #111; }
+
+    .dm-table { width: 100%; border-collapse: collapse; }
+    .dm-table thead tr { background: #111; }
+    .dm-table thead th {
+        padding: 12px 16px; font-weight: 600; font-size: .78rem; color: #fff !important;
+        letter-spacing: .6px; text-transform: uppercase; border: none; white-space: nowrap;
+    }
+    .dm-table tbody tr { border-bottom: 1px solid #f2f2f2; transition: background .1s; }
+    .dm-table tbody tr:last-child { border-bottom: none; }
+    .dm-table tbody tr:hover { background: #fafafa; }
+    .dm-table tbody td {
+        padding: 13px 16px; font-size: .875rem; color: #222 !important;
+        vertical-align: middle; border: none;
+    }
+    .dm-table tbody td:first-child { color: #bbb !important; font-size: .78rem; font-weight: 600; }
+
+    .dm-status {
+        display: inline-block; padding: 3px 11px; border-radius: 20px;
+        font-size: .73rem; font-weight: 700; letter-spacing: .4px;
+        background: #f5f5f5; color: #999; border: 1.5px solid #e8e8e8;
+    }
+    .dm-status.active { background: #111; color: #fff !important; border-color: #111; }
+
+    /* Sliding toggle switch */
+    .dm-sw-wrap {
+        display: inline-flex; align-items: center; gap: 9px;
+        cursor: pointer; user-select: none;
+    }
+    .dm-sw-wrap.loading { opacity: .4; pointer-events: none; }
+    .dm-sw {
+        position: relative; width: 50px; height: 26px; flex-shrink: 0;
+    }
+    .dm-sw-track {
+        position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+        background: #ddd; border-radius: 13px;
+        transition: background .25s ease;
+    }
+    .dm-sw-track.on { background: #111; }
+    .dm-sw-ball {
+        position: absolute; top: 3px; left: 3px;
+        width: 20px; height: 20px; background: #fff; border-radius: 50%;
+        box-shadow: 0 1px 4px rgba(0,0,0,.3);
+        transition: left .25s ease;
+        pointer-events: none;
+    }
+    .dm-sw-track.on .dm-sw-ball { left: 27px; }
+    .dm-sw-label {
+        font-size: .74rem; font-weight: 700; letter-spacing: .6px;
+        color: #bbb; min-width: 26px;
+    }
+    .dm-sw-wrap:not(.loading):hover .dm-sw-track:not(.on) { background: #ccc; }
+    .dm-sw-wrap:not(.loading):hover .dm-sw-track.on { background: #333; }
+
+    .dm-paging { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; margin-top: 20px; padding-top: 14px; border-top: 1px solid #f2f2f2; }
+    .dm-paging-info { font-size: .8rem; color: #aaa; }
+    .dm-paging-btns { display: flex; gap: 4px; }
+    .dm-pg-btn {
+        width: 32px; height: 32px; display: inline-flex; align-items: center; justify-content: center;
+        border: 1.5px solid #e0e0e0; background: #fff; color: #111 !important;
+        font-size: .82rem; font-weight: 600; cursor: pointer; border-radius: 4px; outline: none;
+        transition: all .12s;
+    }
+    .dm-pg-btn.current { background: #111; color: #fff !important; border-color: #111; }
+    .dm-pg-btn:disabled { opacity: .3; cursor: not-allowed; }
+    .dm-pg-btn:not(.current):not(:disabled):hover { background: #f5f5f5; border-color: #bbb; }
+
+    .dm-msg td { text-align: center; padding: 52px 0 !important; color: #ccc !important; font-size: .9rem; }
+    .dm-ar { direction: rtl; text-align: right; color: #666 !important; }
+
+    /* Delete button */
+    .dm-del-btn {
+        background: none; border: 1.5px solid #e0e0e0; color: #bbb;
+        border-radius: 4px; padding: 5px 10px; font-size: .78rem; font-weight: 600;
+        cursor: pointer; letter-spacing: .3px; display: inline-flex; align-items: center; gap: 5px;
+        transition: all .15s;
+    }
+    .dm-del-btn:hover { background: #fff0f0; border-color: #e05252; color: #e05252; }
+    .dm-del-btn svg { pointer-events: none; }
+
+    /* 2-step delete modal */
+    .dm-overlay {
+        display: none; position: fixed; inset: 0;
+        background: rgba(0,0,0,.45); z-index: 9998;
+        align-items: center; justify-content: center;
+    }
+    .dm-overlay.show { display: flex; }
+    .dm-modal {
+        background: #fff; border-radius: 8px; padding: 32px 28px 24px;
+        max-width: 420px; width: 92%; box-shadow: 0 8px 40px rgba(0,0,0,.18);
+        position: relative; z-index: 9999;
+    }
+    .dm-modal-icon {
+        width: 48px; height: 48px; border-radius: 50%; display: flex;
+        align-items: center; justify-content: center; margin: 0 auto 16px;
+        background: #fff5f5; color: #e05252;
+    }
+    .dm-modal-icon.warn2 { background: #fff3e0; color: #e07c00; }
+    .dm-modal h4 { font-size: 1rem; font-weight: 700; color: #111; margin: 0 0 8px; text-align: center; }
+    .dm-modal p  { font-size: .85rem; color: #666; text-align: center; margin: 0 0 20px; line-height: 1.55; }
+    .dm-modal-name { font-weight: 700; color: #111; }
+    .dm-modal-btns { display: flex; gap: 10px; justify-content: center; }
+    .dm-modal-cancel {
+        flex: 1; padding: 9px; border: 1.5px solid #ddd; background: #fff;
+        border-radius: 4px; font-size: .85rem; font-weight: 600; cursor: pointer;
+        transition: background .12s;
+    }
+    .dm-modal-cancel:hover { background: #f5f5f5; }
+    .dm-modal-confirm {
+        flex: 1; padding: 9px; border: none; background: #e05252; color: #fff;
+        border-radius: 4px; font-size: .85rem; font-weight: 700; cursor: pointer;
+        transition: background .12s;
+    }
+    .dm-modal-confirm:hover { background: #c03a3a; }
+    .dm-modal-confirm:disabled { background: #eaa; cursor: not-allowed; }
+    .dm-confirm-input {
+        width: 100%; border: 1.5px solid #ddd; border-radius: 4px;
+        padding: 8px 12px; font-size: .85rem; margin-bottom: 16px;
+        outline: none; transition: border-color .15s; box-sizing: border-box;
+    }
+    .dm-confirm-input:focus { border-color: #e05252; }
+    .dm-step2-hint { font-size: .78rem; color: #aaa; text-align: center; margin-top: -12px; margin-bottom: 14px; }
+</style>
+
+<div class="page-wrapper">
+    <div class="container-fluid">
+
+        <div class="row page-titles">
+            <div class="col-md-5 col-12 align-self-center">
+                <h3 class="text-themecolor mb-0">Delivery Management</h3>
+            </div>
+            <div class="col-md-7 col-12 align-self-center d-none d-md-block">
+                <ol class="breadcrumb mb-0 p-0 bg-transparent float-right">
+                    <li class="breadcrumb-item"><a href="@Url.RouteUrl("Admin_Dashboard")">Dashboard</a></li>
+                    <li class="breadcrumb-item active">Delivery Management</li>
+                </ol>
+            </div>
+        </div>
+
+        <div class="card dm-card">
+            <div class="card-body p-4">
+
+                
+                <p class="dm-sub">Control Jeeply delivery service per merchant</p>
+
+                <hr class="dm-divider" />
+
+                <div class="dm-tabs" id="sectionTabs">
+                    @if (sections != null)
+                    {
+                        foreach (var sec in sections)
+                        {
+                            <button class="dm-tab @(sec.Key == firstKey ? "active" : "")"
+                                    data-key="@sec.Key"
+                                    onclick="loadSection('@sec.Key', this)">@sec.Value</button>
+                        }
+                    }
+                </div>
+
+                <div class="dm-controls">
+                    <input type="text" id="merchantSearch" class="dm-search" placeholder="Search merchants..." />
+                    <select id="merchantPageSize" class="dm-pagesize">
+                        <option value="20">20 per page</option>
+                        <option value="50">50 per page</option>
+                        <option value="100">100 per page</option>
+                    </select>
+                </div>
+
+                <div style="overflow-x:auto;">
+                    <table class="dm-table">
+                        <thead>
+                            <tr>
+                                <th style="width:52px">#</th>
+                                <th>Merchant</th>
+                                <th style="width:140px; text-align:center">Jeeply Delivery</th>
+                                <th style="width:80px; text-align:center">Delete</th>
+                            </tr>
+                        </thead>
+                        <tbody id="merchantTableBody">
+                            <tr class="dm-msg"><td colspan="3">Loading...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="dm-paging">
+                    <span class="dm-paging-info" id="merchantPagingInfo"></span>
+                    <div class="dm-paging-btns" id="merchantPagingBtns"></div>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<script type="text/javascript">
+    var _currentKey   = '@firstKey';
+    var _page         = 1;
+    var _pageSize     = 20;
+    var _search       = '';
+    var _total        = 0;
+    var _searchTimer  = null;
+    var _toggleUrl    = '@Url.RouteUrl("Admin_DeliveryManagement_Toggle")';
+    var _deleteUrl    = '@Url.RouteUrl("Admin_DeliveryManagement_Delete")';
+    var _merchantsUrl = '@Url.RouteUrl("Admin_DeliveryManagement_GetMerchants")';
+
+    $(function () {
+        loadSection(_currentKey, document.querySelector('.dm-tab.active'));
+
+        $('#merchantSearch').on('input', function () {
+            clearTimeout(_searchTimer);
+            _search = $(this).val().trim();
+            _searchTimer = setTimeout(function () { _page = 1; fetchMerchants(); }, 350);
+        });
+
+        $('#merchantPageSize').on('change', function () {
+            _pageSize = parseInt($(this).val(), 10);
+            _page = 1;
+            fetchMerchants();
+        });
+    });
+
+    function loadSection(key, btn) {
+        _currentKey = key;
+        _page = 1;
+        _search = $('#merchantSearch').val().trim();
+        document.querySelectorAll('.dm-tab').forEach(function (b) { b.classList.remove('active'); });
+        if (btn) btn.classList.add('active');
+        fetchMerchants();
+    }
+
+    function fetchMerchants() {
+        $('#merchantTableBody').html('<tr class="dm-msg"><td colspan="4">Loading...</td></tr>');
+        $('#merchantPagingInfo').text('');
+        $('#merchantPagingBtns').html('');
+
+        $.ajax({
+            url: _merchantsUrl,
+            type: 'GET',
+            data: { fCategoryKey: _currentKey, search: _search, page: _page, pageSize: _pageSize },
+            success: function (res) {
+                if (!res.success) {
+                    $('#merchantTableBody').html('<tr class="dm-msg"><td colspan="3">' + escHtml(res.message || 'Error') + '</td></tr>');
+                    return;
+                }
+                _total = res.total;
+                renderTable(res.data);
+                renderPaging();
+            },
+            error: function (xhr) {
+                $('#merchantTableBody').html('<tr class="dm-msg"><td colspan="3">Request failed (HTTP ' + xhr.status + ')</td></tr>');
+            }
+        });
+    }
+
+    function renderTable(data) {
+        if (!data || data.length === 0) {
+            $('#merchantTableBody').html('<tr class="dm-msg"><td colspan="4">No merchants found in this section.</td></tr>');
+            return;
+        }
+        var start = (_page - 1) * _pageSize;
+        var rows = '';
+        $.each(data, function (i, m) {
+            var isOn = m.isDeliveryEnabled;
+            rows += '<tr id="merchant-row-' + m.brandId + '">' +
+                '<td>' + (start + i + 1) + '</td>' +
+                '<td>' + escHtml(m.title || '\u2014') + '</td>' +
+                '<td style="text-align:center">' +
+                    '<div class="dm-sw-wrap" onclick="toggleDelivery(' + m.brandId + ', this)">' +
+                        '<div class="dm-sw"><div class="dm-sw-track ' + (isOn ? 'on' : '') + '"><span class="dm-sw-ball"></span></div></div>' +
+                        '<span class="dm-sw-label">' + (isOn ? 'ON' : 'OFF') + '</span>' +
+                    '</div>' +
+                '</td>' +
+                '<td style="text-align:center">' +
+                    '<button class="dm-del-btn" onclick="openDeleteStep1(' + m.brandId + ', \'' + escJs(m.title || '') + '\')">' +
+                        '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg>' +
+                        'Delete' +
+                    '</button>' +
+                '</td>' +
+                '</tr>';
+        });
+        $('#merchantTableBody').html(rows);
+    }
+
+    function renderPaging() {
+        var totalPages = Math.ceil(_total / _pageSize) || 1;
+        $('#merchantPagingInfo').text(_total + ' merchants  \u00b7  Page ' + _page + ' of ' + totalPages);
+        if (totalPages <= 1) return;
+        var html = '';
+        html += '<button class="dm-pg-btn" onclick="goPage(' + (_page - 1) + ')"' + (_page === 1 ? ' disabled' : '') + '>&lsaquo;</button>';
+        var s = Math.max(1, _page - 2), e = Math.min(totalPages, _page + 2);
+        for (var p = s; p <= e; p++) {
+            html += '<button class="dm-pg-btn' + (p === _page ? ' current' : '') + '" onclick="goPage(' + p + ')">' + p + '</button>';
+        }
+        html += '<button class="dm-pg-btn" onclick="goPage(' + (_page + 1) + ')"' + (_page === totalPages ? ' disabled' : '') + '>&rsaquo;</button>';
+        $('#merchantPagingBtns').html(html);
+    }
+
+    function goPage(p) {
+        var totalPages = Math.ceil(_total / _pageSize) || 1;
+        if (p < 1 || p > totalPages) return;
+        _page = p;
+        fetchMerchants();
+    }
+
+    function toggleDelivery(brandId, wrap) {
+        var $wrap = $(wrap);
+        $wrap.addClass('loading');
+        $.ajax({
+            url: _toggleUrl,
+            type: 'POST',
+            data: { brandId: brandId },
+            success: function (res) {
+                if (res.success) {
+                    var isOn = res.isDeliveryEnabled;
+                    $wrap.find('.dm-sw-track').toggleClass('on', isOn);
+                    $wrap.find('.dm-sw-label').text(isOn ? 'ON' : 'OFF');
+                    $wrap.removeClass('loading');
+                } else {
+                    alert(res.message || 'Toggle failed.');
+                    $wrap.removeClass('loading');
+                    fetchMerchants();
+                }
+            },
+            error: function () {
+                alert('Request failed.');
+                $wrap.removeClass('loading');
+            }
+        });
+    }
+
+    function escHtml(str) {
+        return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    }
+
+    function escJs(str) {
+        return String(str).replace(/\\/g, '\\\\').replace(/'/g, '\\\'').replace(/"/g, '\\"');
+    }
+
+    /* ---------- 2-step delete flow ---------- */
+    var _pendingDeleteId   = null;
+    var _pendingDeleteName = '';
+
+    function openDeleteStep1(brandId, title) {
+        _pendingDeleteId   = brandId;
+        _pendingDeleteName = title;
+        $('#dm-step1-name').text(title);
+        $('#dm-overlay-step1').addClass('show');
+    }
+
+    function closeStep1() {
+        $('#dm-overlay-step1').removeClass('show');
+    }
+
+    function confirmStep1() {
+        closeStep1();
+        $('#dm-step2-name').text(_pendingDeleteName);
+        $('#dm-step2-input').val('').removeClass('border-danger');
+        $('#dm-step2-confirm').prop('disabled', true);
+        $('#dm-overlay-step2').addClass('show');
+        setTimeout(function () { $('#dm-step2-input').focus(); }, 120);
+    }
+
+    function closeStep2() {
+        $('#dm-overlay-step2').removeClass('show');
+        _pendingDeleteId   = null;
+        _pendingDeleteName = '';
+    }
+
+    /* Use event delegation — modals are rendered AFTER this <script> tag so direct
+       binding would target an empty set. $(document).on() works at any time.       */
+    $(document).on('input', '#dm-step2-input', function () {
+        var val = $(this).val().trim();
+        var match = val.toLowerCase() === _pendingDeleteName.toLowerCase();
+        $('#dm-step2-confirm').prop('disabled', !match);
+    });
+
+    $(document).on('click', '#dm-overlay-step1', function (e) { if (e.target === this) closeStep1(); });
+    $(document).on('click', '#dm-overlay-step2', function (e) { if (e.target === this) closeStep2(); });
+
+    function confirmStep2() {
+        var $btn = $('#dm-step2-confirm');
+        $btn.prop('disabled', true).text('Deleting...');
+
+        $.ajax({
+            url: _deleteUrl,
+            type: 'POST',
+            data: { brandId: _pendingDeleteId },
+            success: function (res) {
+                $btn.text('Delete');
+                if (res.success) {
+                    closeStep2();
+                    _total = Math.max(0, _total - 1);
+                    fetchMerchants();
+                } else {
+                    alert(res.message || 'Delete failed.');
+                    closeStep2();
+                }
+            },
+            error: function () {
+                $btn.prop('disabled', false).text('Delete');
+                alert('Request failed.');
+            }
+        });
+    }
+</script>
+
+<!-- Step 1 modal: first confirmation -->
+<div class="dm-overlay" id="dm-overlay-step1">
+    <div class="dm-modal">
+        <div class="dm-modal-icon">
+            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        </div>
+        <h4>Delete Merchant?</h4>
+        <p>You are about to delete <span class="dm-modal-name" id="dm-step1-name"></span>.<br/>Are you sure you want to continue?</p>
+        <div class="dm-modal-btns">
+            <button class="dm-modal-cancel" onclick="closeStep1()">Cancel</button>
+            <button class="dm-modal-confirm" onclick="confirmStep1()">Yes, Continue</button>
+        </div>
+    </div>
+</div>
+
+<!-- Step 2 modal: final confirmation with name typing -->
+<div class="dm-overlay" id="dm-overlay-step2">
+    <div class="dm-modal">
+        <div class="dm-modal-icon warn2">
+            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+        </div>
+        <h4>Final Confirmation</h4>
+        <p>This action is <strong>irreversible</strong>. The merchant <span class="dm-modal-name" id="dm-step2-name"></span> and all associated data will be permanently deleted.<br/><br/>Type the merchant name below to confirm:</p>
+        <input type="text" id="dm-step2-input" class="dm-confirm-input" placeholder="Type merchant name here..." autocomplete="off" />
+        <p class="dm-step2-hint">Name must match exactly (case-insensitive)</p>
+        <div class="dm-modal-btns">
+            <button class="dm-modal-cancel" onclick="closeStep2()">Cancel</button>
+            <button class="dm-modal-confirm" id="dm-step2-confirm" disabled onclick="confirmStep2()">Delete</button>
+        </div>
+    </div>
+</div>

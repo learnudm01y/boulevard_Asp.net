@@ -9,6 +9,13 @@ namespace Boulevard.Contexts
 {
     public class BoulevardDbContext : DbContext
     {
+        public BoulevardDbContext() : base("name=BoulevardDbContext")
+        {
+            // Disable EF's model-hash check so manually-added columns (e.g. MiniCategory)
+            // do not cause "model has changed" exceptions on first use after ALTER TABLE.
+            Database.SetInitializer<BoulevardDbContext>(null);
+        }
+
         public DbSet<User> Users { get; set; }
         public DbSet<Role> Roles { get; set; }
         public DbSet<Module> Modules { get; set; }

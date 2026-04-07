@@ -36,15 +36,16 @@
             <a class="nav-toggler waves-effect waves-light d-block d-md-none" href="javascript:void(0)">
                 <i class="ti-menu ti-close"></i>
             </a>
+            <style>
+                /* Logo swap: long when sidebar open, short when mini-sidebar (closed) */
+                #blvd-logo-long  { display: inline-block; height: 55px; }
+                #blvd-logo-short { display: none;         height: 55px; }
+                #main-wrapper.mini-sidebar #blvd-logo-long  { display: none !important; }
+                #main-wrapper.mini-sidebar #blvd-logo-short { display: inline-block !important; }
+            </style>
             <a class="navbar-brand justify-content-center" href="@Url.RouteUrl("Admin_Dashboard")">
-                @if (layout.Name == "Dark")
-                {
-                    <img src="~/Areas/Admin/Content/assets/images/logoWhite.png" style=" height: 55px;" />
-                }
-                else
-                {
-                    <img src="~/Areas/Admin/Content/assets/images/logoBlack.png" style=" height: 55px;" />
-                }
+                <img id="blvd-logo-long"  src="~/Areas/Admin/Content/assets/images/logo-long-dashboard.jpeg" />
+                <img id="blvd-logo-short" src="~/Areas/Admin/Content/assets/images/logo-dashboard.png" />
             </a>
 
             <a class="topbartoggler d-block d-md-none waves-effect waves-light" href="javascript:void(0)"

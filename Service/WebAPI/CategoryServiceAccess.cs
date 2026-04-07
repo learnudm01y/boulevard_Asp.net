@@ -699,13 +699,18 @@ namespace Boulevard.Service.WebAPI
                     {
                         foreach (var child in childCategories)
                         {
-                            var childCategorylist = categoryList.Where(t => (t.ParentId > 0 && t.ParentId == child.CategoryId));
+                            var childCategorylist = categoryList.Where(t => (t.ParentId > 0 && t.ParentId == child.CategoryId)).ToList();
                             if (childCategorylist.Any())
                             {
+                                // Level 4 (MiniCategory): load children of each grandchild
+                                foreach (var grandchild in childCategorylist)
+                                {
+                                    var miniCatList = categoryList.Where(t => t.ParentId > 0 && t.ParentId == grandchild.CategoryId).ToList();
+                                    if (miniCatList.Any())
+                                        grandchild.ChildCategories.AddRange(miniCatList);
+                                }
                                 category.ChildCategories.Add(child);
-
                                 category.ChildCategories[category.ChildCategories.Count - 1].ChildCategories.AddRange(childCategorylist);
-                                //break;
                             }
                             else
                             {

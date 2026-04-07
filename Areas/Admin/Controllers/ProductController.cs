@@ -135,7 +135,11 @@ namespace Boulevard.Areas.Admin.Controllers
                     {
                         productKey = p.ProductKey,
                         productName = p.ProductName,
-                        productPrice = p.ProductPrice,
+                        productPrice = _context.ProductPrices
+                            .Where(pp => pp.ProductId == p.ProductId && pp.Status == "Active")
+                            .OrderBy(pp => pp.Price)
+                            .Select(pp => (double?)pp.Price)
+                            .FirstOrDefault() ?? (double)p.ProductPrice,
                         stockQuantity = p.StockQuantity,
                         productDescription = p.ProductDescription,
                         deliveryInfo = p.DeliveryInfo,
@@ -580,43 +584,37 @@ namespace Boulevard.Areas.Admin.Controllers
 
                             var dataTable = ds.Tables[0];
 
-                            #region Check Excel Column
-                            TempProduct product = new TempProduct();
-                            //product.SrNo = dataTable.Rows[0]["Sr.No"].ToString();
-                            product.Brand = dataTable.Rows[0]["Brand"].ToString();
-                            product.Barcode = dataTable.Rows[0]["Barcode"].ToString();
-                            product.Category = dataTable.Rows[0]["Category"].ToString();
-                            product.SubCategory = dataTable.Rows[0]["Sub Category"].ToString();
-                            product.SubSubCategory = dataTable.Rows[0]["Sub Sub Category"].ToString();
-                            product.ItemDesc = dataTable.Rows[0]["Item Desc"].ToString();
-                            product.AttributeCode = dataTable.Rows[0]["Attribute Code"].ToString();
-                            product.AttributeName = dataTable.Rows[0]["Attribute Name"].ToString();
-                            product.Images = dataTable.Rows[0]["images"].ToString();
-                            product.Quantity = dataTable.Rows[0]["Quantitys"].ToString();
-                            product.SellingPrice = dataTable.Rows[0]["Selling Price"].ToString();
-                            product.ProductTags = dataTable.Rows[0]["Product Tags"].ToString();
-                            product.Stocks = dataTable.Rows[0]["Stocks quantity"].ToString();
-                            product.ProductName = dataTable.Rows[0]["ProductName"].ToString();
-                            product.ProductType = dataTable.Rows[0]["Product Type"].ToString();
-                            product.AttributeNameArabic = dataTable.Rows[0]["Attribute Name Arabic"].ToString();
-                            product.DeliveryInfo = dataTable.Rows[0]["Delivery Info"].ToString();
-                            product.DeliveryInfoArabic = dataTable.Rows[0]["Delivery Info Arabic"].ToString();
-                            product.BrandArabic = dataTable.Rows[0]["Brand Arabic"].ToString();
-                            
-                            product.CategoryArabic = dataTable.Rows[0]["Category Arabic"].ToString();
-                            product.SubCategoryArabic = dataTable.Rows[0]["Sub Category Arabic"].ToString();
-                            product.SubSubCategoryArabic = dataTable.Rows[0]["Sub Sub Category Arabic"].ToString();
-                            product.ProductNameArabic = dataTable.Rows[0]["ProductName Arabic"].ToString();
-
-                            product.CategoryImage = dataTable.Rows[0]["Category images"].ToString();
-
-                            product.SubCategoryImage = dataTable.Rows[0]["Sub Category images"].ToString();
-
-                            product.SubSubCategoryImage = dataTable.Rows[0]["Sub Sub Category images"].ToString();
-
-
-
-
+                            #region Check Excel Column – validate required headers exist before processing
+                            // Access row[0] purely to confirm the columns exist; throws if missing.
+                            var _chk = new
+                            {
+                                Brand              = dataTable.Rows[0]["Brand"].ToString(),
+                                Barcode            = dataTable.Rows[0]["Barcode"].ToString(),
+                                Category           = dataTable.Rows[0]["Category"].ToString(),
+                                SubCategory        = dataTable.Rows[0]["Sub Category"].ToString(),
+                                SubSubCategory     = dataTable.Rows[0]["Sub Sub Category"].ToString(),
+                                ItemDesc           = dataTable.Rows[0]["Item Desc"].ToString(),
+                                AttributeCode      = dataTable.Rows[0]["Attribute Code"].ToString(),
+                                AttributeName      = dataTable.Rows[0]["Attribute Name"].ToString(),
+                                Images             = dataTable.Rows[0]["Images"].ToString(),
+                                Quantity           = dataTable.Rows[0]["Quantitys"].ToString(),
+                                SellingPrice       = dataTable.Rows[0]["Selling Price"].ToString(),
+                                ProductTags        = dataTable.Rows[0]["Product Tags"].ToString(),
+                                Stocks             = dataTable.Rows[0]["Stocks Quantity"].ToString(),
+                                ProductName        = dataTable.Rows[0]["ProductName"].ToString(),
+                                ProductType        = dataTable.Rows[0]["Product Type"].ToString(),
+                                AttrNameAr         = dataTable.Rows[0]["Attribute Name Arabic"].ToString(),
+                                DeliveryInfo       = dataTable.Rows[0]["Delivery Info"].ToString(),
+                                DeliveryInfoAr     = dataTable.Rows[0]["Delivery Info Arabic"].ToString(),
+                                BrandAr            = dataTable.Rows[0]["Brand Arabic"].ToString(),
+                                CategoryAr         = dataTable.Rows[0]["Category Arabic"].ToString(),
+                                SubCategoryAr      = dataTable.Rows[0]["Sub Category Arabic"].ToString(),
+                                SubSubCategoryAr   = dataTable.Rows[0]["Sub Sub Category Arabic"].ToString(),
+                                ProductNameAr      = dataTable.Rows[0]["ProductName Arabic"].ToString(),
+                                CategoryImage      = dataTable.Rows[0]["Category images"].ToString(),
+                                SubCategoryImage   = dataTable.Rows[0]["Sub Category images"].ToString(),
+                                SubSubCategoryImage = dataTable.Rows[0]["Sub Sub Category images"].ToString(),
+                            };
                             #endregion
 
 
@@ -628,9 +626,16 @@ namespace Boulevard.Areas.Admin.Controllers
                                 counter++;
                             }
 
-                            List<TempProduct> list = new List<TempProduct>();
-                            List<TempProduct> Duplicatelist = new List<TempProduct>();
-                            string productModel = string.Empty;
+                            // Robust ICV column lookup — case-insensitive + trim whitespace from header
+                            // (handles Excel files where the header cell has leading/trailing spaces)
+                            string icvColName = null;
+                            foreach (DataColumn dc in dataTable.Columns)
+                            {
+                                if (string.Equals(dc.ColumnName.Trim(), "ICV Boulevard Score", StringComparison.OrdinalIgnoreCase))
+                                { icvColName = dc.ColumnName; break; }
+                            }
+
+                            int xmlRowCount = 0;
 
                             StringBuilder xmlStore = new StringBuilder();
 
@@ -642,80 +647,92 @@ namespace Boulevard.Areas.Admin.Controllers
                                 {
                                     if (objDataRow.ItemArray.All(x => string.IsNullOrEmpty(x?.ToString())))
                                         continue;
-                                    TempProduct data = new TempProduct();                                  
-                                    //product.SrNo = objDataRow["Sr.No"].ToString().Trim();
-                                    product.Brand = objDataRow["Brand"].ToString().Trim();
-                                    product.Barcode = objDataRow["Barcode"].ToString().Trim();
-                                    product.Category = objDataRow["Category"].ToString().Trim();
-                                    product.SubCategory = objDataRow["Sub Category"].ToString().Trim();
-                                    product.SubSubCategory = objDataRow["Sub Sub Category"].ToString().Trim();
-                                    product.ItemDesc = objDataRow["Item Desc"].ToString().Trim();
-                                    product.AttributeCode = objDataRow["Attribute Code"].ToString().Trim();
-                                    product.AttributeName = objDataRow["Attribute Name"].ToString().Trim();
-                                    product.Images = objDataRow["Images"].ToString().Trim(); // Capitalized 'Images'
-                                    product.Quantity = objDataRow["Quantitys"].ToString().Trim(); // Fixed column name from "Quantitys"
-                                    product.SellingPrice = objDataRow["Selling Price"].ToString().Trim();
-                                    product.ProductTags = objDataRow["Product Tags"].ToString().Trim();
-                                    product.Stocks = objDataRow["Stocks Quantity"].ToString().Trim(); // Capitalized and fixed spacing
-                                    product.ProductName = objDataRow["ProductName"].ToString().Trim();
-                                    product.ProductType = objDataRow["Product Type"].ToString().Trim();
-                                    product.AttributeNameArabic = objDataRow["Attribute Name Arabic"].ToString().Trim();
-                                    product.DeliveryInfo = objDataRow["Delivery Info"].ToString().Trim();
-                                    product.DeliveryInfoArabic = objDataRow["Delivery Info Arabic"].ToString().Trim();
-                                    product.BrandArabic = objDataRow["Brand Arabic"].ToString().Trim();
-                                    product.CategoryArabic = objDataRow["Category Arabic"].ToString().Trim();
-                                    product.SubCategoryArabic = objDataRow["Sub Category Arabic"].ToString().Trim();
-                                    product.SubSubCategoryArabic = objDataRow["Sub Sub Category Arabic"].ToString().Trim();
-                                    product.ProductNameArabic = objDataRow["ProductName Arabic"].ToString().Trim();
-                                    product.ItemDescArabic = objDataRow["Item Desc Arabic"].ToString().Trim();
 
-                                    product.CategoryImage = objDataRow["Category images"].ToString().Trim();
+                                    // C2 fix: populate per-row TempProduct correctly.
+                                    TempProduct data = new TempProduct();
+                                    data.Brand               = objDataRow["Brand"].ToString().Trim();
+                                    data.Barcode             = objDataRow["Barcode"].ToString().Trim();
+                                    data.Category            = objDataRow["Category"].ToString().Trim();
+                                    data.SubCategory         = objDataRow["Sub Category"].ToString().Trim();
+                                    data.SubSubCategory      = objDataRow["Sub Sub Category"].ToString().Trim();
+                                    data.ItemDesc            = objDataRow["Item Desc"].ToString().Trim();
+                                    data.AttributeCode       = objDataRow["Attribute Code"].ToString().Trim();
+                                    data.AttributeName       = objDataRow["Attribute Name"].ToString().Trim();
+                                    data.Images              = objDataRow["Images"].ToString().Trim();
+                                    data.Quantity            = objDataRow["Quantitys"].ToString().Trim();
+                                    data.SellingPrice        = objDataRow["Selling Price"].ToString().Trim();
+                                    data.ProductTags         = objDataRow["Product Tags"].ToString().Trim();
+                                    data.Stocks              = objDataRow["Stocks Quantity"].ToString().Trim();
+                                    data.ProductName         = objDataRow["ProductName"].ToString().Trim();
+                                    // Product Type is handled safely below — see after SubSubCategoryImage block
+                                    data.AttributeNameArabic = objDataRow["Attribute Name Arabic"].ToString().Trim();
+                                    data.DeliveryInfo        = objDataRow["Delivery Info"].ToString().Trim();
+                                    data.DeliveryInfoArabic  = objDataRow["Delivery Info Arabic"].ToString().Trim();
+                                    data.BrandArabic         = objDataRow["Brand Arabic"].ToString().Trim();
+                                    data.CategoryArabic      = objDataRow["Category Arabic"].ToString().Trim();
+                                    data.SubCategoryArabic   = objDataRow["Sub Category Arabic"].ToString().Trim();
+                                    data.SubSubCategoryArabic = objDataRow["Sub Sub Category Arabic"].ToString().Trim();
+                                    data.ProductNameArabic   = objDataRow["ProductName Arabic"].ToString().Trim();
+                                    data.ItemDescArabic      = objDataRow["Item Desc Arabic"].ToString().Trim();
+                                    data.CategoryImage       = objDataRow["Category images"].ToString().Trim();
+                                    data.SubCategoryImage    = objDataRow["Sub Category images"].ToString().Trim();
+                                    data.SubSubCategoryImage = objDataRow["Sub Sub Category images"].ToString().Trim();
+                                    // MINI Category (4th level). Commas inside category name cells are
+                                    // part of the name — they are NEVER split as value separators here.
+                                    data.MiniCategory        = dataTable.Columns.Contains("MINI Category")
+                                                               ? objDataRow["MINI Category"].ToString().Trim() : "";
+                                    data.MiniCategoryArabic  = dataTable.Columns.Contains("MINI Category Arabic")
+                                                               ? objDataRow["MINI Category Arabic"].ToString().Trim() : "";
+                                    // Product Type is optional in the template; default to "Now" when absent.
+                                    data.ProductType         = dataTable.Columns.Contains("Product Type")
+                                                               ? objDataRow["Product Type"].ToString().Trim() : "Now";
+                                    // ICV Boulevard Score is optional — column AE in the Excel template.
+                                    // Column name matching is case-insensitive and whitespace-tolerant (icvColName resolved above).
+                                    data.IcvBoulevardScore   = icvColName != null
+                                                               ? (objDataRow[icvColName] ?? "").ToString().Trim() : "";
+                                    data.ExcelCount          = counter;
+                                    xmlRowCount++;
 
-                                    product.SubCategoryImage = objDataRow["Sub Category images"].ToString().Trim();
-
-                                    product.SubSubCategoryImage = objDataRow["Sub Sub Category images"].ToString().Trim(); ;
-                                    product.ExcelCount = counter;
-                                    list.Add(data);
-
-                                    // Xml File Create
+                                    // Xml File Create — use 'data' (the correctly-populated per-row object)
                                     writer.WriteStartElement("Product");
-                                    writer.WriteAttributeString("srNo", product.SrNo ?? " ");
-                                    writer.WriteAttributeString("brand", product.Brand ?? " ");
-                                    writer.WriteAttributeString("barcode", product.Barcode ?? " ");
-                                    writer.WriteAttributeString("category", product.Category ?? " ");
-                                    writer.WriteAttributeString("subCategory", product.SubCategory ?? " ");
-                                    
-                                    writer.WriteAttributeString("itemDesc", product.ItemDesc ?? " ");
-                                    writer.WriteAttributeString("attributeCode", product.AttributeCode ?? " ");
-                                    writer.WriteAttributeString("attributeName", product.AttributeName ?? " ");
-                                    writer.WriteAttributeString("images", product.Images ?? " ");
-                                    writer.WriteAttributeString("quantity", product.Quantity ?? " ");
-                                    writer.WriteAttributeString("sellingPrice", product.SellingPrice ?? " ");
-                                    writer.WriteAttributeString("productTags", product.ProductTags ?? " ");
-                                    writer.WriteAttributeString("stocks", product.Stocks ?? " ");
-                                    writer.WriteAttributeString("productName", product.ProductName ?? " ");
-                                    writer.WriteAttributeString("subSubCategory", product.SubSubCategory ?? " ");
-                                    writer.WriteAttributeString("productType", product.ProductType ?? " ");
-                                    writer.WriteAttributeString("attributeNameArabic", product.AttributeNameArabic ?? " ");
-                                    writer.WriteAttributeString("deliveryInfo", product.DeliveryInfo ?? " ");
-                                    writer.WriteAttributeString("deliveryInfoArabic", product.DeliveryInfoArabic ?? " ");
-                                    writer.WriteAttributeString("brandArabic", product.BrandArabic ?? " ");
-                                    writer.WriteAttributeString("categoryArabic", product.CategoryArabic ?? " ");
-                                    writer.WriteAttributeString("subCategoryArabic", product.SubCategoryArabic ?? " ");
-                                    writer.WriteAttributeString("subSubCategoryArabic", product.SubSubCategoryArabic ?? " ");
-                                    writer.WriteAttributeString("productNameArabic", product.ProductNameArabic ?? " ");
-                                    writer.WriteAttributeString("itemDescArabic", product.ItemDescArabic ?? " ");
-                                    writer.WriteAttributeString("categoryImage", product.CategoryImage ?? " ");
-                                  
-                                    writer.WriteAttributeString("subCategoryImage", product.SubCategoryImage ?? " ");
-                                    writer.WriteAttributeString("subSubCategoryImage", product.SubSubCategoryImage ?? " ");
-                                    writer.WriteAttributeString("excelCount", product.ExcelCount.ToString() ?? "0");
+                                    writer.WriteAttributeString("srNo", data.SrNo ?? " ");
+                                    writer.WriteAttributeString("brand", data.Brand ?? " ");
+                                    writer.WriteAttributeString("barcode", data.Barcode ?? " ");
+                                    writer.WriteAttributeString("category", data.Category ?? " ");
+                                    writer.WriteAttributeString("subCategory", data.SubCategory ?? " ");
+                                    writer.WriteAttributeString("subSubCategory", data.SubSubCategory ?? " ");
+                                    writer.WriteAttributeString("itemDesc", data.ItemDesc ?? " ");
+                                    writer.WriteAttributeString("attributeCode", data.AttributeCode ?? " ");
+                                    writer.WriteAttributeString("attributeName", data.AttributeName ?? " ");
+                                    writer.WriteAttributeString("images", data.Images ?? " ");
+                                    writer.WriteAttributeString("quantity", data.Quantity ?? " ");
+                                    writer.WriteAttributeString("sellingPrice", data.SellingPrice ?? " ");
+                                    writer.WriteAttributeString("productTags", data.ProductTags ?? " ");
+                                    writer.WriteAttributeString("stocks", data.Stocks ?? " ");
+                                    writer.WriteAttributeString("productName", data.ProductName ?? " ");
+                                    writer.WriteAttributeString("productType", data.ProductType ?? " ");
+                                    writer.WriteAttributeString("attributeNameArabic", data.AttributeNameArabic ?? " ");
+                                    writer.WriteAttributeString("deliveryInfo", data.DeliveryInfo ?? " ");
+                                    writer.WriteAttributeString("deliveryInfoArabic", data.DeliveryInfoArabic ?? " ");
+                                    writer.WriteAttributeString("brandArabic", data.BrandArabic ?? " ");
+                                    writer.WriteAttributeString("categoryArabic", data.CategoryArabic ?? " ");
+                                    writer.WriteAttributeString("subCategoryArabic", data.SubCategoryArabic ?? " ");
+                                    writer.WriteAttributeString("subSubCategoryArabic", data.SubSubCategoryArabic ?? " ");
+                                    writer.WriteAttributeString("productNameArabic", data.ProductNameArabic ?? " ");
+                                    writer.WriteAttributeString("itemDescArabic", data.ItemDescArabic ?? " ");
+                                    writer.WriteAttributeString("categoryImage", data.CategoryImage ?? " ");
+                                    writer.WriteAttributeString("subCategoryImage", data.SubCategoryImage ?? " ");
+                                    writer.WriteAttributeString("subSubCategoryImage", data.SubSubCategoryImage ?? " ");
+                                    writer.WriteAttributeString("miniCategory", data.MiniCategory ?? " ");
+                                    writer.WriteAttributeString("miniCategoryArabic", data.MiniCategoryArabic ?? " ");
+                                    writer.WriteAttributeString("icvBoulevardScore", data.IcvBoulevardScore ?? "");
+                                    writer.WriteAttributeString("excelCount", data.ExcelCount.ToString());
                                     writer.WriteEndElement();
                                 }
                                 writer.WriteEndElement();
                             }
 
-                            if (list.Count() > 0)
+                            if (xmlRowCount > 0)
                             {
                                 await _tempMemberDataAccess.AddTempProduct(xmlStore.ToString(),feacherCategory.FeatureCategoryId);
                                 return RedirectToAction(nameof(AddBulk), new { message = "", fCatagoryKey= feacherCategory.FeatureCategoryKey.ToString() });

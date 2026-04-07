@@ -231,16 +231,18 @@
                                         <div class="info-text">
                                             <h5>Sender Info:</h5>
                                             <h3>@Model.Member.Name</h3>
-                                            <p>@Model.MemberAddresses.AddressLine1,</p>
-                                            <p>@Model.MemberAddresses.AddressLine2</p>
-                                            @if (Model.MemberAddresses.City != null)
+                                            @if (Model.MemberAddresses != null)
                                             {
-                                                <div>@Model.MemberAddresses.City.CityName,</div>
-                                            }
-
-                                            @if (Model.MemberAddresses.Country != null)
-                                            {
-                                                <div>@Model.MemberAddresses.Country.CountryName</div>
+                                                <p>@Model.MemberAddresses.AddressLine1,</p>
+                                                <p>@Model.MemberAddresses.AddressLine2</p>
+                                                if (Model.MemberAddresses.City != null)
+                                                {
+                                                    <div>@Model.MemberAddresses.City.CityName,</div>
+                                                }
+                                                if (Model.MemberAddresses.Country != null)
+                                                {
+                                                    <div>@Model.MemberAddresses.Country.CountryName</div>
+                                                }
                                             }
                                             <p>Phone: @Model.Member.PhoneNumber</p>
 

@@ -1429,6 +1429,46 @@ new { controller = "OrderRequestProduct", action = "GetPagedOrdersCount", id = U
         new { controller = "Salon", action = "SalonBannerCreate", id = UrlParameter.Optional }
       );
 
+      #region Social Impact Tracker
+
+      context.MapRoute(
+        "Admin_SocialImpactTracker",
+        "admin/social-impact-tracker",
+        new { controller = "SocialImpactTracker", action = "Index", id = UrlParameter.Optional }
+      );
+
+      context.MapRoute(
+        "Admin_SocialImpact_UpdateCommission",
+        "admin/social-impact-tracker/update-commission",
+        new { controller = "SocialImpactTracker", action = "UpdateCommission", id = UrlParameter.Optional }
+      );
+
+      #endregion
+
+      #region Delivery Management
+
+      context.MapRoute(
+        "Admin_DeliveryManagement",
+        "admin/delivery-management",
+        new { controller = "DeliveryManagement", action = "Index", id = UrlParameter.Optional }
+      );
+      context.MapRoute(
+        "Admin_DeliveryManagement_GetMerchants",
+        "admin/delivery-management/merchants",
+        new { controller = "DeliveryManagement", action = "GetMerchants", id = UrlParameter.Optional }
+      );
+      context.MapRoute(
+        "Admin_DeliveryManagement_Toggle",
+        "admin/delivery-management/toggle",
+        new { controller = "DeliveryManagement", action = "ToggleDelivery" }
+      );
+      context.MapRoute(
+        "Admin_DeliveryManagement_Delete",
+        "admin/delivery-management/delete",
+        new { controller = "DeliveryManagement", action = "DeleteMerchant" }
+      );
+
+      #endregion
 
 
     }

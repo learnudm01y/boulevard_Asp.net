@@ -79,6 +79,10 @@ namespace Boulevard.Service.Admin
                     {
                         try
                         {
+                            // Normalise both , and ; as valid delimiters throughout
+                            string[] SplitValues(string raw)
+                                => (raw ?? "").Replace(';', ',').Split(new[] { ',' }, StringSplitOptions.None);
+
                             //Brand
                             var brand = db.Brands.FirstOrDefault(b => b.Title.Trim().ToLower() == item.Brand.Trim().ToLower() && b.FeatureCategoryId == feacherCategoryId);
                             if (brand == null)
@@ -96,75 +100,158 @@ namespace Boulevard.Service.Admin
                                 db.SaveChanges();
                             }
 
-                            //Category
-                            var category = db.Categories.FirstOrDefault(c => c.CategoryName.Trim().ToLower() == item.Category.Trim().ToLower() && c.FeatureCategoryId == item.FeatureCategoryId);
-                            if (category == null)
+                            // ── Splitting helpers ────────────────────────────────────────────────────
+                            // SplitDedup  : for Category / SubCategory — deduplicate so "A,A" → ["A"]
+                            // SplitRaw    : for SubSubCategory / MiniCategory / all Arabic arrays —
+                            //               NO dedup so "A,A" → ["A","A"], enabling two separate DB records.
+                            string[] SplitDedup(string raw)
+                                => (raw ?? "").Replace(';', ',').Replace('،', ',')
+                                    .Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries)
+                                    .Select(s => s.Trim()).Where(s => s.Length > 0)
+                                    .Distinct(StringComparer.OrdinalIgnoreCase).ToArray();
+
+                            string[] SplitRaw(string raw)
+                                => (raw ?? "").Replace(';', ',').Replace('،', ',')
+                                    .Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries)
+                                    .Select(s => s.Trim()).Where(s => s.Length > 0)
+                                    .ToArray();
+
+                            string GetArAt(string[] arr, int idx) => idx < arr.Length ? arr[idx] : "";
+
+                            // ── GetOrCreateCat: standard (no duplicate records) ──────────────────────
+                            Category GetOrCreateCat(string name, string nameAr, int parentId, string imgFile)
                             {
-                                category = new Category();
-                                category.CategoryKey = Guid.NewGuid();
-                                category.CreateBy = 1;
-                                category.CreateDate = DateTimeHelper.DubaiTime();
-                                category.FeatureCategoryId = feacherCategoryId;
-                                category.CategoryName = item.Category.Trim();
-                                category.CategoryNameAr = item.CategoryArabic.Trim();
-                                category.Status = "Active";
-                                category.ParentId = 0;
-                                if (!string.IsNullOrEmpty(item.CategoryImage))
+                                var c = db.Categories.FirstOrDefault(x =>
+                                    x.CategoryName.Trim().ToLower() == name.ToLower() &&
+                                    x.FeatureCategoryId == feacherCategoryId &&
+                                    x.ParentId == parentId);
+                                if (c == null)
                                 {
-                                    category.Image = "/Content/Upload/Category/"  + item.CategoryImage;
+                                    c = new Category
+                                    {
+                                        CategoryKey       = Guid.NewGuid(),
+                                        CreateBy          = 1,
+                                        CreateDate        = DateTimeHelper.DubaiTime(),
+                                        FeatureCategoryId = feacherCategoryId,
+                                        CategoryName      = name.Trim(),
+                                        CategoryNameAr    = (nameAr ?? "").Trim(),
+                                        ParentId          = parentId,
+                                        Status            = "Active"
+                                    };
+                                    if (!string.IsNullOrEmpty(imgFile))
+                                        c.Image = "/Content/Upload/Category/" + imgFile;
+                                    db.Categories.Add(c);
+                                    db.SaveChanges();
                                 }
-                                db.Categories.Add(category);
-                                db.SaveChanges();
+                                return c;
                             }
 
-                            //  SubCategory
-                            var subcategory = db.Categories.FirstOrDefault(c => c.CategoryName.Trim().ToLower() == item.SubCategory.Trim().ToLower() && c.FeatureCategoryId == item.FeatureCategoryId && c.ParentId == category.CategoryId);
-                            if (subcategory == null && !string.IsNullOrEmpty(item.SubCategory))
+                            // ── GetOrCreateCatTracked: allows intentional duplicate-named records ────
+                            // tracker maps "name|parentId" → how many have already been claimed this
+                            // import pass.  The Nth call skips the first N-1 existing records and either
+                            // returns the Nth existing one or creates a brand-new record.
+                            // This lets "Moisturizer, Moisturizer" produce two SEPARATE category rows.
+                            Category GetOrCreateCatTracked(
+                                string name, string nameAr, int parentId, string imgFile,
+                                System.Collections.Generic.Dictionary<string, int> tracker)
                             {
-                                subcategory = new Category();
-                                subcategory.CategoryKey = Guid.NewGuid();
-                                subcategory.CreateBy = 1;
-                                subcategory.CreateDate = DateTimeHelper.DubaiTime();
-                                subcategory.FeatureCategoryId = feacherCategoryId;
-                                subcategory.CategoryName = item.SubCategory.Trim();
-                                subcategory.CategoryNameAr = item.SubCategoryArabic.Trim();
-                                subcategory.ParentId = category.CategoryId;
-                                if (!string.IsNullOrEmpty(item.SubCategoryImage))
-                                {
-                                    subcategory.Image = "/Content/Upload/Category/"  + item.SubCategoryImage;
-                                }
+                                string key = name.Trim().ToLower() + "|" + parentId;
+                                int skip = tracker.ContainsKey(key) ? tracker[key] : 0;
+                                tracker[key] = skip + 1;
 
-                                subcategory.Status = "Active";
-                                db.Categories.Add(subcategory);
+                                var existing = db.Categories
+                                    .Where(x => x.CategoryName.Trim().ToLower() == name.Trim().ToLower() &&
+                                                x.FeatureCategoryId == feacherCategoryId &&
+                                                x.ParentId == parentId &&
+                                                x.Status == "Active")
+                                    .OrderBy(x => x.CategoryId)
+                                    .Skip(skip)
+                                    .FirstOrDefault();
+
+                                if (existing != null) return existing;
+
+                                var c = new Category
+                                {
+                                    CategoryKey       = Guid.NewGuid(),
+                                    CreateBy          = 1,
+                                    CreateDate        = DateTimeHelper.DubaiTime(),
+                                    FeatureCategoryId = feacherCategoryId,
+                                    CategoryName      = name.Trim(),
+                                    CategoryNameAr    = (nameAr ?? "").Trim(),
+                                    ParentId          = parentId,
+                                    Status            = "Active"
+                                };
+                                if (!string.IsNullOrEmpty(imgFile))
+                                    c.Image = "/Content/Upload/Category/" + imgFile;
+                                db.Categories.Add(c);
                                 db.SaveChanges();
+                                return c;
                             }
 
+                            // Collect every CategoryId the product must be linked to (all levels, all branches)
+                            var allCatIds = new System.Collections.Generic.HashSet<int>();
 
-                            //  SubCategory
-                            var subSubcategory = db.Categories.FirstOrDefault(c => c.CategoryName.Trim().ToLower() == item.SubSubCategory.Trim().ToLower() && c.FeatureCategoryId == item.FeatureCategoryId && c.ParentId == subcategory.CategoryId);
-                            if (subSubcategory == null && !string.IsNullOrEmpty(item.SubSubCategory))
+                            // Category + SubCategory: deduplicate (same name = same category)
+                            var catNames      = SplitDedup(item.Category);
+                            var catArNames    = SplitRaw(item.CategoryArabic);
+                            var subNames      = SplitDedup(item.SubCategory);
+                            var subArNames    = SplitRaw(item.SubCategoryArabic);
+                            // SubSubCategory + MiniCategory: NO dedup — "A,A" creates TWO separate records
+                            var subSubNames   = SplitRaw(item.SubSubCategory);
+                            var subSubArNames = SplitRaw(item.SubSubCategoryArabic);
+                            var miniNames     = SplitRaw(item.MiniCategory);
+                            var miniArNames   = SplitRaw(item.MiniCategoryArabic);
+
+                            // Build every branch of the 4-level hierarchy and collect all involved CategoryIds
+                            foreach (var catTuple in catNames.Select((n, i) => new { n, i }))
                             {
-                                subSubcategory = new Category();
-                                subSubcategory.CategoryKey = Guid.NewGuid();
-                                subSubcategory.CreateBy = 1;
-                                subSubcategory.CreateDate = DateTimeHelper.DubaiTime();
-                                subSubcategory.FeatureCategoryId = feacherCategoryId;
-                                subSubcategory.CategoryName = item.SubSubCategory.Trim();
-                                subSubcategory.CategoryNameAr = item.SubSubCategoryArabic.Trim();
-                                subSubcategory.ParentId = subcategory.CategoryId;
-                                if (!string.IsNullOrEmpty(item.SubSubCategoryImage))
-                                {
-                                    subSubcategory.Image = "/Content/Upload/Category/" + item.SubSubCategoryImage;
-                                }
+                                var catObj = GetOrCreateCat(catTuple.n, GetArAt(catArNames, catTuple.i), 0, item.CategoryImage);
+                                allCatIds.Add(catObj.CategoryId);
 
-                                subSubcategory.Status = "Active";
-                                db.Categories.Add(subSubcategory);
-                                db.SaveChanges();
+                                if (subNames.Length > 0)
+                                {
+                                    foreach (var subTuple in subNames.Select((n, i) => new { n, i }))
+                                    {
+                                        var subObj = GetOrCreateCat(subTuple.n, GetArAt(subArNames, subTuple.i), catObj.CategoryId, item.SubCategoryImage);
+                                        allCatIds.Add(subObj.CategoryId);
+
+                                        if (subSubNames.Length > 0)
+                                        {
+                                            // Fresh tracker per (cat, sub) parent so "Moisturizer,Moisturizer"
+                                            // under Face creates two separate records independent of Body.
+                                            var ssDupeTracker = new System.Collections.Generic.Dictionary<string, int>();
+                                            foreach (var ssTuple in subSubNames.Select((n, i) => new { n, i }))
+                                            {
+                                                var ssObj = GetOrCreateCatTracked(ssTuple.n, GetArAt(subSubArNames, ssTuple.i), subObj.CategoryId, item.SubSubCategoryImage, ssDupeTracker);
+                                                allCatIds.Add(ssObj.CategoryId);
+
+                                                if (miniNames.Length > 0)
+                                                {
+                                                    // Fresh tracker per ssObj parent
+                                                    var miniDupeTracker = new System.Collections.Generic.Dictionary<string, int>();
+                                                    foreach (var mTuple in miniNames.Select((n, i) => new { n, i }))
+                                                    {
+                                                        var mObj = GetOrCreateCatTracked(mTuple.n, GetArAt(miniArNames, mTuple.i), ssObj.CategoryId, null, miniDupeTracker);
+                                                        allCatIds.Add(mObj.CategoryId);
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
                             }
 
+                            // Find existing product — if it already exists we ONLY add new category links.
+                            // The product itself (prices, images, stock) is NEVER duplicated.
+                            var product = db.Products.FirstOrDefault(p =>
+                                p.ProductName.Trim().ToLower() == item.ProductName.Trim().ToLower() &&
+                                p.FeatureCategoryId == feacherCategoryId &&
+                                p.Status == "Active");
+                            bool isNewProduct = (product == null);
 
-                            //Product
-                            var product = new Product();
+                            if (isNewProduct)
+                            {
+                            product = new Product();
                             product.ProductKey = Guid.NewGuid();
                             product.CreateBy = 1;
                             product.CreateDate = DateTimeHelper.DubaiTime();
@@ -182,27 +269,19 @@ namespace Boulevard.Service.Admin
                             product.AttributeCode = item.AttributeCode;
                             product.AttributeName = item.AttributeName;
                             product.AttributeNameArabic = item.AttributeNameArabic;
+                            product.IcvBoulevardScore = item.IcvBoulevardScore;
 
-                            //product.StockQuantity = item.Stocks != null ? Convert.ToInt32(item.Stocks) : 0;
-                            //if (item.ProductType.ToLower() == "now")
-                            //{
-                            //    product.ProductType = EnumHelper.GetEnumValueByName<ProductType>(item.ProductType.ToLower());
-                            //}
-                            //else if (item.ProductType.ToLower() == "scheduled")
-                            //{
-                            //    product.ProductType = EnumHelper.GetEnumValueByName<ProductType>(item.ProductType.ToLower());
-                            //}
-                            //else
-                            //{
-                            //    product.ProductType = 3;
-                            //}
+                            // C4 fix: Stocks may be comma/semicolon-separated — take the total sum for the product-level stock
+                            var stockParts = SplitValues(item.Stocks);
+                            product.StockQuantity = stockParts
+                                .Where(s => !string.IsNullOrWhiteSpace(s) && int.TryParse(s.Trim(), out _))
+                                .Sum(s => int.Parse(s.Trim()));
 
-                            product.StockQuantity = item.Stocks != null ? Convert.ToInt32(item.Stocks) : 0;
-                            if (item.ProductType.ToLower() == "now")
+                            if (item.ProductType != null && item.ProductType.ToLower() == "now")
                             {
                                 product.ProductType = 1;
                             }
-                            else if (item.ProductType.ToLower() == "scheduled")
+                            else if (item.ProductType != null && item.ProductType.ToLower() == "scheduled")
                             {
                                 product.ProductType = 2;
                             }
@@ -234,24 +313,54 @@ namespace Boulevard.Service.Admin
                                 }
                             }
 
-                            //Product Price
+                            } // end isNewProduct — product row, images created above
 
-
-                            var qtys = item.Quantity.Split(',');
-                            var Prices = item.SellingPrice.Split(',');
-                            var stockquantity = item.Stocks.Split(',');
-                            for (int i = 0; i < qtys.Length; i++)
+                            // Always update IcvBoulevardScore when a non-empty value is provided —
+                            // this covers re-imports of EXISTING products that previously had no ICV data.
+                            if (!string.IsNullOrWhiteSpace(item.IcvBoulevardScore))
                             {
+                                product.IcvBoulevardScore = item.IcvBoulevardScore;
+                                db.SaveChanges();
+                            }
+
+                            // Always run (new or existing): link product to ALL category nodes collected above.
+                            // The Any() check prevents duplicate ProductCategory rows.
+                            // Link product to ALL category nodes collected above (all levels, all branches).
+                            foreach (var cid in allCatIds)
+                            {
+                                if (!db.ProductCategories.Any(pc => pc.ProductId == product.ProductId && pc.CategoryId == cid))
+                                {
+                                    db.ProductCategories.Add(new ProductCategory
+                                        { ProductId = product.ProductId, CategoryId = cid, Status = "Active" });
+                                    db.SaveChanges();
+                                }
+                            }
+
+                            //Product Price — only insert for brand-new products. Re-imports reuse existing prices.
+                            if (isNewProduct)
+                            {
+                            //Product Price — support both , and ; as delimiters
+                            var qtys         = SplitValues(item.Quantity);
+                            var Prices       = SplitValues(item.SellingPrice);
+                            var stockquantity = SplitValues(item.Stocks);
+                            // Guard: make all arrays the same length (use shortest) to prevent index out-of-bounds
+                            int priceRowCount = Math.Min(qtys.Length, Math.Min(Prices.Length, stockquantity.Length));
+                            for (int i = 0; i < priceRowCount; i++)
+                            {
+                                // Skip rows where both quantity and price are blank
+                                if (string.IsNullOrWhiteSpace(qtys[i]) && string.IsNullOrWhiteSpace(Prices[i]))
+                                    continue;
+
                                 var productPrice = new ProductPrice
                                 {
                                     ProductId = product.ProductId,
-                                    Price = Prices[i] != null &&
-                                                !string.IsNullOrWhiteSpace(Prices[i].ToString()) &&
-                                                double.TryParse(Prices[i].ToString(), out double parsedPrice)
-                                                ? parsedPrice
-                                                : 0,
-                                    ProductQuantity = Convert.ToDouble(qtys[i]),
-                                    ProductStock = Convert.ToInt32(stockquantity[i]),
+                                    Price = !string.IsNullOrWhiteSpace(Prices[i]) &&
+                                            double.TryParse(Prices[i].Trim(), System.Globalization.NumberStyles.Any,
+                                                            System.Globalization.CultureInfo.InvariantCulture, out double parsedPrice)
+                                            ? parsedPrice : 0,
+                                    ProductQuantity = double.TryParse((qtys[i] ?? "").Trim(), System.Globalization.NumberStyles.Any,
+                                                        System.Globalization.CultureInfo.InvariantCulture, out double parsedQty) ? parsedQty : 0,
+                                    ProductStock = int.TryParse((stockquantity[i] ?? "").Trim(), out int parsedStock) ? parsedStock : 0,
                                     Status = "Active",
                                     LastUpdateDate = DateTimeHelper.DubaiTime(),
                                 };
@@ -276,42 +385,7 @@ namespace Boulevard.Service.Admin
                                 db.SaveChanges();
 
                             }
-
-
-
-                            // Product Category
-                            if (category != null)
-                            {
-                                var productCategory = new ProductCategory();
-                                productCategory.ProductId = product.ProductId;
-                                productCategory.CategoryId = category.CategoryId;
-                                productCategory.Status = "Active";
-
-                                db.ProductCategories.Add(productCategory);
-                                db.SaveChanges();
-                            }
-
-                            if (subcategory != null)
-                            {
-                                var productCategory = new ProductCategory();
-                                productCategory.ProductId = product.ProductId;
-                                productCategory.CategoryId = subcategory.CategoryId;
-                                productCategory.Status = "Active";
-
-                                db.ProductCategories.Add(productCategory);
-                                db.SaveChanges();
-                            }
-
-                            if (subSubcategory != null)
-                            {
-                                var productCategory = new ProductCategory();
-                                productCategory.ProductId = product.ProductId;
-                                productCategory.CategoryId = subSubcategory.CategoryId;
-                                productCategory.Status = "Active";
-
-                                db.ProductCategories.Add(productCategory);
-                                db.SaveChanges();
-                            }
+                            } // end isNewProduct price/stock block
                         }
                         catch (Exception ex)
                         {
@@ -330,21 +404,62 @@ namespace Boulevard.Service.Admin
             }
         }
 
-        public async Task<bool> AddTempProduct(string xmlFileData ,int feacherCategoryId)
+        public async Task<bool> AddTempProduct(string xmlFileData, int feacherCategoryId)
         {
             try
             {
-                string connectionString = ConfigurationManager.ConnectionStrings["BoulevardDbContext"].ConnectionString;
-                using (var connection = new SqlConnection(connectionString))
-                {
-                    await connection.OpenAsync();
-                    var parameters = new DynamicParameters();
-                    parameters.Add("@tempProducts_xml", xmlFileData, DbType.Xml);
-                    parameters.Add("@feacherCategoryId", feacherCategoryId);
-                    await connection.ExecuteAsync("pr_upload_bulk_product", parameters, commandType: CommandType.StoredProcedure);
+                var db = new BoulevardDbContext();
+                var doc = XDocument.Parse(xmlFileData);
 
+                foreach (var elem in doc.Root.Elements("Product"))
+                {
+                    string GetAttr(string name) => elem.Attribute(name)?.Value?.Trim() ?? "";
+                    int GetCount(string name) => int.TryParse(elem.Attribute(name)?.Value, out int v) ? v : 0;
+
+                    var row = new TempProduct
+                    {
+                        TempId               = Guid.NewGuid(),
+                        SrNo                 = GetAttr("srNo"),
+                        Brand                = GetAttr("brand"),
+                        BrandArabic          = GetAttr("brandArabic"),
+                        Barcode              = GetAttr("barcode"),
+                        Category             = GetAttr("category"),
+                        SubCategory          = GetAttr("subCategory"),
+                        SubSubCategory       = GetAttr("subSubCategory"),
+                        CategoryArabic       = GetAttr("categoryArabic"),
+                        SubCategoryArabic    = GetAttr("subCategoryArabic"),
+                        SubSubCategoryArabic = GetAttr("subSubCategoryArabic"),
+                        ItemDesc             = GetAttr("itemDesc"),
+                        ItemDescArabic       = GetAttr("itemDescArabic"),
+                        AttributeCode        = GetAttr("attributeCode"),
+                        AttributeName        = GetAttr("attributeName"),
+                        AttributeNameArabic  = GetAttr("attributeNameArabic"),
+                        Images               = GetAttr("images"),
+                        Quantity             = GetAttr("quantity"),
+                        SellingPrice         = GetAttr("sellingPrice"),
+                        ProductTags          = GetAttr("productTags"),
+                        Stocks               = GetAttr("stocks"),
+                        ProductName          = GetAttr("productName"),
+                        ProductNameArabic    = GetAttr("productNameArabic"),
+                        ProductType          = GetAttr("productType"),
+                        DeliveryInfo         = GetAttr("deliveryInfo"),
+                        DeliveryInfoArabic   = GetAttr("deliveryInfoArabic"),
+                        CategoryImage        = GetAttr("categoryImage"),
+                        SubCategoryImage     = GetAttr("subCategoryImage"),
+                        SubSubCategoryImage  = GetAttr("subSubCategoryImage"),
+                        ExcelCount           = GetCount("excelCount"),
+                        // 4th-level category. Commas inside these strings are PART of the
+                        // category name; they are never used as value separators here.
+                        MiniCategory         = GetAttr("miniCategory"),
+                        MiniCategoryArabic   = GetAttr("miniCategoryArabic"),
+                        // ICV Boulevard Score (optional column AC in the Excel template).
+                        IcvBoulevardScore    = GetAttr("icvBoulevardScore"),
+                        FeatureCategoryId    = feacherCategoryId,
+                    };
+                    db.TempProducts.Add(row);
                 }
 
+                await db.SaveChangesAsync();
                 return true;
             }
             catch (Exception ex)

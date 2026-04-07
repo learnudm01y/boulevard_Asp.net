@@ -73,5 +73,7 @@ namespace Boulevard.ResponseModel
 
         public double TotalReview { get; set; }
 
+        public string IcvBoulevardScore { get; set; }
+
     }
 }

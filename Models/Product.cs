@@ -143,10 +143,11 @@ namespace Boulevard.Models
         [NotMapped]
         public List<ProductPrice> ProductPrices { get; set; } = new List<ProductPrice>();
 
-
-      
-        //[NotMapped]
-        //public virtual List<ProductPrice> ProductPrices { get; set; }
+        /// <summary>
+        /// ICV Boulevard Score (e.g. "100%") — imported from Excel column "ICV Boulevard Score".
+        /// </summary>
+        [StringLength(50)]
+        public string IcvBoulevardScore { get; set; }
 
     }
 }
