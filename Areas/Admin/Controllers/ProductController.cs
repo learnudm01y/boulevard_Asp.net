@@ -508,11 +508,13 @@ namespace Boulevard.Areas.Admin.Controllers
         public async Task<ActionResult> AddBulk(TempProductCountViewModel model)
         {
             var Password = Request.Form["Password"] ?? "";
-            _tempMemberDataAccess.DeleteTempProduct();
+            var fCatagoryKeyFallback = model?.fCatagoryKey ?? "";
             if (Request.Files.Count > 0)
             {
                 try
                 {
+                    _tempMemberDataAccess.DeleteTempProduct();
+
                     if (string.IsNullOrEmpty(model.fCatagoryKey) || !Guid.TryParse(model.fCatagoryKey, out Guid _fcGuid))
                         return RedirectToAction(nameof(AddBulk), new { message = "Invalid category key.", fCatagoryKey = model.fCatagoryKey });
 
@@ -520,9 +522,6 @@ namespace Boulevard.Areas.Admin.Controllers
                     if (feacherCategory == null)
                         return RedirectToAction(nameof(AddBulk), new { message = "Feature category not found in database. Please run the seed script first.", fCatagoryKey = model.fCatagoryKey });
 
-                    StringBuilder queryString = new StringBuilder();
-                    DataSet ds = new DataSet();
-                    DataTable dt = new DataTable();
                     int readDone = 0;
                     if (Request.Files.Count > 0)
                     {
@@ -543,83 +542,36 @@ namespace Boulevard.Areas.Admin.Controllers
                                 Directory.CreateDirectory(Server.MapPath("~" + rootpath));
                             }
                             file1.SaveAs(path);
-                            string filePath = rootpath + fileName;
 
-                            string excelConnectionString = string.Empty;
-                            if (!string.IsNullOrEmpty(Password))
+                            // Read Excel using EPPlus — no OleDB/ACE driver required on server
+                            var dataTable = new DataTable();
+                            using (var epPkg = new ExcelPackage(new System.IO.FileInfo(path)))
                             {
-                                excelConnectionString = "Provider=Microsoft.ACE.OLEDB.12.0;Data Source=" + path + ";Password=" + Password + ";Extended Properties=\"Excel 8.0;HDR=Yes;IMEX=2\"";
-                            }
-                            else
-                            {
-                                excelConnectionString = "Provider=Microsoft.ACE.OLEDB.12.0;Data Source=" + path + ";Extended Properties=\"Excel 12.0;HDR=Yes;IMEX=2\"";
-                            }
+                                var ws = epPkg.Workbook.Worksheets[1];
+                                if (ws == null || ws.Dimension == null)
+                                    return RedirectToAction(nameof(AddBulk), new { message = "Excel file is empty or could not be read.", fCatagoryKey = feacherCategory.FeatureCategoryKey.ToString() });
 
-                            OleDbConnection excelConnection = new OleDbConnection(excelConnectionString);
-                            excelConnection.Open();
-
-                            dt = excelConnection.GetOleDbSchemaTable(OleDbSchemaGuid.Tables, null);
-                            if (dt == null)
-                            {
-                                return RedirectToAction(nameof(AddBulk), new { message = "No File Found.", fCatagoryKey = feacherCategory.FeatureCategoryKey.ToString() });
-                            }
-
-                            String[] excelSheets = new String[dt.Rows.Count];
-                            int t = 0;
-                            //excel data saves in temp file here.
-                            foreach (DataRow row in dt.Rows)
-                            {
-                                excelSheets[t] = row["TABLE_NAME"].ToString();
-                                t++;
-                            }
-
-                            OleDbConnection excelConnection1 = new OleDbConnection(excelConnectionString);
-
-                            string query = string.Format("Select * from [{0}]", excelSheets[0]);
-                            using (OleDbDataAdapter dataAdapter = new OleDbDataAdapter(query, excelConnection1))
-                            {
-                                dataAdapter.Fill(ds);
-                                excelConnection.Close();
-                            }
-
-                            var dataTable = ds.Tables[0];
-
-                            #region Fix date-formatted price cells
-                            // OleDB returns the raw cell value, NOT the displayed text. When a
-                            // user accidentally formats the "Selling Price" column as a date
-                            // (e.g. format "m.d"), typing 4.8 causes Excel to store the date
-                            // serial 45755 (April 8, 2025) while displaying "4.8". OleDB reads
-                            // 45755. We use EPPlus to read the formatted text for every Selling
-                            // Price cell and overwrite the DataTable values when they differ.
-                            try
-                            {
-                                using (var epPkg = new ExcelPackage(new System.IO.FileInfo(path)))
+                                // Build columns from header row
+                                for (int c = 1; c <= ws.Dimension.Columns; c++)
                                 {
-                                    var ws = epPkg.Workbook.Worksheets[1];
-                                    // Find the "Selling Price" column index (1-based) in the Excel header row
-                                    int spColIdx = -1;
+                                    string colName = (ws.Cells[1, c].Text ?? "").Trim();
+                                    // Ensure unique column names (duplicate headers get a suffix)
+                                    string uniqueCol = colName;
+                                    int suffix = 1;
+                                    while (dataTable.Columns.Contains(uniqueCol))
+                                        uniqueCol = colName + "_" + (++suffix);
+                                    dataTable.Columns.Add(uniqueCol);
+                                }
+
+                                // Build data rows — read .Text to always get displayed value
+                                for (int r = 2; r <= ws.Dimension.Rows; r++)
+                                {
+                                    var dr = dataTable.NewRow();
                                     for (int c = 1; c <= ws.Dimension.Columns; c++)
-                                    {
-                                        if (string.Equals((ws.Cells[1, c].Text ?? "").Trim(),
-                                            "Selling Price", StringComparison.OrdinalIgnoreCase))
-                                        { spColIdx = c; break; }
-                                    }
-                                    if (spColIdx > 0)
-                                    {
-                                        // Map each DataTable row to the corresponding Excel row (row 2+)
-                                        for (int r = 0; r < dataTable.Rows.Count; r++)
-                                        {
-                                            string displayText = (ws.Cells[r + 2, spColIdx].Text ?? "").Trim();
-                                            if (!string.IsNullOrEmpty(displayText))
-                                            {
-                                                dataTable.Rows[r]["Selling Price"] = displayText;
-                                            }
-                                        }
-                                    }
+                                        dr[c - 1] = ws.Cells[r, c].Text ?? "";
+                                    dataTable.Rows.Add(dr);
                                 }
                             }
-                            catch { /* EPPlus fallback: proceed with OleDB values if EPPlus fails */ }
-                            #endregion
 
                             #region Check Excel Column – validate required headers exist before processing
                             // Access row[0] purely to confirm the columns exist; throws if missing.
@@ -805,12 +757,12 @@ namespace Boulevard.Areas.Admin.Controllers
                 }
                 catch (Exception ex)
                 {
-                    return RedirectToAction(nameof(AddBulk), new { message = ex.Message.Replace("'", ""),fCatagoryKey = model.fCatagoryKey.ToString() });
+                    return RedirectToAction(nameof(AddBulk), new { message = ex.Message.Replace("'", ""), fCatagoryKey = fCatagoryKeyFallback });
                 }
             }
             else
             {
-                return RedirectToAction(nameof(AddBulk), new { message = "No File Found." , fCatagoryKey = model.fCatagoryKey.ToString() });
+                return RedirectToAction(nameof(AddBulk), new { message = "No File Found.", fCatagoryKey = fCatagoryKeyFallback });
             }
         }
 
