@@ -1,0 +1,1125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+  <title>Boulevard Mart — Grocery</title>
+  <style>
+    /* ── Reset & Base ── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { height: 100%; }
+    body {
+      font-family: 'Segoe UI', Arial, sans-serif;
+      background: #0f1117;
+      color: #f0f0f0;
+      min-height: 100%;
+    }
+
+    /* ── Top Bar ── */
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: #1a1d27;
+      display: flex;
+      align-items: center;
+      padding: 12px 16px;
+      gap: 12px;
+      border-bottom: 1px solid #2a2d3e;
+    }
+    .back-btn {
+      display: none;
+      background: none;
+      border: none;
+      color: #7ec8e3;
+      font-size: 22px;
+      cursor: pointer;
+      padding: 2px 6px;
+    }
+    .back-btn.visible { display: flex; align-items: center; }
+    .topbar-title {
+      flex: 1;
+      font-size: 18px;
+      font-weight: 700;
+      color: #fff;
+      letter-spacing: .3px;
+    }
+    .topbar-subtitle {
+      font-size: 11px;
+      font-weight: 400;
+      color: #7ec8e3;
+      display: block;
+    }
+    .config-btn {
+      background: #2a2d3e;
+      border: 1px solid #3a3d50;
+      border-radius: 8px;
+      color: #7ec8e3;
+      font-size: 12px;
+      padding: 6px 10px;
+      cursor: pointer;
+    }
+    .lang-btn {
+      background: #2a2d3e;
+      border: 1px solid #7c3aed;
+      border-radius: 8px;
+      color: #c4b5fd;
+      font-size: 12px;
+      font-weight: 700;
+      padding: 6px 10px;
+      cursor: pointer;
+      letter-spacing: .5px;
+      flex-shrink: 0;
+    }
+
+    /* ── RTL (Arabic) layout overrides ── */
+    [dir=rtl] .topbar          { flex-direction: row-reverse; }
+    [dir=rtl] .section-header  { flex-direction: row-reverse; }
+    [dir=rtl] .breadcrumb      { flex-direction: row-reverse; }
+    [dir=rtl] .hero-banner     { flex-direction: row-reverse; text-align: right; }
+    [dir=rtl] .prod-body       { text-align: right; }
+    [dir=rtl] .prod-price-row  { flex-direction: row-reverse; }
+    [dir=rtl] .prod-brand      { text-align: right; }
+    [dir=rtl] .cat-name        { direction: rtl; }
+    [dir=rtl] .topbar-title,
+    [dir=rtl] .topbar-subtitle { direction: rtl; }
+
+    /* ── Server Config Panel ── */
+    .config-panel {
+      display: none;
+      background: #1a1d27;
+      border-bottom: 1px solid #2a2d3e;
+      padding: 12px 16px;
+      gap: 8px;
+    }
+    .config-panel.open { display: flex; flex-wrap: wrap; }
+    .config-panel label { font-size: 11px; color: #9ca3af; width: 100%; }
+    .config-panel input {
+      flex: 1;
+      background: #0f1117;
+      border: 1px solid #3a3d50;
+      border-radius: 6px;
+      color: #f0f0f0;
+      font-size: 13px;
+      padding: 7px 10px;
+      outline: none;
+      min-width: 0;
+    }
+    .config-panel button {
+      background: #4ade80;
+      color: #0f1117;
+      border: none;
+      border-radius: 6px;
+      font-weight: 700;
+      font-size: 13px;
+      padding: 7px 16px;
+      cursor: pointer;
+    }
+
+    /* ── Hero Banner ── */
+    .hero-banner {
+      margin: 14px 14px 0;
+      background: linear-gradient(135deg, #1d4ed8 0%, #7c3aed 100%);
+      border-radius: 12px;
+      padding: 14px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      min-height: 70px;
+    }
+    .hero-banner .banner-text {
+      font-size: 13px;
+      font-weight: 700;
+      color: #fff;
+      max-width: 68%;
+      line-height: 1.4;
+    }
+    .hero-banner .banner-badge {
+      background: rgba(255,255,255,.18);
+      border-radius: 8px;
+      padding: 6px 10px;
+      font-size: 11px;
+      font-weight: 600;
+      color: #fff;
+      white-space: nowrap;
+    }
+
+    /* ── Section Header ── */
+    .section-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 18px 16px 10px;
+    }
+    .section-header h2 {
+      font-size: 16px;
+      font-weight: 700;
+      color: #fff;
+    }
+    .section-header .tag {
+      font-size: 11px;
+      background: #1e3a5f;
+      color: #7ec8e3;
+      border-radius: 20px;
+      padding: 3px 10px;
+    }
+
+    /* ── Category Grid ── */
+    #category-screen { display: block; }
+    #product-screen  { display: none; }
+
+    .category-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      padding: 0 14px 20px;
+    }
+
+    @media (min-width: 480px) {
+      .category-grid { grid-template-columns: repeat(4, 1fr); }
+    }
+    @media (min-width: 640px) {
+      .category-grid { grid-template-columns: repeat(5, 1fr); }
+    }
+
+    .cat-card {
+      background: #1a1d27;
+      border-radius: 14px;
+      padding: 14px 8px 12px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      border: 1px solid #2a2d3e;
+      transition: transform 0.15s, border-color 0.15s;
+      text-align: center;
+    }
+    .cat-card:hover, .cat-card:active {
+      transform: translateY(-2px);
+      border-color: #4ade80;
+    }
+    .cat-card.selected {
+      border-color: #7c3aed;
+      background: rgba(124, 58, 237, 0.09);
+      box-shadow: 0 0 0 2px rgba(124, 58, 237, 0.22);
+    }
+    .cat-card.selected:hover { transform: none; }
+    /* Divider between category grid and inline products */
+    #inline-products {
+      border-top: 1px solid #2a2d3e;
+      margin-top: 8px;
+      padding-bottom: 80px;
+    }
+    .cat-icon {
+      width: 58px;
+      height: 58px;
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 26px;
+      overflow: hidden;
+      flex-shrink: 0;
+    }
+    .cat-icon img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 14px;
+    }
+    .cat-name {
+      font-size: 11px;
+      font-weight: 600;
+      color: #e2e8f0;
+      line-height: 1.3;
+    }
+    .cat-sub-badge {
+      font-size: 10px;
+      color: #7ec8e3;
+      background: rgba(126,200,227,0.12);
+      border-radius: 4px;
+      padding: 2px 6px;
+    }
+
+    /* ── Product Screen ── */
+    .product-screen-header {
+      padding: 14px 16px 10px;
+    }
+    .product-screen-header h2 {
+      font-size: 18px;
+      font-weight: 700;
+      color: #fff;
+    }
+    .product-screen-header p {
+      font-size: 12px;
+      color: #9ca3af;
+      margin-top: 2px;
+    }
+
+    /* ── Product Grid ── */
+    .product-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+      padding: 0 14px 80px;
+    }
+    @media (min-width: 480px) {
+      .product-grid { grid-template-columns: repeat(3, 1fr); }
+    }
+    @media (min-width: 720px) {
+      .product-grid { grid-template-columns: repeat(4, 1fr); }
+    }
+
+    .prod-card {
+      background: #1a1d27;
+      border-radius: 12px;
+      overflow: hidden;
+      border: 1px solid #2a2d3e;
+      display: flex;
+      flex-direction: column;
+    }
+    .prod-img-wrap {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 1 / 1;
+      background: #252836;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .prod-img-wrap img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    .prod-img-placeholder {
+      font-size: 36px;
+      color: #4a4f68;
+    }
+    .prod-discount-badge {
+      position: absolute;
+      top: 6px;
+      right: 6px;
+      background: #ef4444;
+      color: #fff;
+      font-size: 10px;
+      font-weight: 700;
+      border-radius: 6px;
+      padding: 2px 6px;
+    }
+    .prod-icv-badge {
+      position: absolute;
+      bottom: 6px;
+      left: 6px;
+      background: rgba(15, 18, 32, 0.82);
+      backdrop-filter: blur(4px);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 6px;
+      padding: 3px 7px;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 10px;
+      font-weight: 700;
+      color: #ef4444;
+      line-height: 1;
+    }
+    .prod-icv-badge svg {
+      width: 11px;
+      height: 11px;
+      flex-shrink: 0;
+      fill: none;
+      stroke: #ef4444;
+      stroke-width: 1.6;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+    .prod-origin-badge {
+      position: absolute;
+      bottom: 6px;
+      right: 6px;
+      background: rgba(13, 110, 75, 0.88);
+      backdrop-filter: blur(4px);
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 6px;
+      padding: 3px 7px;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 10px;
+      font-weight: 700;
+      color: #fff;
+      line-height: 1;
+    }
+    .prod-origin-badge svg {
+      width: 11px;
+      height: 11px;
+      flex-shrink: 0;
+      fill: none;
+      stroke: #fff;
+      stroke-width: 1.6;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+    .prod-body {
+      padding: 10px 10px 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      flex: 1;
+    }
+    .prod-brand {
+      font-size: 10px;
+      color: #6b7280;
+      text-transform: uppercase;
+      letter-spacing: .5px;
+    }
+    .prod-name {
+      font-size: 12px;
+      font-weight: 600;
+      color: #e2e8f0;
+      line-height: 1.35;
+      /* clamp to 2 lines */
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+    .prod-attr {
+      font-size: 11px;
+      color: #9ca3af;
+    }
+    .prod-price-row {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-top: 4px;
+    }
+    .prod-price {
+      font-size: 14px;
+      font-weight: 700;
+      color: #4ade80;
+    }
+    .prod-price-original {
+      font-size: 11px;
+      color: #6b7280;
+      text-decoration: line-through;
+    }
+    .prod-add-btn {
+      margin-top: auto;
+      background: #1d4ed8;
+      border: none;
+      border-radius: 8px;
+      color: #fff;
+      font-size: 12px;
+      font-weight: 600;
+      padding: 7px 0;
+      width: 100%;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+    .prod-add-btn:hover { background: #2563eb; }
+
+    /* ── Skeleton Loader ── */
+    .skeleton {
+      background: linear-gradient(90deg, #1f2235 25%, #2a2d3e 50%, #1f2235 75%);
+      background-size: 200% 100%;
+      animation: shimmer 1.4s infinite;
+      border-radius: 8px;
+    }
+    @keyframes shimmer {
+      0%   { background-position: -200% 0; }
+      100% { background-position:  200% 0; }
+    }
+    .skeleton-cat {
+      height: 100px;
+      border-radius: 14px;
+    }
+    .skeleton-prod {
+      height: 240px;
+      border-radius: 12px;
+    }
+
+    /* ── Empty / Error State ── */
+    .state-box {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 60px 20px;
+      text-align: center;
+      gap: 12px;
+      color: #6b7280;
+    }
+    .state-box .state-icon { font-size: 48px; }
+    .state-box p { font-size: 14px; line-height: 1.5; }
+    .state-box .retry-btn {
+      background: #1d4ed8;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 10px 24px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    /* ── Breadcrumb ── */
+    .breadcrumb {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 4px;
+      padding: 8px 16px 0;
+      font-size: 11px;
+      color: #6b7280;
+    }
+    .breadcrumb .bc-sep { color: #3a3d50; margin: 0 1px; }
+    .breadcrumb .bc-item {
+      color: #7ec8e3;
+      cursor: pointer;
+      border: none;
+      background: none;
+      padding: 0;
+      font-size: 11px;
+      text-decoration: underline;
+      text-underline-offset: 2px;
+    }
+    .breadcrumb .bc-item:last-child {
+      color: #e2e8f0;
+      cursor: default;
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    /* ── Load-more button ── */
+    .load-more-wrap {
+      padding: 0 14px 24px;
+      text-align: center;
+    }
+    .load-more-btn {
+      background: #1a1d27;
+      border: 1px solid #3a3d50;
+      color: #7ec8e3;
+      border-radius: 10px;
+      padding: 10px 32px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: border-color 0.15s;
+    }
+    .load-more-btn:hover { border-color: #4ade80; color: #4ade80; }
+    .load-more-btn:disabled { opacity: .4; cursor: default; }
+  </style>
+</head>
+<body>
+
+<!-- ═══════════════ TOP BAR ═══════════════ -->
+<div class="topbar">
+  <button class="back-btn" id="back-btn" onclick="showCategories()">&#8592;</button>
+  <div style="flex:1">
+    <span class="topbar-title" id="topbar-title">Boulevard Mart</span>
+    <span class="topbar-subtitle" id="topbar-subtitle">Grocery</span>
+  </div>
+  <button id="lang-btn" class="lang-btn" onclick="toggleLang()">EN</button>
+  <button class="config-btn" onclick="toggleConfig()">&#9881; API</button>
+</div>
+
+<!-- ═══════════════ CONFIG PANEL ═══════════════ -->
+<div class="config-panel" id="config-panel">
+  <label>Base URL (e.g. http://localhost:5000)</label>
+  <input type="text" id="base-url-input" placeholder="http://localhost:5000" />
+  <button onclick="applyConfig()">Apply</button>
+</div>
+
+<!-- ═══════════════ CATEGORY SCREEN ═══════════════ -->
+<div id="category-screen">
+  <nav class="breadcrumb" id="breadcrumb"></nav>
+  <div class="hero-banner">
+    <div class="banner-text" id="hero-text">EXTRA 15% OFF<br>WITH YOUR CBD CARDS</div>
+    <div class="banner-badge" id="hero-badge">Grocery<br>Deals 🛒</div>
+  </div>
+
+  <div class="section-header">
+    <h2 id="cat-section-title">Shop by Category</h2>
+    <span class="tag" id="cat-count-tag">Loading…</span>
+  </div>
+
+  <div class="category-grid" id="category-grid">
+    <!-- skeletons inserted by JS -->
+    <div class="skeleton skeleton-cat"></div>
+    <div class="skeleton skeleton-cat"></div>
+    <div class="skeleton skeleton-cat"></div>
+    <div class="skeleton skeleton-cat"></div>
+    <div class="skeleton skeleton-cat"></div>
+    <div class="skeleton skeleton-cat"></div>
+  </div>
+
+  <!-- Inline products: shown below mini-category grid when a leaf is selected -->
+  <div id="inline-products" style="display:none">
+    <div class="section-header" style="padding-top:10px">
+      <h2 id="inline-prod-title" style="font-size:15px"></h2>
+      <span class="tag" id="inline-prod-sub">loading…</span>
+    </div>
+    <div class="product-grid" id="inline-product-grid"></div>
+    <div class="load-more-wrap" id="inline-load-more-wrap" style="display:none">
+      <button class="load-more-btn" id="inline-load-more-btn" onclick="loadMoreProducts()">Load More</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ══════════════════════════════════════════════
+//  Config
+// ══════════════════════════════════════════════
+const GROCERY_FC_KEY = '3b317e3f-cb2f-4fdd-b9c8-3f2186695771';
+const PAGE_SIZE = 20;
+
+// Language: 'ar' = Arabic (RTL), 'en' = English (LTR)
+let lang = localStorage.getItem('blvd_lang') || 'ar';
+
+// Returns arVal when lang=ar and arVal is non-empty, otherwise enVal
+function t(enVal, arVal) {
+  return (lang === 'ar' && arVal && String(arVal).trim()) ? arVal : (enVal || '');
+}
+
+let BASE_URL   = localStorage.getItem('blvd_base_url') || 'http://localhost:5000';
+let groceryFcId = 0;
+
+// Category tree navigation
+let categoryTree = [];  // root categories from API
+let categoryMap  = {};  // flat map: categoryId → category object
+// navStack: each entry = { items: Category[], titleEn: string, titleAr: string, subtitle: string }
+// Last entry is the currently displayed level.
+let navStack = [];
+
+// Per-category pagination state
+let currentCategoryId    = 0;
+let currentCategoryNameEn = '';
+let currentCategoryNameAr = '';
+let currentPage = 0;   // 0-based page index for load-more
+let hasMoreProducts = true;
+
+// ── Restore config field ──
+document.getElementById('base-url-input').value = BASE_URL;
+
+function toggleConfig() {
+  const p = document.getElementById('config-panel');
+  p.classList.toggle('open');
+}
+
+function applyConfig() {
+  BASE_URL = document.getElementById('base-url-input').value.replace(/\/$/, '');
+  localStorage.setItem('blvd_base_url', BASE_URL);
+  toggleConfig();
+  groceryFcId  = 0;  // force re-resolve
+  categoryTree = [];
+  categoryMap  = {};
+  navStack     = [];
+  currentPage  = 0;
+  loadCategories();
+}
+
+function applyLang() {
+  const isAr = lang === 'ar';
+  document.documentElement.setAttribute('dir', isAr ? 'rtl' : 'ltr');
+  const btn = document.getElementById('lang-btn');
+  if (btn) btn.textContent = isAr ? 'EN' : 'عربي';
+  // Hero banner
+  document.getElementById('hero-text').innerHTML =
+    t('EXTRA 15% OFF<br>WITH YOUR CBD CARDS', 'خصم 15% إضافي<br>مع بطاقاتك المصرفية');
+  document.getElementById('hero-badge').innerHTML =
+    t('Grocery<br>Deals 🛒', 'عروض<br>البقالة 🛒');
+  // Section titles
+  const sct = document.getElementById('cat-section-title');
+  if (sct) sct.textContent = t('Shop by Category', 'تسوق حسب الفئة');
+  // Load-more button
+  const lmb = document.getElementById('inline-load-more-btn');
+  if (lmb) lmb.textContent = t('Load More', 'تحميل المزيد');
+}
+
+function toggleLang() {
+  lang = lang === 'ar' ? 'en' : 'ar';
+  localStorage.setItem('blvd_lang', lang);
+  applyLang();
+  // Re-render current category grid in new language
+  if (navStack.length > 0) {
+    renderCategoryGrid(navStack[navStack.length - 1].items);
+    applyNavTitles();
+  }
+  // Re-fetch products if inline panel is visible
+  const inlineSec = document.getElementById('inline-products');
+  if (inlineSec.style.display !== 'none' && currentCategoryId) {
+    const catName = t(currentCategoryNameEn, currentCategoryNameAr);
+    document.getElementById('topbar-title').textContent      = catName;
+    document.getElementById('inline-prod-title').textContent = catName;
+    buildBreadcrumb(currentCategoryNameEn, currentCategoryNameAr);
+    fetchProducts(currentCategoryId, 0, true);
+  }
+}
+
+// ══════════════════════════════════════════════
+//  API Helpers
+// ══════════════════════════════════════════════
+async function apiFetch(path) {
+  const url = BASE_URL + path;
+  const res = await fetch(url);
+  if (!res.ok) throw new Error(`HTTP ${res.status} — ${url}`);
+  const json = await res.json();
+  // Boulevard API wraps responses in { code, isSuccess, message, result }
+  if (json && json.result !== undefined) return json.result;
+  // Fallback for any endpoint that uses { data: ... }
+  if (json && json.data !== undefined) return json.data;
+  // Bare array
+  if (Array.isArray(json)) return json;
+  throw new Error(json.message || 'API error');
+}
+
+// ══════════════════════════════════════════════
+//  Resolve Grocery fcId
+// ══════════════════════════════════════════════
+async function resolveGroceryFcId() {
+  if (groceryFcId > 0) return groceryFcId;
+  const list = await apiFetch('/api/v1/GetAllfeatureCategory');
+  if (!Array.isArray(list)) throw new Error('FeatureCategory list not an array');
+  const found = list.find(fc =>
+    fc.featureCategoryKey &&
+    fc.featureCategoryKey.toLowerCase() === GROCERY_FC_KEY.toLowerCase()
+  );
+  if (!found) throw new Error(`Grocery FeatureCategory (${GROCERY_FC_KEY}) not found. Run seed_grocery.sql first.`);
+  groceryFcId = found.featureCategoryId;
+  return groceryFcId;
+}
+
+// ══════════════════════════════════════════════
+//  Emoji fallback icons per common grocery categories
+// ══════════════════════════════════════════════
+const EMOJI_MAP = {
+  'grocery':        '🛒', 'fresh food': '🥦', 'fresh':       '🥬',
+  'roastery':       '☕', 'beverages':  '🧃', 'beverage':    '🥤',
+  'bakery':         '🍞', 'organic':    '🌿', 'personal care':'🧴',
+  'baby':           '🍼', 'deals':      '🏷️', 'dairy':       '🥛',
+  'meat':           '🥩', 'poultry':    '🍗', 'seafood':     '🐟',
+  'fruits':         '🍎', 'fruit':      '🍊', 'vegetables':  '🥕',
+  'vegetable':      '🥕', 'snacks':     '🍿', 'frozen':      '🧊',
+  'household':      '🏠', 'cleaning':   '🧹', 'pet':         '🐾',
+  'health':         '💊', 'vitamins':   '💊', 'pharmacy':    '💊',
+  'electronics':    '📱', 'laundry':    '👕', 'bread':       '🍞',
+  'coffee':         '☕', 'tea':        '🍵', 'juice':       '🧃',
+  'water':          '💧', 'soda':       '🥤', 'energy':      '⚡',
+  'sauce':          '🍅', 'condiment':  '🫙', 'pasta':       '🍝',
+  'rice':           '🍚', 'cereal':     '🥣', 'spice':       '🌶️',
+};
+
+function categoryEmoji(name) {
+  const lc = (name || '').toLowerCase();
+  for (const [key, emoji] of Object.entries(EMOJI_MAP)) {
+    if (lc.includes(key)) return emoji;
+  }
+  return '📦';
+}
+
+// Category background colours (cycle)
+const CAT_COLORS = [
+  '#1d4ed8','#7c3aed','#0a7a52','#b45309',
+  '#be185d','#0f766e','#4338ca','#16a34a',
+];
+function catColor(i) { return CAT_COLORS[i % CAT_COLORS.length]; }
+
+// ══════════════════════════════════════════════
+//  Category Screen
+// ══════════════════════════════════════════════
+// Build a flat lookup map from the nested tree
+function flattenTree(cats) {
+  for (const cat of (cats || [])) {
+    categoryMap[cat.categoryId] = cat;
+    if (cat.childCategories && cat.childCategories.length > 0) {
+      flattenTree(cat.childCategories);
+    }
+  }
+}
+
+// Render a set of category cards (any tree level) into the grid
+function renderCategoryGrid(items) {
+  const grid     = document.getElementById('category-grid');
+  const countTag = document.getElementById('cat-count-tag');
+  if (!items || items.length === 0) {
+    grid.innerHTML = `
+      <div class="state-box" style="grid-column:1/-1">
+        <span class="state-icon">🛒</span>
+        <p>${t('No categories found.<br>Import grocery data first.', 'لا توجد فئات.<br>يرجى استيراد البيانات أولاً.')}</p>
+      </div>`;
+    countTag.textContent = t('0 categories', '0 فئات');
+    return;
+  }
+  countTag.textContent = lang === 'ar'
+    ? `${items.length} عنصر`
+    : `${items.length} item${items.length !== 1 ? 's' : ''}`;
+  grid.innerHTML = items.map((cat, i) => buildCatCard(cat, i)).join('');
+}
+
+// Build breadcrumb from current navStack + optional leaf (pass both en/ar names)
+function buildBreadcrumb(leafNameEn, leafNameAr) {
+  const bcEl = document.getElementById('breadcrumb');
+  const sep  = lang === 'ar' ? '‹' : '›';
+  const leaf = (leafNameEn || leafNameAr) ? t(leafNameEn || '', leafNameAr || '') : null;
+  const parts = [];
+  navStack.filter((_, i) => i > 0).forEach((lvl, i, arr) => {
+    const isLast = (i === arr.length - 1) && !leaf;
+    const name = t(lvl.titleEn, lvl.titleAr);
+    parts.push(`<button class="bc-item" onclick="bcGoTo(${i + 1})" ${isLast ? 'tabindex="-1"' : ''}>${escHtml(name)}</button>`);
+    if (!isLast || leaf) parts.push(`<span class="bc-sep">${sep}</span>`);
+  });
+  if (leaf) {
+    parts.push(`<button class="bc-item" tabindex="-1">${escHtml(leaf)}</button>`);
+  }
+  bcEl.innerHTML = parts.join('');
+}
+
+// Apply topbar text and back-button visibility based on navStack
+function applyNavTitles() {
+  const level = navStack[navStack.length - 1];
+  document.getElementById('topbar-title').textContent    = t(level.titleEn, level.titleAr);
+  document.getElementById('topbar-subtitle').textContent  = t('Boulevard Mart', 'بوليفارد مارت');
+  if (navStack.length > 1) {
+    document.getElementById('back-btn').classList.add('visible');
+  } else {
+    document.getElementById('back-btn').classList.remove('visible');
+  }
+  buildBreadcrumb(null, null);
+}
+
+// Drill into a parent category to display its children
+function drillDown(categoryId) {
+  const cat = categoryMap[categoryId];
+  if (!cat || !cat.childCategories || cat.childCategories.length === 0) return;
+  navStack.push({
+    items:   cat.childCategories,
+    titleEn: cat.categoryName   || '',
+    titleAr: cat.categoryNameAr || '',
+    subtitle: 'Boulevard Mart',
+  });
+  // Clear any inline product selection from the previous level
+  document.getElementById('inline-products').style.display = 'none';
+  document.getElementById('inline-product-grid').innerHTML = '';
+  applyNavTitles();
+  renderCategoryGrid(cat.childCategories);
+}
+
+async function loadCategories() {
+  const grid = document.getElementById('category-grid');
+  grid.innerHTML = [1,2,3,4,5,6]
+    .map(() => '<div class="skeleton skeleton-cat"></div>')
+    .join('');
+  document.getElementById('cat-count-tag').textContent = 'Loading…';
+
+  try {
+    const fcId = await resolveGroceryFcId();
+    // Use /categories to get the FULL nested tree in one request
+    const rootCats = await apiFetch(`/api/v1/general/categories?featureCategoryid=${fcId}`);
+
+    categoryTree = Array.isArray(rootCats) ? rootCats : [];
+    categoryMap  = {};
+    flattenTree(categoryTree);
+
+    // Reset navigation to root level
+    navStack = [{ items: categoryTree, titleEn: 'Boulevard Mart', titleAr: 'بوليفارد مارت', subtitle: 'Grocery' }];
+    document.getElementById('inline-products').style.display = 'none';
+    applyNavTitles();
+    renderCategoryGrid(categoryTree);
+
+  } catch (err) {
+    grid.innerHTML = `
+      <div class="state-box" style="grid-column:1/-1">
+        <span class="state-icon">⚠️</span>
+        <p>${escHtml(err.message)}</p>
+        <button class="retry-btn" onclick="loadCategories()">Retry</button>
+      </div>`;
+    document.getElementById('cat-count-tag').textContent = 'Error';
+  }
+}
+
+function buildCatCard(cat, i) {
+  const nameEn      = cat.categoryName   || cat.CategoryName   || '';
+  const nameAr      = cat.categoryNameAr || cat.CategoryNameAr || '';
+  const name        = t(nameEn, nameAr) || 'Category';
+  const img         = cat.image || cat.Image || '';
+  const id          = cat.categoryId || cat.CategoryId;
+  const hasChildren = cat.childCategories && cat.childCategories.length > 0;
+  const color       = catColor(i);
+  const emoji       = categoryEmoji(nameEn || nameAr);
+
+  // Escape names for use inside onclick single-quoted strings
+  const escEn = (nameEn).replace(/\\/g, '\\\\').replace(/'/g, "\\'");
+  const escAr = (nameAr).replace(/\\/g, '\\\\').replace(/'/g, "\\'");
+
+  // Parent categories drill down; leaf categories show products inline below the grid
+  const onclick = hasChildren
+    ? `drillDown(${id})`
+    : `selectLeafCat(${id}, '${escEn}', '${escAr}')`;
+
+  const iconHtml = img
+    ? `<img src="${escHtml(img)}" alt="${escHtml(name)}" loading="lazy" onerror="this.style.display='none';this.parentNode.innerHTML='<span>${emoji}</span>'">`
+    : `<span>${emoji}</span>`;
+
+  const subLabel = t('sub', 'قسم');
+  const badge = hasChildren
+    ? `<div class="cat-sub-badge">${cat.childCategories.length} ${subLabel}</div>`
+    : '';
+
+  return `
+    <div class="cat-card" data-cat-id="${id}" onclick="${onclick}">
+      <div class="cat-icon" style="background:${color}22; color:${color}">
+        ${iconHtml}
+      </div>
+      <span class="cat-name">${escHtml(name)}</span>
+      ${badge}
+    </div>`;
+}
+
+// ══════════════════════════════════════════════
+//  Product Screen (inline below category grid)
+// ══════════════════════════════════════════════
+
+// Select a leaf (mini) category card: highlights it and loads products inline below the grid
+function selectLeafCat(categoryId, categoryNameEn, categoryNameAr) {
+  currentCategoryId     = categoryId;
+  currentCategoryNameEn = categoryNameEn || '';
+  currentCategoryNameAr = categoryNameAr || '';
+  const catName = t(categoryNameEn, categoryNameAr);
+  currentPage         = 0;
+  hasMoreProducts     = true;
+
+  // Highlight the selected card, deselect others
+  document.querySelectorAll('#category-grid .cat-card').forEach(c => {
+    c.classList.toggle('selected', parseInt(c.dataset.catId) === categoryId);
+  });
+
+  // Update topbar + breadcrumb to show selected mini category
+  document.getElementById('topbar-title').textContent    = catName;
+  document.getElementById('topbar-subtitle').textContent  = t('Boulevard Mart', 'بوليفارد مارت');
+  document.getElementById('back-btn').classList.add('visible');
+  buildBreadcrumb(categoryNameEn, categoryNameAr);
+
+  // Show inline product section with skeleton loaders
+  const section = document.getElementById('inline-products');
+  section.style.display = 'block';
+  document.getElementById('inline-prod-title').textContent = catName;
+  document.getElementById('inline-prod-sub').textContent   = t('loading…', 'جارِ التحميل…');
+  document.getElementById('inline-product-grid').innerHTML = [1,2,3,4]
+    .map(() => '<div class="skeleton skeleton-prod"></div>').join('');
+  document.getElementById('inline-load-more-wrap').style.display = 'none';
+
+  // Scroll smoothly to the products section
+  section.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+
+  fetchProducts(categoryId, 0, true);
+}
+
+async function fetchProducts(categoryId, page, replace) {
+  const grid   = document.getElementById('inline-product-grid');
+  const lmWrap = document.getElementById('inline-load-more-wrap');
+  const lmBtn  = document.getElementById('inline-load-more-btn');
+  const sub    = document.getElementById('inline-prod-sub');
+
+  if (!replace) lmBtn.disabled = true;
+
+  try {
+    const data = await apiFetch(
+      `/api/v1/general/GetSingelCategorywiseProduct?categoryId=${categoryId}&size=${PAGE_SIZE}&count=${page}&productType=1&lang=${lang}`
+    );
+
+    // data is a Category object with .products array
+    const products = (data && data.products) ? data.products : (Array.isArray(data) ? data : []);
+
+    if (replace) {
+      if (products.length === 0) {
+        grid.innerHTML = `
+          <div class="state-box" style="grid-column:1/-1">
+            <span class="state-icon">📦</span>
+            <p>${t('No products in this category yet.', 'لا توجد منتجات في هذه الفئة بعد.')}</p>
+          </div>`;
+        sub.textContent = '0 products';
+        lmWrap.style.display = 'none';
+        return;
+      }
+      grid.innerHTML = products.map(buildProdCard).join('');
+    } else {
+      const existing = grid.querySelectorAll('.prod-card').length;
+      grid.insertAdjacentHTML('beforeend', products.map(buildProdCard).join(''));
+      const total = grid.querySelectorAll('.prod-card').length;
+      sub.textContent = `${total} products loaded`;
+    }
+
+    const totalLoaded = grid.querySelectorAll('.prod-card').length;
+    sub.textContent = lang === 'ar'
+      ? `تم تحميل ${totalLoaded} منتج`
+      : `${totalLoaded} product${totalLoaded !== 1 ? 's' : ''} loaded`;
+
+    hasMoreProducts = products.length === PAGE_SIZE;
+    lmWrap.style.display   = hasMoreProducts ? 'block' : 'none';
+    if (hasMoreProducts) lmBtn.disabled = false;
+    currentPage = page + 1;
+
+  } catch (err) {
+    if (replace) {
+      grid.innerHTML = `
+        <div class="state-box" style="grid-column:1/-1">
+          <span class="state-icon">⚠️</span>
+          <p>${escHtml(err.message)}</p>
+          <button class="retry-btn" onclick="fetchProducts(${categoryId},0,true)">${t('Retry', 'إعادة المحاولة')}</button>
+        </div>`;
+    }
+    sub.textContent = t('Error loading products', 'خطأ في تحميل المنتجات');
+    lmWrap.style.display = 'none';
+  }
+}
+
+function loadMoreProducts() {
+  fetchProducts(currentCategoryId, currentPage, false);
+}
+
+function buildProdCard(p) {
+  const name   = p.productName || p.ProductName || t('Product', 'منتج');
+  const price  = parseFloat(p.productPrice || p.ProductPrice || 0).toFixed(2);
+  const dPrice = p.discountPrice || p.DiscountPrice;
+  const img    = p.image || p.Image || '';
+  const bi     = p.brandInfo || p.BrandInfo;
+  const brand  = bi ? t(bi.title || bi.Title || '', bi.titleAr || bi.TitleAr || '') : '';
+  const attr   = p.attributeName || p.AttributeName || '';
+  const icvRaw = (p.icvBoulevardScore || p.IcvBoulevardScore || '').toString().trim();
+  const originVal = (p.origin || p.Origin || '').trim();
+
+  // Convert ICV score to percentage display: "1" → "100%", "0.75" → "75%"
+  let icvScore = '';
+  if (icvRaw) {
+    const num = parseFloat(icvRaw);
+    if (!isNaN(num)) {
+      icvScore = (num <= 1 ? Math.round(num * 100) : Math.round(num)) + '%';
+    } else {
+      icvScore = icvRaw;
+    }
+  }
+
+  let discountPct = '';
+  const di = p.discountInformation || p.DiscountInformation;
+  if (di) {
+    if (di.discountType === 'Percentage' || di.DiscountType === 'Percentage') {
+      discountPct = `-${di.discountAmount || di.DiscountAmount}%`;
+    }
+  }
+
+  const imgHtml = img
+    ? `<img src="${escHtml(img)}" alt="${escHtml(name)}" loading="lazy"
+           onerror="this.style.display='none';this.parentNode.querySelector('.prod-img-placeholder').style.display='flex'">`
+    : '';
+
+  const originalPrice = (dPrice && parseFloat(dPrice) > 0 && parseFloat(dPrice) < parseFloat(price))
+    ? `<span class="prod-price-original">${price} AED</span>`
+    : '';
+
+  const displayPrice = (dPrice && parseFloat(dPrice) > 0 && parseFloat(dPrice) < parseFloat(price))
+    ? parseFloat(dPrice).toFixed(2)
+    : price;
+
+  // ICV Boulevard Score badge — bottom-left of image (tag icon + score value)
+  const icvBadge = icvScore
+    ? `<div class="prod-icv-badge" title="ICV Boulevard Score">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z"/>
+          <line x1="7" y1="7" x2="7.01" y2="7"/>
+        </svg>
+        ${escHtml(icvScore)}
+      </div>`
+    : '';
+
+  // Origin badge — bottom-right of image (globe icon + origin value)
+  const originBadge = originVal
+    ? `<div class="prod-origin-badge" title="Origin">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <circle cx="12" cy="12" r="10"/>
+          <line x1="2" y1="12" x2="22" y2="12"/>
+          <path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10A15.3 15.3 0 0112 2z"/>
+        </svg>
+        ${escHtml(originVal)}
+      </div>`
+    : '';
+
+  return `
+    <div class="prod-card">
+      <div class="prod-img-wrap">
+        ${imgHtml}
+        <div class="prod-img-placeholder" style="${img ? 'display:none' : 'display:flex'}">🛍️</div>
+        ${discountPct ? `<div class="prod-discount-badge">${escHtml(discountPct)}</div>` : ''}
+        ${icvBadge}
+        ${originBadge}
+      </div>
+      <div class="prod-body">
+        ${brand ? `<div class="prod-brand">${escHtml(brand)}</div>` : ''}
+        <div class="prod-name">${escHtml(name)}</div>
+        ${attr ? `<div class="prod-attr">${escHtml(attr)}</div>` : ''}
+        <div class="prod-price-row">
+          <span class="prod-price">${displayPrice} AED</span>
+          ${originalPrice}
+        </div>
+        <button class="prod-add-btn">${t('+ Add to Cart', '+ أضف إلى السلة')}</button>
+      </div>
+    </div>`;
+}
+
+// ══════════════════════════════════════════════
+//  Navigation
+// ══════════════════════════════════════════════
+
+// Jump directly to a specific navStack level by index (from breadcrumb click)
+function bcGoTo(stackIdx) {
+  if (stackIdx >= navStack.length) return;
+  navStack = navStack.slice(0, stackIdx + 1);
+  document.getElementById('inline-products').style.display = 'none';
+  document.getElementById('inline-product-grid').innerHTML = '';
+  document.querySelectorAll('#category-grid .cat-card').forEach(c => c.classList.remove('selected'));
+  applyNavTitles();
+  renderCategoryGrid(navStack[navStack.length - 1].items);
+}
+
+function showCategories() {
+  const inlineSec = document.getElementById('inline-products');
+
+  // If inline products are open: close them and deselect the card (stay at same level)
+  if (inlineSec.style.display !== 'none') {
+    inlineSec.style.display = 'none';
+    document.getElementById('inline-product-grid').innerHTML = '';
+    document.querySelectorAll('#category-grid .cat-card').forEach(c => c.classList.remove('selected'));
+    applyNavTitles();
+    return;
+  }
+
+  // Go up one category level
+  if (navStack.length > 1) {
+    navStack.pop();
+    applyNavTitles();
+    renderCategoryGrid(navStack[navStack.length - 1].items);
+  }
+}
+
+// ══════════════════════════════════════════════
+//  Utility
+// ══════════════════════════════════════════════
+function escHtml(str) {
+  return String(str || '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
+// ══════════════════════════════════════════════
+//  Boot
+// ══════════════════════════════════════════════
+applyLang();
+loadCategories();
+</script>
+</body>
+</html>

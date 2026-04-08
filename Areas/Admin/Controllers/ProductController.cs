@@ -551,11 +551,30 @@ namespace Boulevard.Areas.Admin.Controllers
                                 if (ws == null || ws.Dimension == null)
                                     return RedirectToAction(nameof(AddBulk), new { message = "Excel file is empty or could not be read.", fCatagoryKey = feacherCategory.FeatureCategoryKey.ToString() });
 
+                                // Canonical column names — case-insensitive lookup so any variation
+                                // in Excel header casing (e.g. "images" vs "Images") maps to exactly
+                                // what the DataRow["ColumnName"] accesses below expect.
+                                var canonicalCols = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+                                {
+                                    "Sr.No","Brand","Brand Arabic","Barcode",
+                                    "Category","Category Arabic","Category images",
+                                    "Sub Category","Sub Category Arabic","Sub Category images",
+                                    "Sub Sub Category","Sub Sub Category Arabic","Sub Sub Category images",
+                                    "MINI Category","MINI Category Arabic",
+                                    "Item Desc","Item Desc Arabic",
+                                    "Attribute Code","Attribute Name","Attribute Name Arabic",
+                                    "Images","Quantitys","Selling Price","Product Tags","Stocks Quantity",
+                                    "ProductName","ProductName Arabic","Product Type",
+                                    "Delivery Info","Delivery Info Arabic",
+                                    "ICV Boulevard Score","Origin"
+                                };
+
                                 // Build columns from header row
                                 for (int c = 1; c <= ws.Dimension.Columns; c++)
                                 {
-                                    string colName = (ws.Cells[1, c].Text ?? "").Trim();
-                                    // Ensure unique column names (duplicate headers get a suffix)
+                                    string rawName = (ws.Cells[1, c].Text ?? "").Trim();
+                                    // Use canonical name if matched; preserve original otherwise
+                                    string colName = canonicalCols.TryGetValue(rawName, out string canonical) ? canonical : rawName;
                                     string uniqueCol = colName;
                                     int suffix = 1;
                                     while (dataTable.Columns.Contains(uniqueCol))

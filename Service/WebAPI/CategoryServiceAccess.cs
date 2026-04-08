@@ -21,7 +21,7 @@ namespace Boulevard.Service.WebAPI
             uow = new UnitOfWork();
         }
 
-        string link = HttpContext.Current.Request.Url.GetLeftPart(UriPartial.Authority) + "/";
+        string link = HttpContext.Current.Request.Url.GetLeftPart(UriPartial.Authority);
         public async Task<Category> Get(int categoryId,string lang="en")
         {
             try
