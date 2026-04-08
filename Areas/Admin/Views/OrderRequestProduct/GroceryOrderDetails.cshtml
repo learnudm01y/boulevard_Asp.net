@@ -1,245 +1,142 @@
-﻿
+﻿@model Boulevard.Models.OrderRequestProduct
 @{
-    ViewBag.Title = "GroceryDetials";
+    ViewBag.Title = "Grocery Order Details";
     Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+    bool hasModel = Model != null;
+    var details = hasModel && Model.OrderRequestProduxtDetails != null
+        ? Model.OrderRequestProduxtDetails.ToList()
+        : new System.Collections.Generic.List<Boulevard.Models.OrderRequestProductDetails>();
+    bool anyDeliveryEnabled = details.Any(d => d.IsDeliveryEnabled);
+    var byBrand = details.GroupBy(d => new { d.BrandName, d.IsDeliveryEnabled }).ToList();
 }
 
-<style>
-    table, th, td {
-        border: 1px solid black;
-        border-collapse: collapse;
-        text-align: center;
-    }
-
-    table {
-        width: 500px;
-    }
-</style>
 <div class="page-wrapper">
     <div class="container-fluid">
-        <!-- ============================================================== -->
-        <!-- Bread crumb and right sidebar toggle -->
-        <!-- ============================================================== -->
+
         <div class="row page-titles">
             <div class="col-md-5 col-12 align-self-center">
-                <h3 class="text-themecolor mb-0">Order Details</h3>
+                <h3 class="text-themecolor mb-0">Grocery Order Details</h3>
             </div>
             <div class="col-md-7 col-12 align-self-center d-none d-md-block">
                 <ol class="breadcrumb mb-0 p-0 bg-transparent float-right">
-                    <li class="breadcrumb-item active"><a href="@Url.RouteUrl("Admin_Member")">Member</a></li>
+                    <li class="breadcrumb-item"><a href="@Url.RouteUrl("Admin_dashboard")">Home</a></li>
+                    <li class="breadcrumb-item"><a href="@Url.Action("GroceryOrderList","OrderRequestProduct")">Grocery Orders</a></li>
                     <li class="breadcrumb-item active">Order Details</li>
                 </ol>
             </div>
         </div>
-        <!-- ============================================================== -->
-        <!-- End Bread crumb and right sidebar toggle -->
-        <!-- ============================================================== -->
-        <!--order list-->
-        <form>
-            <div class="card">
-                <div class="card-header">
-                    Order Details
-                </div>
-                <div class="card-body">
-                    <div class="row">
-                        <input type="hidden" name="MemberId" class="form-control" value="0">
 
-                        <div class="col-md-12 col-sm-12">
-                            <div class="form-group">
-                                <label>Member Id : member-101</label>
-                            </div>
-                        </div>
-                        <div class="col-md-12 col-sm-12">
-                            <div class="form-group">
-                                <label>Member Name : <span style="font-size:large">Nafiz Chowdhury</span></label>
-                            </div>
-                        </div>
-                        <div class="col-md-12 col-sm-12">
-                            <div class="form-group">
-                                <label>Member No : 566250256</label>
-                            </div>
-                        </div>
-                        <div class="col-md-12 col-sm-12">
-                            <div class="form-group">
-                                <label>
-                                    Member Address : Mirpur 1,Dahaka,Bangladesh
-                                </label>
-                            </div>
-                        </div>
-                        <div class="col-md-12 col-sm-12">
-                            <div class="form-group">
-                                <label>
-                                    Comments : Delivery need to be Quick
-                                </label>
-                            </div>
-                        </div>
-                        <div class="col-md-12 col-sm-12">
-                            <div class="form-group">
-                                <label>Order Date : 13/08/2024</label>
-                            </div>
-                        </div>
-                        <div class="col-md-12 col-sm-12">
-                            <div class="form-group">
-                                <label>Delivery Date : 15/08/2024</label>
-                            </div>
-                        </div>
-                        <div class="col-md-12 col-sm-12">
-                            <div class="form-group">
-                                <label>Delivery Charge : 10 AED</label>
-                            </div>
-                        </div>
-                        <div class="col-md-12 col-sm-12">
-                            <div class="form-group">
-                                <label>Total Price : 700 AED</label>
-                            </div>
-                        </div>
-                        <div class="col-md-12 col-sm-12">
-                            <div class="form-group">
-                                <label>Payment Method Name : Cash on delivery</label>
-                            </div>
-                        </div>
-                        <div class="col-md-12 col-sm-12">
-                            <div class="form-group">
-                                <label>Order Status : Order Placed</label>
-                            </div>
-                        </div>
-                        @*<div class="col-md-12 col-sm-12">
-                                <div class="card bg-light mb-3" style="width: 18rem;">
-                                    <img class="card-img-top" src="@Model.Image" alt="Card image cap">
-                                    <div class="card-body">
-                                        <h5 class="card-title">Member Image</h5>
-                                    </div>
-                                </div>
-                            </div>*@
-
-
+        @if (!hasModel)
+        {
+            <div class="alert alert-warning">Order not found.</div>
+        }
+        else
+        {
+        <!-- Order Header -->
+        <div class="card mb-3">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">Order #@Model.ReadableOrderId</h5>
+                <span class="badge badge-@(Model.OrderStatusId == 1 ? "warning" : Model.OrderStatusId == 2 ? "success" : "secondary") p-2">
+                    @(Model.OrderStatus != null ? Model.OrderStatus.Name : "Unknown")
+                </span>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-4">
+                        <p><strong>Member:</strong> @(Model.Member != null ? Model.Member.Name : "-")</p>
+                        <p><strong>Phone:</strong> @(Model.Member != null ? Model.Member.PhoneNumber : "-")</p>
+                        <p><strong>Payment:</strong> @(Model.PaymentMethod != null ? Model.PaymentMethod.PaymentMethodName : "-")</p>
                     </div>
-                    <br>
-                    <br>
-                    <br>
-                    <div class="col-md-12 col-sm-12">
-                        @*<h1>Order Details</h1>*@
-                        <div class="form-group float-xl-right">
-                            <h1>Order Details</h1>
-                            @*<label style="font-size:30px">Total Price : @Model.TotalPrice</label>*@
-                        </div>
+                    <div class="col-md-4">
+                        <p><strong>Order Date:</strong> @Model.OrderDateTime.ToString("dd MMM yyyy HH:mm")</p>
+                        <p><strong>Delivery Date:</strong> @Model.DeliveryDateTime.ToString("dd MMM yyyy")</p>
+                        <p><strong>Delivery Address:</strong> @(Model.MemberAddresses != null ? Model.MemberAddresses.NearByAddress : "-")</p>
                     </div>
-                    <div class="table-responsive">
-
-                        <table id="zero_config" class="table table-striped table-bordered" cellspacing="0" width="100%">
-                            <thead>
-                                <tr>
-                                    <th></th>
-                                    <th>Product Name</th>
-                                    <th>Product Image</th>
-                                    <th>Product Description</th>
-                                    <th>Product Price</th>
-                                    <th>Quantity</th>
-                                    <th>Gross Price</th>
-                                    @*<th>Action</th>*@
-                                </tr>
-                            </thead>
-                            <tbody>
-
-                                <tr>
-                                    <td></td>
-                                    <td>Maxican Chili</td>
-                                    <td>
-                                       
-                                        <img src="~/Areas/Admin/Content/assets/images/Productservice/240_F_496371797_vLcs8uwBTjWe3e5ImboTfJo8z3QqTzLi.jpg" style="max-width:50px;max-height:50px;">
-                                    </td>
-                                    <td>It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. The point of using Lorem Ipsum is that it has a more-or-less normal distribution of letters</td>
-                                    <td>320</td>
-                                    <td>2</td>
-                                    <td>640</td>
-                                    @*<td>
-            <a href="@Url.RouteUrl("Admin_Member_Address_Create_And_Update", new { key = node.MemberAddressKey})" class="btn btn-success btn-xs">
-                <i class="fa fa-edit"></i>
-            </a>
-            <a href="javascript:;" class="btn btn-primary btn-xs" onclick="Delete(@node.MemberAddressId)">
-                <i class="fa fa-trash"></i>
-            </a>
-        </td>*@
-                                </tr>
-
-                                <tr>
-                                    <td></td>
-                                    <td>Fresh Veggies Combo</td>
-                                    <td>
-
-                                        <img src="~/Areas/Admin/Content/assets/images/Productservice/240_F_147516063_hCXI8VUIdBYud0B0hhS3Yo5CFTT1a4g8.jpg" style="max-width:50px;max-height:50px;">
-                                    </td>
-                                    <td>It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. The point of using Lorem Ipsum is that it has a more-or-less normal distribution of letters</td>
-                                    <td>60</td>
-                                    <td>1</td>
-                                    <td>60</td>
-                                    @*<td>
-            <a href="@Url.RouteUrl("Admin_Member_Address_Create_And_Update", new { key = node.MemberAddressKey})" class="btn btn-success btn-xs">
-                <i class="fa fa-edit"></i>
-            </a>
-            <a href="javascript:;" class="btn btn-primary btn-xs" onclick="Delete(@node.MemberAddressId)">
-                <i class="fa fa-trash"></i>
-            </a>
-        </td>*@
-                                </tr>
-
-                            </tbody>
-                        </table>
-
+                    <div class="col-md-4">
+                        <p><strong>Subtotal:</strong> @Model.TotalPrice AED</p>
+                        <p><strong>Delivery Charge:</strong> @Model.DeliveryCharge AED</p>
+                        <p><strong>Grand Total:</strong> <strong>@(Model.TotalPrice + Model.DeliveryCharge) AED</strong></p>
                     </div>
                 </div>
             </div>
-        </form>
-        <!-- ============================================================== -->
+        </div>
+
+        <!-- Products grouped by Brand -->
+        @foreach (var brandGroup in byBrand)
+        {
+            <div class="card mb-3">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h6 class="mb-0"><i class="mdi mdi-store"></i> @(string.IsNullOrEmpty(brandGroup.Key.BrandName) ? "Unknown Brand" : brandGroup.Key.BrandName)</h6>
+                    @if (brandGroup.Key.IsDeliveryEnabled)
+                    {
+                        <span class="badge badge-success p-2"><i class="fa fa-truck"></i> Shipping Active</span>
+                    }
+                    else
+                    {
+                        <span class="badge badge-danger p-2"><i class="fa fa-ban"></i> Shipping Disabled</span>
+                    }
+                </div>
+                <div class="card-body p-0">
+                    <table class="table table-sm table-bordered mb-0" style="border-collapse:collapse">
+                        <thead class="thead-light">
+                            <tr>
+                                <th>Product</th>
+                                <th>Quantity</th>
+                                <th>Unit Price</th>
+                                <th>Total</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in brandGroup)
+                            {
+                                <tr>
+                                    <td>@(item.Product != null ? item.Product.ProductName : "Product #" + item.ProductId)</td>
+                                    <td>@item.Quantity</td>
+                                    <td>@item.GrossPrice AED</td>
+                                    <td>@(item.Quantity * item.GrossPrice) AED</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        }
+
+        <!-- Jeeply Tracking section: only if at least one brand has delivery enabled AND a courier order exists -->
+        @if (anyDeliveryEnabled && !string.IsNullOrEmpty(Model.CourierOrderId))
+        {
+            <div class="card mb-3 border-info">
+                <div class="card-header bg-info text-white">
+                    <i class="mdi mdi-truck-delivery"></i> Jeeply Shipment Tracking
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <p><strong>Courier Order ID:</strong> @Model.CourierOrderId</p>
+                        </div>
+                        <div class="col-md-4">
+                            <p><strong>Rider Name:</strong> @(string.IsNullOrEmpty(Model.RiderName) ? "Not assigned yet" : Model.RiderName)</p>
+                        </div>
+                        <div class="col-md-4">
+                            <p><strong>Rider Phone:</strong> @(string.IsNullOrEmpty(Model.RiderPhone) ? "-" : Model.RiderPhone)</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+        else if (!anyDeliveryEnabled)
+        {
+            <div class="alert alert-warning">
+                <i class="fa fa-info-circle"></i> Delivery is <strong>disabled</strong> for all merchants in this order. No Jeeply tracking is available.
+            </div>
+        }
+
+        <div class="mt-3">
+            <a href="@Url.Action("GroceryOrderList","OrderRequestProduct")" class="btn btn-secondary">
+                <i class="fa fa-arrow-left"></i> Back to Orders
+            </a>
+        </div>
+        }
+
     </div>
 </div>
-
-
-<script type="text/javascript">
-
-    function Delete(id) {
-        const swalWithBootstrapButtons = Swal.mixin({
-            customClass: {
-                confirmButton: 'btn btn-success',
-                cancelButton: 'mr-2 btn btn-danger'
-            },
-            buttonsStyling: false,
-            animation: false,
-            allowOutsideClick: false
-        })
-
-        swalWithBootstrapButtons.fire({
-            title: 'Are you sure?',
-            text: "You won't be able to revert this!",
-            type: 'warning',
-            showCancelButton: true,
-            confirmButtonText: 'Yes, delete it!',
-            cancelButtonText: 'No, cancel!',
-            reverseButtons: true
-        }).then((result) => {
-            if (result.value) {
-                swalWithBootstrapButtons.fire(
-                    'Deleted!',
-                    'Your file has been deleted.',
-                    'success',
-
-                ).then((sucess) => {
-                    // Fire Delete Method
-                    $.ajax({
-                        url: "@Url.Action("Delete", "MemberAddress")/" + id,
-                        type: "GET",
-                        success: function (response) {
-                            location.reload();
-                        },
-                        error: function (jqXHR, textStatus, errorThrown) {
-                            console.log(textStatus, errorThrown);
-                        }
-                    });
-                })
-
-            }
-        })
-    }
-
-</script>
-

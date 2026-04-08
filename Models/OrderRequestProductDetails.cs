@@ -60,5 +60,8 @@ namespace Boulevard.Models
         [NotMapped]
         public string BrandName { get; set; }
 
+        [NotMapped]
+        public bool IsDeliveryEnabled { get; set; }
+
     }
 }

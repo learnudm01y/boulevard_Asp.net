@@ -151,7 +151,15 @@ namespace Boulevard.Service.Admin
                         {
                             if (product.BrandId > 0)
                             {
-                                details.BrandName = await uow.BrandRepository.Get().Where(s => s.BrandId == product.BrandId).Select(s => s.Title).FirstOrDefaultAsync();
+                                var brand = await uow.BrandRepository.Get()
+                                    .Where(s => s.BrandId == product.BrandId)
+                                    .Select(s => new { s.Title, s.IsDeliveryEnabled })
+                                    .FirstOrDefaultAsync();
+                                if (brand != null)
+                                {
+                                    details.BrandName = brand.Title;
+                                    details.IsDeliveryEnabled = brand.IsDeliveryEnabled;
+                                }
                             }
                         }
                        

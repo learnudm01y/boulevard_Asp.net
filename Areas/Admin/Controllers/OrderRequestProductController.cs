@@ -549,13 +549,15 @@ namespace Boulevard.Areas.Admin.Controllers
             return View();
         }
 
-        public async Task<ActionResult> GroceryOrderDetails()
+        public async Task<ActionResult> GroceryOrderDetails(int? id = null)
         {
             try
             {
+                if (!id.HasValue || id.Value <= 0)
+                    return RedirectToAction(nameof(GroceryOrderList));
 
-                
-                return View();
+                var data = await _orderRequestProductDataAccess.Details(id.Value);
+                return View(data);
             }
             catch (Exception ex)
             {

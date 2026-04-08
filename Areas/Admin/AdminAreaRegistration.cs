@@ -685,7 +685,7 @@ new { controller = "Service", action = "ExcelImportCount", id = UrlParameter.Opt
 
       context.MapRoute(
    "Admin_Order_Request_GroceryOrderDetails",
-   "admin/order/request/GroceryOrderDetails",
+   "admin/order/request/GroceryOrderDetails/{id}",
    new { controller = "OrderRequestProduct", action = "GroceryOrderDetails", id = UrlParameter.Optional }
  );
 
