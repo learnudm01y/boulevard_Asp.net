@@ -10,8 +10,8 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.Entity;
 using System.Data.Entity.Infrastructure;
-using System.Data.OleDb;
 using System.Diagnostics;
+using OfficeOpenXml;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -514,44 +514,33 @@ namespace Boulevard.Areas.Admin.Controllers
                             file1.SaveAs(path);
                             string filePath = rootpath + fileName;
 
-                            string excelConnectionString = string.Empty;
-                            if (!string.IsNullOrEmpty(Password))
+                            // Read Excel using EPPlus — no OleDB/ACE driver required on server
+                            var dataTable = new DataTable();
+                            using (var epPkg = new ExcelPackage(new System.IO.FileInfo(path)))
                             {
-                                excelConnectionString = "Provider=Microsoft.ACE.OLEDB.12.0;Data Source=" + path + ";Password=" + Password + ";Extended Properties=\"Excel 8.0;HDR=Yes;IMEX=2\"";
-                            }
-                            else
-                            {
-                                excelConnectionString = "Provider=Microsoft.ACE.OLEDB.12.0;Data Source=" + path + ";Extended Properties=\"Excel 12.0;HDR=Yes;IMEX=2\"";
-                            }
+                                var ws = epPkg.Workbook.Worksheets[1];
+                                if (ws == null || ws.Dimension == null)
+                                    return RedirectToAction(nameof(AddServiceTypeBulk), new { message = "Excel file is empty or could not be read." });
 
-                            OleDbConnection excelConnection = new OleDbConnection(excelConnectionString);
-                            excelConnection.Open();
+                                for (int c = 1; c <= ws.Dimension.Columns; c++)
+                                {
+                                    string colName = (ws.Cells[1, c].Text ?? "").Trim();
+                                    string uniqueCol = colName;
+                                    int suffix = 1;
+                                    while (dataTable.Columns.Contains(uniqueCol))
+                                        uniqueCol = colName + "_" + (++suffix);
+                                    dataTable.Columns.Add(uniqueCol);
+                                }
 
-                            dt = excelConnection.GetOleDbSchemaTable(OleDbSchemaGuid.Tables, null);
-                            if (dt == null)
-                            {
-                                return RedirectToAction(nameof(AddServiceTypeBulk), new { message = "No File Found." });
-                            }
-
-                            String[] excelSheets = new String[dt.Rows.Count];
-                            int t = 0;
-                            //excel data saves in temp file here.
-                            foreach (DataRow row in dt.Rows)
-                            {
-                                excelSheets[t] = row["TABLE_NAME"].ToString();
-                                t++;
-                            }
-
-                            OleDbConnection excelConnection1 = new OleDbConnection(excelConnectionString);
-
-                            string query = string.Format("Select * from [{0}]", excelSheets[0]);
-                            using (OleDbDataAdapter dataAdapter = new OleDbDataAdapter(query, excelConnection1))
-                            {
-                                dataAdapter.Fill(ds);
-                                excelConnection.Close();
+                                for (int r = 2; r <= ws.Dimension.Rows; r++)
+                                {
+                                    var dr = dataTable.NewRow();
+                                    for (int c = 1; c <= ws.Dimension.Columns; c++)
+                                        dr[c - 1] = ws.Cells[r, c].Text ?? "";
+                                    dataTable.Rows.Add(dr);
+                                }
                             }
 
-                            var dataTable = ds.Tables[0];
 
                             #region Check Excel Column
                             TempServiceType tempServiceType = new TempServiceType();

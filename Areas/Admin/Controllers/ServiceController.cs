@@ -10,8 +10,8 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.Entity;
 using System.Data.Entity.Infrastructure;
-using System.Data.OleDb;
 using System.IO;
+using OfficeOpenXml;
 using System.Linq;
 using System.Net;
 using System.Reflection;
@@ -692,48 +692,38 @@ namespace Boulevard.Areas.Admin.Controllers
                             file1.SaveAs(path);
                             string filePath = rootpath + fileName;
 
-                            string excelConnectionString = string.Empty;
-                            if (!string.IsNullOrEmpty(Password))
+                            // Read Excel using EPPlus — no OleDB/ACE driver required on server
+                            var dataTable = new DataTable();
+                            using (var epPkg = new ExcelPackage(new System.IO.FileInfo(path)))
                             {
-                                excelConnectionString = "Provider=Microsoft.ACE.OLEDB.12.0;Data Source=" + path + ";Password=" + Password + ";Extended Properties=\"Excel 8.0;HDR=Yes;IMEX=2\"";
-                            }
-                            else
-                            {
-                                excelConnectionString = "Provider=Microsoft.ACE.OLEDB.12.0;Data Source=" + path + ";Extended Properties=\"Excel 12.0;HDR=Yes;IMEX=2\"";
+                                var ws = epPkg.Workbook.Worksheets[1];
+                                if (ws == null || ws.Dimension == null)
+                                    return RedirectToAction(nameof(AddServiceBulk), new { message = "Excel file is empty or could not be read.", fCatagoryKey = model.fCatagoryKey.ToString(), isPackage = model.IsPackage });
+
+                                for (int c = 1; c <= ws.Dimension.Columns; c++)
+                                {
+                                    string colName = (ws.Cells[1, c].Text ?? "").Trim();
+                                    string uniqueCol = colName;
+                                    int suffix = 1;
+                                    while (dataTable.Columns.Contains(uniqueCol))
+                                        uniqueCol = colName + "_" + (++suffix);
+                                    dataTable.Columns.Add(uniqueCol);
+                                }
+
+                                for (int r = 2; r <= ws.Dimension.Rows; r++)
+                                {
+                                    var dr = dataTable.NewRow();
+                                    for (int c = 1; c <= ws.Dimension.Columns; c++)
+                                        dr[c - 1] = ws.Cells[r, c].Text ?? "";
+                                    dataTable.Rows.Add(dr);
+                                }
                             }
 
-                            OleDbConnection excelConnection = new OleDbConnection(excelConnectionString);
-                            excelConnection.Open();
-
-                            dt = excelConnection.GetOleDbSchemaTable(OleDbSchemaGuid.Tables, null);
-                            if (dt == null)
-                            {
-                                return RedirectToAction(nameof(AddServiceBulk), new { message = "No File Found.", fCatagoryKey = model.fCatagoryKey.ToString(), isPackage = model.IsPackage });
-                            }
-
-                            String[] excelSheets = new String[dt.Rows.Count];
-                            int t = 0;
-                            //excel data saves in temp file here.
-                            foreach (DataRow row in dt.Rows)
-                            {
-                                excelSheets[t] = row["TABLE_NAME"].ToString();
-                                t++;
-                            }
-
-                            OleDbConnection excelConnection1 = new OleDbConnection(excelConnectionString);
-
-                            string query = string.Format("Select * from [{0}]", excelSheets[0]);
-                            using (OleDbDataAdapter dataAdapter = new OleDbDataAdapter(query, excelConnection1))
-                            {
-                                dataAdapter.Fill(ds);
-                                excelConnection.Close();
-                            }
                             List<TempService> list = new List<TempService>();
                             List<TempService> Duplicatelist = new List<TempService>();
                             string productModel = string.Empty;
 
                             StringBuilder xmlStore = new StringBuilder();
-                            var dataTable = ds.Tables[0];
                             // Normalize to lowercase once so all comparisons below are case-insensitive
                             model.fCatagoryKey = (model.fCatagoryKey ?? "").ToLower();
                             if (model.fCatagoryKey == "B3E3E680-C8EF-4AB2-A4AC-D75BB48A3647".ToLower() || model.fCatagoryKey == "25D8C418-2D26-4159-9D7F-970E3B933B42".ToLower() || model.fCatagoryKey == "BBC98E2D-941B-44C6-8122-0E12A2645B87".ToLower() || model.fCatagoryKey == "4D5E6F7A-8B9C-0D1E-F234-5678901ABCDE".ToLower())
