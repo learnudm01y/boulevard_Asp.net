@@ -1020,7 +1020,26 @@ new { controller = "Service", action = "GetServicesByIdTypingandInsurance", id =
 
             #endregion
 
-            
+            #region Laundry
+
+            config.Routes.MapHttpRoute(
+                "Laundry_GetBanners",
+                "api/v1/laundry/banners",
+                new { controller = "Laundry", action = "GetBanners", id = RouteParameter.Optional }
+            );
+
+            #endregion
+
+            #region Photography
+
+            config.Routes.MapHttpRoute(
+                "Photography_GetBanners",
+                "api/v1/photography/banners",
+                new { controller = "Photography", action = "GetBanners", id = RouteParameter.Optional }
+            );
+
+            #endregion
+
         }
 
     }

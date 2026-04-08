@@ -136,11 +136,32 @@ namespace Boulevard.Service.WebAPI
                     await new AdminNotificationDataAccess().SaveNotification(model.MemberId, " A customer has placed a new shipment request. Order No : #" + orders.ReadableOrderId, "New Order", "Member", "Product", orders.OrderRequestProductId);
 
                     await new PushNotificationAccess().SendInvoiceMemberNotification(Convert.ToInt32(model.MemberId), M_Title, M_Message);
-                   var courier =  await course.CreateExpressShipmentAsync(orderResult.OrderRequestProductId);
 
-                    if (courier.success == "error")
+                    // Only call Jeeply if at least one product's brand has delivery enabled.
+                    // Collect all ProductIds in this order, find their BrandIds, then check IsDeliveryEnabled.
+                    var productIds = model.Details.Select(d => d.ProductId).Distinct().ToList();
+                    var brandIds = await uow.ProductRepository.Get()
+                        .Where(p => productIds.Contains(p.ProductId))
+                        .Select(p => p.BrandId)
+                        .Distinct()
+                        .ToListAsync();
+                    bool anyDeliveryEnabled = await uow.BrandRepository.Get()
+                        .AnyAsync(b => brandIds.Contains(b.BrandId) && b.IsDeliveryEnabled);
+
+                    if (anyDeliveryEnabled)
                     {
-                        orderResult.CourierOrderResponse = courier.message;
+                        var courier = await course.CreateExpressShipmentAsync(orderResult.OrderRequestProductId);
+                        if (courier.success == "error")
+                        {
+                            orderResult.CourierOrderResponse = courier.message;
+                            orderResult.UpdateDate = Helper.DateTimeHelper.DubaiTime();
+                            await uow.OrderRequestProductRepository.Edit(orderResult);
+                        }
+                    }
+                    else
+                    {
+                        // All merchants in this order have delivery disabled — skip Jeeply entirely.
+                        orderResult.CourierOrderResponse = "Delivery disabled for all merchants in this order.";
                         orderResult.UpdateDate = Helper.DateTimeHelper.DubaiTime();
                         await uow.OrderRequestProductRepository.Edit(orderResult);
                     }

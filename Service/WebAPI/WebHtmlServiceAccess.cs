@@ -27,13 +27,19 @@ namespace Boulevard.Service.WebAPI
             var Response = new List<WebHtml>();
             try
             {
+                bool hasIdentifier = !string.IsNullOrWhiteSpace(identifire);
+
                 if (featureCategoryId == 0)
                 {
-                     Response = await uow.WebHtmlRepository.Get().Where(s => s.Status == "Active" && s.Identifier == identifire).ToListAsync();
+                    Response = hasIdentifier
+                        ? await uow.WebHtmlRepository.Get().Where(s => s.Status == "Active" && s.Identifier == identifire).ToListAsync()
+                        : await uow.WebHtmlRepository.Get().Where(s => s.Status == "Active").ToListAsync();
                 }
                 else
                 {
-                     Response = await uow.WebHtmlRepository.Get().Where(s => s.Status == "Active" && s.Identifier == identifire && s.FeatureCategoryId==featureCategoryId).ToListAsync();
+                    Response = hasIdentifier
+                        ? await uow.WebHtmlRepository.Get().Where(s => s.Status == "Active" && s.Identifier == identifire && s.FeatureCategoryId == featureCategoryId).ToListAsync()
+                        : await uow.WebHtmlRepository.Get().Where(s => s.Status == "Active" && s.FeatureCategoryId == featureCategoryId).ToListAsync();
                 }
                 if (Response.Count > 0 || Response != null)
                 {

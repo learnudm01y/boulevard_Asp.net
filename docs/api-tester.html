@@ -115,7 +115,7 @@
       gap: 10px;
       border-bottom: 1px solid var(--border);
       position: sticky;
-      top: 57px;
+      top: 100px;
       z-index: 50;
     }
     .section-restaurant .section-header { background: color-mix(in srgb, var(--restaurant) 12%, var(--panel)); border-left: 3px solid var(--restaurant); }
@@ -357,6 +357,126 @@
     }
     .proxy-toggle-label input { accent-color: var(--warn); width: 15px; height: 15px; cursor: pointer; }
     .proxy-active { border-color: var(--ok) !important; color: var(--ok) !important; }
+
+    /* ─── Page Navigation ─────────────────────────────────── */
+    .page-nav {
+      background: var(--panel);
+      border-bottom: 1px solid var(--border);
+      padding: 0 32px;
+      display: flex;
+      gap: 0;
+      position: sticky;
+      top: 57px;
+      z-index: 90;
+    }
+    .page-nav-btn {
+      padding: 10px 22px;
+      cursor: pointer;
+      color: var(--muted);
+      border-bottom: 3px solid transparent;
+      border-top: none; border-left: none; border-right: none;
+      background: none;
+      font-size: .88rem;
+      font-weight: 600;
+      transition: color .15s, border-color .15s;
+      letter-spacing: .01em;
+      white-space: nowrap;
+    }
+    .page-nav-btn:hover { color: var(--text); }
+    .page-nav-btn.active { color: #fff; border-bottom-color: var(--retail); }
+
+    /* ─── Banners Portal layout ────────────────────────────── */
+    #banners-portal-view { padding: 28px 32px; background: var(--bg); min-height: calc(100vh - 140px); }
+
+    .banners-toolbar {
+      display: flex; gap: 14px; align-items: center; flex-wrap: wrap;
+      margin-bottom: 24px; padding: 14px 20px;
+      background: var(--panel); border: 1px solid var(--border); border-radius: 10px;
+    }
+    .banners-toolbar label { font-size: .82rem; color: var(--muted); white-space: nowrap; }
+    .banners-toolbar input, .banners-toolbar select {
+      background: var(--card); border: 1px solid var(--border); color: var(--text);
+      padding: 6px 10px; border-radius: 6px; font-size: .84rem; outline: none;
+    }
+    .banners-toolbar input:focus, .banners-toolbar select:focus { border-color: var(--retail); }
+
+    .banners-sections-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+    @media (max-width: 900px) { .banners-sections-grid { grid-template-columns: 1fr; } }
+
+    .banner-section-card {
+      background: var(--panel); border: 1px solid var(--border); border-radius: 12px; overflow: hidden;
+    }
+    .banner-section-header {
+      padding: 13px 18px; display: flex; align-items: center; gap: 10px;
+      border-bottom: 1px solid var(--border);
+    }
+    .banner-section-restaurant .banner-section-header { border-left: 4px solid var(--restaurant); background: color-mix(in srgb, var(--restaurant) 8%, var(--panel)); }
+    .banner-section-retail     .banner-section-header { border-left: 4px solid var(--retail);     background: color-mix(in srgb, var(--retail)     8%, var(--panel)); }
+    .banner-section-laundry    .banner-section-header { border-left: 4px solid var(--laundry);    background: color-mix(in srgb, var(--laundry)    8%, var(--panel)); }
+    .banner-section-photography .banner-section-header{ border-left: 4px solid var(--photography);background: color-mix(in srgb, var(--photography) 8%, var(--panel)); }
+
+    .banner-section-header h3 { font-size: .92rem; font-weight: 700; flex: 1; }
+    .banner-count-badge {
+      font-size: .72rem; padding: 2px 9px; border-radius: 10px;
+      background: var(--card); color: var(--muted); border: 1px solid var(--border); white-space: nowrap;
+    }
+    .banner-section-body { padding: 14px; min-height: 130px; }
+
+    .banners-loading, .banners-error, .banners-empty {
+      display: flex; align-items: center; justify-content: center;
+      min-height: 100px; font-size: .84rem; gap: 8px; border-radius: 8px; padding: 16px;
+    }
+    .banners-loading { color: var(--warn); background: color-mix(in srgb, var(--warn) 8%, var(--card)); }
+    .banners-error   { color: var(--err);  background: color-mix(in srgb, var(--err)  8%, var(--card)); flex-direction: column; text-align: center; gap: 6px; }
+    .banners-empty   { color: var(--muted); background: var(--card); flex-direction: column; gap: 4px; }
+
+    /* ─── Individual banner cards ──────────────────────────── */
+    .banners-grid { display: flex; flex-direction: column; gap: 12px; }
+
+    .banner-item {
+      background: var(--card); border: 1px solid var(--border); border-radius: 10px;
+      overflow: hidden; transition: transform .15s, box-shadow .15s;
+    }
+    .banner-item:hover { transform: translateY(-2px); box-shadow: 0 6px 24px rgba(0,0,0,.5); }
+
+    .banner-img-wrap {
+      position: relative; width: 100%; padding-top: 28%;
+      background: var(--code-bg); overflow: hidden;
+    }
+    .banner-img-wrap img {
+      position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block;
+    }
+    .banner-img-placeholder {
+      position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+      font-size: 2.5rem; color: var(--border);
+    }
+    .banner-order-badge {
+      position: absolute; top: 8px; left: 8px;
+      background: rgba(0,0,0,.72); color: #fff; font-size: .68rem; font-weight: 700;
+      padding: 2px 8px; border-radius: 4px; backdrop-filter: blur(4px);
+    }
+    .banner-page-badge {
+      position: absolute; top: 8px; right: 8px;
+      background: rgba(0,0,0,.72); color: var(--text); font-size: .65rem;
+      padding: 2px 8px; border-radius: 4px; backdrop-filter: blur(4px);
+      max-width: 160px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .banner-info { padding: 11px 14px; }
+    .banner-title    { font-size: .88rem; font-weight: 700; margin-bottom: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .banner-subtitle { font-size: .78rem; color: var(--muted); margin-bottom: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .banner-meta-row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; margin-top: 6px; }
+    .banner-meta-item { font-size: .7rem; color: var(--muted); display: flex; align-items: center; gap: 3px; }
+    .banner-link {
+      font-size: .7rem; color: var(--retail); text-decoration: none;
+      padding: 2px 8px; border-radius: 4px; border: 1px solid var(--retail);
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+      max-width: 200px; display: inline-block; vertical-align: middle;
+    }
+    .banner-link:hover { background: color-mix(in srgb, var(--retail) 15%, transparent); }
   </style>
 </head>
 <body>
@@ -365,6 +485,12 @@
   <h1>Boulevard API Tester <span>All Sections</span></h1>
   <div id="globalStatus">Ready</div>
 </header>
+
+<!-- ─── Page Navigation ─────────────────────────────────────────── -->
+<nav class="page-nav">
+  <button class="page-nav-btn active" id="nav-api"     onclick="switchView('api')">🔧 API Tester</button>
+  <button class="page-nav-btn"        id="nav-banners" onclick="switchView('banners')">🖼️ Banners Portal</button>
+</nav>
 
 <!-- file:// CORS warning banner -->
 <div id="corsBanner">
@@ -494,6 +620,123 @@
       <span class="s-err">Errors: 0</span>
     </div>
     <div class="endpoint-list" id="list-photography"></div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════════════════
+     BANNERS PORTAL — Visual display of all section banners
+     ═══════════════════════════════════════════════════════════════════════════ -->
+<div id="banners-portal-view" style="display:none">
+
+  <!-- Toolbar -->
+  <div class="banners-toolbar">
+    <label>Language</label>
+    <select id="bp-lang">
+      <option value="en">EN — English</option>
+      <option value="ar">AR — Arabic</option>
+    </select>
+    <label>Page Identifier</label>
+    <input id="bp-page-id" type="text" placeholder="e.g. home  (leave blank for all)" style="width:210px" />
+    <button class="btn btn-primary" onclick="fetchAllBanners()">⟳ Refresh All Sections</button>
+    <button class="btn btn-neutral btn-sm" onclick="clearAllBanners()">✕ Clear</button>
+    <span id="bp-global-status" style="margin-left:auto;font-size:.78rem;color:var(--muted)"></span>
+  </div>
+
+  <!-- 2×2 section grid -->
+  <div class="banners-sections-grid">
+
+    <!-- ── Restaurant ────────────────────────────────────── -->
+    <div class="banner-section-card banner-section-restaurant">
+      <div class="banner-section-header">
+        <span style="font-size:1.2rem">🍽️</span>
+        <h3>Restaurant Banners</h3>
+        <code style="font-size:.68rem;color:var(--muted)">api/v1/restaurant/banners</code>
+        <span class="banner-count-badge" id="bp-status-restaurant">–</span>
+        <button class="btn btn-neutral btn-sm" id="bp-btn-restaurant"
+                onclick="fetchBannersForSection('restaurant')" title="Refresh">⟳</button>
+      </div>
+      <div class="banner-section-body" id="bp-body-restaurant">
+        <div class="banners-empty">
+          <span style="font-size:1.4rem">🍽️</span>
+          <span>Click ⟳ to load Restaurant banners</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Retail ─────────────────────────────────────────── -->
+    <div class="banner-section-card banner-section-retail">
+      <div class="banner-section-header">
+        <span style="font-size:1.2rem">🛍️</span>
+        <h3>Retail Banners</h3>
+        <code style="font-size:.68rem;color:var(--muted)">api/v1/retail/banners</code>
+        <span class="banner-count-badge" id="bp-status-retail">–</span>
+        <button class="btn btn-neutral btn-sm" id="bp-btn-retail"
+                onclick="fetchBannersForSection('retail')" title="Refresh">⟳</button>
+      </div>
+      <div class="banner-section-body" id="bp-body-retail">
+        <div class="banners-empty">
+          <span style="font-size:1.4rem">🛍️</span>
+          <span>Click ⟳ to load Retail banners</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Laundry ────────────────────────────────────────── -->
+    <div class="banner-section-card banner-section-laundry">
+      <div class="banner-section-header">
+        <span style="font-size:1.2rem">🧺</span>
+        <h3>Laundry Banners</h3>
+        <code style="font-size:.68rem;color:var(--muted)">api/v1/laundry/banners</code>
+        <span class="banner-count-badge" id="bp-status-laundry">–</span>
+        <button class="btn btn-neutral btn-sm" id="bp-btn-laundry"
+                onclick="fetchBannersForSection('laundry')" title="Refresh">⟳</button>
+      </div>
+      <div class="banner-section-body" id="bp-body-laundry">
+        <div class="banners-empty">
+          <span style="font-size:1.4rem">🧺</span>
+          <span>Click ⟳ to load Laundry banners</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Photography ───────────────────────────────────── -->
+    <div class="banner-section-card banner-section-photography">
+      <div class="banner-section-header">
+        <span style="font-size:1.2rem">📷</span>
+        <h3>Photography Banners</h3>
+        <code style="font-size:.68rem;color:var(--muted)">api/v1/photography/banners</code>
+        <span class="banner-count-badge" id="bp-status-photography">–</span>
+        <button class="btn btn-neutral btn-sm" id="bp-btn-photography"
+                onclick="fetchBannersForSection('photography')" title="Refresh">⟳</button>
+      </div>
+      <div class="banner-section-body" id="bp-body-photography">
+        <div class="banners-empty">
+          <span style="font-size:1.4rem">📷</span>
+          <span>Click ⟳ to load Photography banners</span>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /banners-sections-grid -->
+</div><!-- /banners-portal-view -->
+
+<!-- ─── Banner Raw JSON modal ─────────────────────────────────────────────── -->
+<div id="banner-raw-overlay"
+     style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.82);z-index:9999;
+            align-items:center;justify-content:center;padding:32px"
+     onclick="closeBannerRaw()">
+  <div style="background:var(--panel);border:1px solid var(--border);border-radius:12px;
+              max-width:740px;width:100%;max-height:82vh;overflow:hidden;
+              display:flex;flex-direction:column"
+       onclick="event.stopPropagation()">
+    <div style="display:flex;align-items:center;justify-content:space-between;
+                padding:14px 20px;border-bottom:1px solid var(--border)">
+      <strong style="font-size:.9rem">🔍 Banner Raw JSON</strong>
+      <button class="btn btn-neutral btn-sm" onclick="closeBannerRaw()">✕ Close</button>
+    </div>
+    <pre id="banner-raw-pre" class="response-json"
+         style="margin:0;flex:1;max-height:none;border-radius:0;border:none;overflow:auto;
+                padding:16px"></pre>
   </div>
 </div>
 
@@ -1463,6 +1706,306 @@ if (location.protocol === 'file:') {
   document.getElementById('corsBanner').classList.add('visible');
   document.getElementById('globalStatus').textContent = '⚠ file:// detected — enable CORS Proxy';
   document.getElementById('globalStatus').style.color = 'var(--warn)';
+}
+
+// ─── Page View Switcher ───────────────────────────────────────────────────────
+function switchView(view) {
+  const configBarEl   = document.querySelector('.config-bar');
+  const sectionsEl    = document.querySelector('.sections');
+  const bannersPortal = document.getElementById('banners-portal-view');
+  const navApi        = document.getElementById('nav-api');
+  const navBanners    = document.getElementById('nav-banners');
+  if (view === 'banners') {
+    configBarEl.style.display     = 'none';
+    sectionsEl.style.display      = 'none';
+    bannersPortal.style.display   = 'block';
+    navApi.classList.remove('active');
+    navBanners.classList.add('active');
+  } else {
+    configBarEl.style.display     = '';
+    sectionsEl.style.display      = '';
+    bannersPortal.style.display   = 'none';
+    navApi.classList.add('active');
+    navBanners.classList.remove('active');
+  }
+}
+
+// ─── Banners Portal ───────────────────────────────────────────────────────────
+const BANNER_SECTIONS_CFG = [
+  { key: 'restaurant',  label: 'Restaurant',  icon: '🍽️' },
+  { key: 'retail',      label: 'Retail',      icon: '🛍️' },
+  { key: 'laundry',     label: 'Laundry',     icon: '🧺'  },
+  { key: 'photography', label: 'Photography', icon: '📷' },
+];
+
+function showBannerRaw(data) {
+  document.getElementById('banner-raw-pre').textContent = JSON.stringify(data, null, 2);
+  document.getElementById('banner-raw-overlay').style.display = 'flex';
+}
+function closeBannerRaw() {
+  document.getElementById('banner-raw-overlay').style.display = 'none';
+}
+
+// Build a single banner card using DOM methods (safe, no innerHTML with user data)
+// Field names follow the Boulevard WebHtml model (camelCase from JSON serializer):
+//   pictureOne / pictureTwo / pictureThree — image URLs (already resolved by server)
+//   title / subTitle — display text
+//   buttonLink / buttonText — CTA link and label
+//   identifier — page identifier slot
+//   webHtmlId — primary key
+function _buildBannerItem(b) {
+  // ── Extract fields — use Boulevard model names first, then common fallbacks ──
+  const base    = document.getElementById('baseUrlInput')?.value?.replace(/\/$/, '') ?? '';
+  let imgUrl    = b.pictureOne  ?? b.PictureOne  ?? b.pictureOneAr ?? b.PictureOneAr
+               ?? b.pictureTwo  ?? b.PictureTwo  ?? b.pictureThree ?? b.PictureThree
+               ?? b.imageUrl    ?? b.ImageUrl     ?? b.image        ?? b.Image ?? '';
+  // If image is a relative path, prefix with base URL
+  if (imgUrl && !/^https?:\/\//i.test(imgUrl)) {
+    imgUrl = base + (imgUrl.startsWith('/') ? '' : '/') + imgUrl;
+  }
+  const title    = b.title      ?? b.Title       ?? '';
+  const subtitle = b.subTitle   ?? b.SubTitle    ?? b.smallDetailsOne ?? b.SmallDetailsOne ?? b.description ?? b.Description ?? '';
+  const link     = b.buttonLink ?? b.ButtonLink  ?? b.link  ?? b.Link  ?? b.url  ?? b.Url  ?? '';
+  const btnText  = b.buttonText ?? b.ButtonText  ?? '';
+  const page     = b.identifier ?? b.Identifier  ?? b.pageIdentifier ?? b.PageIdentifier ?? '';
+  const id       = b.webHtmlId  ?? b.WebHtmlId   ?? b.bannerId ?? b.BannerId ?? b.id ?? b.Id ?? '';
+  const fcId     = b.featureCategoryId ?? b.FeatureCategoryId ?? '';
+  const featType = b.featureType ?? b.FeatureType ?? '';
+
+  const item = document.createElement('div');
+  item.className = 'banner-item';
+
+  // ── Image ──────────────────────────────────────────────────────────────────
+  const imgWrap = document.createElement('div');
+  imgWrap.className = 'banner-img-wrap';
+
+  if (imgUrl) {
+    const img = document.createElement('img');
+    img.alt = String(title || `Banner #${id}`);
+    img.src = String(imgUrl);
+    img.loading = 'lazy';
+    const placeholder = document.createElement('div');
+    placeholder.className = 'banner-img-placeholder';
+    placeholder.style.display = 'none';
+    placeholder.textContent = '🖼️';
+    img.onerror = () => { img.style.display = 'none'; placeholder.style.display = 'flex'; };
+    imgWrap.appendChild(img);
+    imgWrap.appendChild(placeholder);
+  } else {
+    const placeholder = document.createElement('div');
+    placeholder.className = 'banner-img-placeholder';
+    placeholder.textContent = '🖼️';
+    imgWrap.appendChild(placeholder);
+  }
+
+  if (id !== '') {
+    const badge = document.createElement('span');
+    badge.className = 'banner-order-badge';
+    badge.textContent = `#${id}`;
+    imgWrap.appendChild(badge);
+  }
+  if (page) {
+    const pageBadge = document.createElement('span');
+    pageBadge.className = 'banner-page-badge';
+    pageBadge.textContent = String(page);
+    imgWrap.appendChild(pageBadge);
+  }
+  item.appendChild(imgWrap);
+
+  // ── Info ──────────────────────────────────────────────────────────────────
+  const info = document.createElement('div');
+  info.className = 'banner-info';
+
+  const titleEl = document.createElement('div');
+  titleEl.className = 'banner-title';
+  titleEl.textContent = title || `Banner #${id || '?'}`;
+  info.appendChild(titleEl);
+
+  if (subtitle) {
+    const subEl = document.createElement('div');
+    subEl.className = 'banner-subtitle';
+    subEl.textContent = String(subtitle);
+    info.appendChild(subEl);
+  }
+
+  const metaRow = document.createElement('div');
+  metaRow.className = 'banner-meta-row';
+
+  if (id !== '') {
+    const idEl = document.createElement('span');
+    idEl.className = 'banner-meta-item';
+    idEl.textContent = `ID: ${id}`;
+    metaRow.appendChild(idEl);
+  }
+
+  if (fcId !== '') {
+    const fcEl = document.createElement('span');
+    fcEl.className = 'banner-meta-item';
+    fcEl.textContent = `fcId: ${fcId}`;
+    metaRow.appendChild(fcEl);
+  }
+
+  if (featType) {
+    const ftEl = document.createElement('span');
+    ftEl.className = 'banner-meta-item';
+    ftEl.textContent = `type: ${featType}`;
+    metaRow.appendChild(ftEl);
+  }
+
+  if (link) {
+    // Allow only relative paths or http/https URLs to prevent injection
+    const isRelative = /^\//.test(String(link));
+    const isHttp     = /^https?:\/\//i.test(String(link));
+    const safeLink   = (isHttp || isRelative) ? String(link) : '#';
+    const a = document.createElement('a');
+    a.className = 'banner-link';
+    a.href = safeLink;
+    if (isHttp) { a.target = '_blank'; a.rel = 'noopener noreferrer'; }
+    a.textContent = btnText || String(link);
+    a.title = String(link);
+    metaRow.appendChild(a);
+  }
+
+  const rawBtn = document.createElement('button');
+  rawBtn.className = 'btn btn-neutral btn-sm';
+  rawBtn.style.cssText = 'font-size:.68rem;padding:2px 9px;margin-left:auto';
+  rawBtn.textContent = '{ } Raw';
+  rawBtn.addEventListener('click', () => showBannerRaw(b));
+  metaRow.appendChild(rawBtn);
+
+  info.appendChild(metaRow);
+  item.appendChild(info);
+  return item;
+}
+
+async function fetchBannersForSection(sectionKey) {
+  const base   = document.getElementById('baseUrlInput').value.replace(/\/$/, '');
+  const lang   = document.getElementById('bp-lang').value || 'en';
+  const pageId = document.getElementById('bp-page-id').value.trim();
+
+  const qs = new URLSearchParams({ lang });
+  if (pageId) qs.set('PageIdentifier', pageId);
+
+  const directUrl = `${base}/api/v1/${sectionKey}/banners?${qs.toString()}`;
+  const url       = isProxyEnabled() ? `${CORS_PROXY}${encodeURIComponent(directUrl)}` : directUrl;
+
+  const bodyEl   = document.getElementById(`bp-body-${sectionKey}`);
+  const statusEl = document.getElementById(`bp-status-${sectionKey}`);
+  const btnEl    = document.getElementById(`bp-btn-${sectionKey}`);
+
+  // ── Loading state ──────────────────────────────────────────────────────────
+  bodyEl.innerHTML = '';
+  const loadDiv = document.createElement('div');
+  loadDiv.className = 'banners-loading';
+  loadDiv.innerHTML = '<span class="spinner"></span> Fetching banners…';
+  bodyEl.appendChild(loadDiv);
+  statusEl.textContent = '…';
+  if (btnEl) btnEl.disabled = true;
+
+  const t0 = performance.now();
+  try {
+    const res  = await fetch(url, { method: 'GET', headers: { Accept: 'application/json' } });
+    const ms   = Math.round(performance.now() - t0);
+    const text = await res.text();
+    let parsed, isJson = false;
+    try { parsed = JSON.parse(text); isJson = true; } catch { /* not JSON */ }
+
+    // ── HTTP or parse error ───────────────────────────────────────────────────
+    if (!res.ok || !isJson) {
+      bodyEl.innerHTML = '';
+      const errDiv = document.createElement('div');
+      errDiv.className = 'banners-error';
+      const strong = document.createElement('strong');
+      strong.textContent = `⚠ ${res.status} ${res.statusText || 'Error'}`;
+      errDiv.appendChild(strong);
+      const urlSpan = document.createElement('span');
+      urlSpan.style.cssText = 'font-size:.73rem;color:var(--muted);word-break:break-all';
+      urlSpan.textContent = directUrl;
+      errDiv.appendChild(urlSpan);
+      bodyEl.appendChild(errDiv);
+      statusEl.textContent = `Error ${res.status} · ${ms}ms`;
+      return;
+    }
+
+    // ── Extract rows from Boulevard envelope ──────────────────────────────────
+    const rows = parsed?.result ?? parsed?.Result ?? parsed?.data ?? parsed?.Data
+              ?? parsed?.banners ?? parsed?.Banners;
+
+    if (!Array.isArray(rows) || rows.length === 0) {
+      bodyEl.innerHTML = '';
+      const emptyDiv = document.createElement('div');
+      emptyDiv.className = 'banners-empty';
+      const icon = document.createElement('span');
+      icon.style.fontSize = '1.8rem';
+      icon.textContent = '📭';
+      emptyDiv.appendChild(icon);
+      const msg = document.createElement('span');
+      msg.textContent = 'No banners returned — try a different Page Identifier or leave it blank';
+      emptyDiv.appendChild(msg);
+      const urlNote = document.createElement('span');
+      urlNote.style.cssText = 'font-size:.7rem;color:var(--border);word-break:break-all';
+      urlNote.textContent = directUrl;
+      emptyDiv.appendChild(urlNote);
+      bodyEl.appendChild(emptyDiv);
+      statusEl.textContent = `0 banners · ${ms}ms`;
+      return;
+    }
+
+    // ── Render banner cards ───────────────────────────────────────────────────
+    statusEl.textContent = `${rows.length} banner${rows.length !== 1 ? 's' : ''} · ${ms}ms`;
+    bodyEl.innerHTML = '';
+    const grid = document.createElement('div');
+    grid.className = 'banners-grid';
+    rows.forEach(b => grid.appendChild(_buildBannerItem(b)));
+    bodyEl.appendChild(grid);
+
+  } catch (err) {
+    const ms = Math.round(performance.now() - t0);
+    statusEl.textContent = `Error · ${ms}ms`;
+    const isFile = location.protocol === 'file:';
+    const hint   = isProxyEnabled()
+      ? 'Proxy may be down or rate-limited.'
+      : (isFile ? 'Enable "CORS Proxy" in the config bar and retry.' : 'Network / CORS error.');
+
+    bodyEl.innerHTML = '';
+    const errDiv = document.createElement('div');
+    errDiv.className = 'banners-error';
+    const strong = document.createElement('strong');
+    strong.textContent = `✕ ${err.message}`;
+    errDiv.appendChild(strong);
+    const hintSpan = document.createElement('span');
+    hintSpan.style.fontSize = '.78rem';
+    hintSpan.textContent = hint;
+    errDiv.appendChild(hintSpan);
+    const urlSpan = document.createElement('span');
+    urlSpan.style.cssText = 'font-size:.7rem;color:var(--muted);word-break:break-all';
+    urlSpan.textContent = directUrl;
+    errDiv.appendChild(urlSpan);
+    bodyEl.appendChild(errDiv);
+  } finally {
+    if (btnEl) btnEl.disabled = false;
+  }
+}
+
+async function fetchAllBanners() {
+  const globalStatusEl = document.getElementById('bp-global-status');
+  globalStatusEl.textContent = 'Refreshing all sections…';
+  setGlobalStatus('Fetching all banners…');
+  for (const s of BANNER_SECTIONS_CFG) {
+    await fetchBannersForSection(s.key);
+  }
+  globalStatusEl.textContent = `Last refreshed: ${new Date().toLocaleTimeString()}`;
+  setGlobalStatus('Done ✓');
+}
+
+function clearAllBanners() {
+  BANNER_SECTIONS_CFG.forEach(s => {
+    const bodyEl = document.getElementById(`bp-body-${s.key}`);
+    const statusEl = document.getElementById(`bp-status-${s.key}`);
+    bodyEl.innerHTML = `<div class="banners-empty"><span style="font-size:1.4rem">${s.icon}</span><span>Click ⟳ to load ${s.label} banners</span></div>`;
+    statusEl.textContent = '–';
+  });
+  document.getElementById('bp-global-status').textContent = '';
 }
 </script>
 </body>

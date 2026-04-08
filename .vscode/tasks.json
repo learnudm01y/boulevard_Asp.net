@@ -1,0 +1,11 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "Deploy New DLL",
+			"type": "shell",
+			"command": "taskkill /F /IM iisexpress.exe /T 2>$null; Start-Sleep 2; Copy-Item 'i:\\entire system - boulevard\\SourceCode of ADmin\\Boulevard\\Boulevard\\obj\\Debug\\Boulevard.dll' 'i:\\entire system - boulevard\\SourceCode of ADmin\\Boulevard\\Boulevard\\bin\\Boulevard.dll' -Force; Write-Host \"DLL Size: $((Get-Item 'i:\\entire system - boulevard\\SourceCode of ADmin\\Boulevard\\Boulevard\\bin\\Boulevard.dll').Length)\"; Start-Process -FilePath 'C:\\Program Files\\IIS Express\\iisexpress.exe' -ArgumentList '/path:\"i:\\entire system - boulevard\\SourceCode of ADmin\\Boulevard\\Boulevard\" /port:5000' -WindowStyle Minimized; Write-Host 'IIS Express started'",
+			"group": "build"
+		}
+	]
+}

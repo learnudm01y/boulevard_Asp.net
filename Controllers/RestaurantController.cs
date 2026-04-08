@@ -41,6 +41,8 @@ namespace Boulevard.Controllers
         public async Task<IHttpActionResult> GetBanners(string PageIdentifier = "", string lang = "en")
         {
             int fcId = await GetFeatureCategoryId();
+            if (fcId == 0)
+                return SuccessMessage(new System.Collections.Generic.List<Models.WebHtml>());
             var result = await _webHtmlService.GetAll(PageIdentifier, fcId, lang);
             if (result != null)
                 return SuccessMessage(result);

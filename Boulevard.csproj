@@ -318,6 +318,8 @@
     <Compile Include="Controllers\UserReportController.cs" />
     <Compile Include="Controllers\UserReviewController.cs" />
     <Compile Include="Controllers\WebhtmlController.cs" />
+    <Compile Include="Controllers\LaundryController.cs" />
+    <Compile Include="Controllers\PhotographyController.cs" />
     <Compile Include="Controllers\RestaurantController.cs" />
     <Compile Include="Controllers\RetailController.cs" />
     <Compile Include="Enum\ProductType.cs" />

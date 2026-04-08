@@ -37,6 +37,28 @@ namespace Boulevard.Service.WebAPI
                 var orderInfo = await uow.OrderRequestProductRepository.GetById(orderId);
                 if (orderInfo != null)
                 {
+                    // Guard: check if any product in this order belongs to a brand with delivery enabled.
+                    // If all brands have delivery disabled, skip Jeeply entirely.
+                    var productIds = await uow.OrderRequestProductDetailsRepository.Get()
+                        .Where(d => d.OrderRequestProductId == orderId)
+                        .Select(d => d.ProductId)
+                        .Distinct()
+                        .ToListAsync();
+                    var brandIds = await uow.ProductRepository.Get()
+                        .Where(p => productIds.Contains(p.ProductId))
+                        .Select(p => p.BrandId)
+                        .Distinct()
+                        .ToListAsync();
+                    bool anyDeliveryEnabled = await uow.BrandRepository.Get()
+                        .AnyAsync(b => brandIds.Contains(b.BrandId) && b.IsDeliveryEnabled);
+
+                    if (!anyDeliveryEnabled)
+                    {
+                        shipmentResponse.success = "skipped";
+                        shipmentResponse.message = "Delivery is disabled for all merchants in this order.";
+                        return shipmentResponse;
+                    }
+
                     var productType = await uow.ProductTypeMasterRepository.Get().Where(s => s.ProductTypeId == orderInfo.ProductType).FirstOrDefaultAsync();
                     var reciveMemberInfo = await uow.MemberRepository.GetById(orderInfo.MemberId);
                     var deliveryaddress = await uow.MemberAddressRepository.Get().Where(s => s.MemberAddressId == orderInfo.MemberAddressId).FirstOrDefaultAsync();
