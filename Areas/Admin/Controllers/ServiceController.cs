@@ -726,7 +726,7 @@ namespace Boulevard.Areas.Admin.Controllers
                             StringBuilder xmlStore = new StringBuilder();
                             // Normalize to lowercase once so all comparisons below are case-insensitive
                             model.fCatagoryKey = (model.fCatagoryKey ?? "").ToLower();
-                            if (model.fCatagoryKey == "B3E3E680-C8EF-4AB2-A4AC-D75BB48A3647".ToLower() || model.fCatagoryKey == "25D8C418-2D26-4159-9D7F-970E3B933B42".ToLower() || model.fCatagoryKey == "BBC98E2D-941B-44C6-8122-0E12A2645B87".ToLower() || model.fCatagoryKey == "4D5E6F7A-8B9C-0D1E-F234-5678901ABCDE".ToLower())
+                            if (model.fCatagoryKey == "B3E3E680-C8EF-4AB2-A4AC-D75BB48A3647".ToLower() || model.fCatagoryKey == "25D8C418-2D26-4159-9D7F-970E3B933B42".ToLower() || model.fCatagoryKey == "BBC98E2D-941B-44C6-8122-0E12A2645B87".ToLower() || model.fCatagoryKey == "4D5E6F7A-8B9C-0D1E-F234-5678901ABCDE".ToLower() || model.fCatagoryKey == "3C4D5E6F-7A8B-9C0D-EF12-345678901ABC".ToLower())
                             {
                                 #region Check Excel Column
                                 TempService tempService = new TempService();

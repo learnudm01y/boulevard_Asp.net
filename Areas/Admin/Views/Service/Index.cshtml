@@ -161,13 +161,13 @@
         var html = '';
         for (var i = 0; i < rows.length; i++) {
             var r = rows[i];
-            var key = escHtml(r.serviceKey);
-            var editUrl = _editUrlTpl.replace('SKEYPH', r.serviceKey);
+            var key = escHtml(r.ServiceKey);
+            var editUrl = _editUrlTpl.replace('SKEYPH', r.ServiceKey);
             html += '<tr>';
-            html += '<td>' + escHtml(r.name) + '</td>';
-            html += '<td>' + escHtml(r.serviceHour) + '</td>';
-            html += '<td>' + escHtml(r.address) + '</td>';
-            html += '<td><i class="fa fa-star" style="color:orange" aria-hidden="true"></i> ' + escHtml(r.ratings) + '</td>';
+            html += '<td>' + escHtml(r.Name) + '</td>';
+            html += '<td>' + escHtml(r.ServiceHour) + '</td>';
+            html += '<td>' + escHtml(r.Address) + '</td>';
+            html += '<td><i class="fa fa-star" style="color:orange" aria-hidden="true"></i> ' + escHtml(r.Ratings) + '</td>';
             html += '<td>'
                   + '<a href="' + editUrl + '" class="btn btn-success btn-xs"><i class="fa fa-edit"></i></a> '
                   + '<a href="javascript:;" class="btn btn-primary btn-xs" onclick="Delete(\'' + key + '\')"><i class="fa fa-trash"></i></a>'
