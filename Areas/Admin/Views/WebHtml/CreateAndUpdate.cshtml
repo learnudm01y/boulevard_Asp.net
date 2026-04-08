@@ -82,24 +82,18 @@
                                 <div class="card-body">
                                     <div class="row">
 
-                                        @if (Model.WebHtmlId > 0)
-                                        {
-                                            <div class="col-md-6 col-sm-6">
-                                                <div class="form-group">
-                                                    <label>Identifier</label>
-                                                    <input type="text" name="Identifier" readonly required class="form-control" value="@Model.Identifier">
-                                                </div>
+                                        <div class="col-md-6 col-sm-6">
+                                            <div class="form-group">
+                                                <label>Identifier</label>
+                                                <select name="Identifier" class="form-control" required>
+                                                    <option value="">-- Select Identifier --</option>
+                                                    <option value="Top-Banner"              @(Model.Identifier == "Top-Banner"              ? "selected" : "")>Top-Banner</option>
+                                                    <option value="Home_Page_Feature_Banner" @(Model.Identifier == "Home_Page_Feature_Banner" ? "selected" : "")>Home_Page_Feature_Banner</option>
+                                                    <option value="category-banner"          @(Model.Identifier == "category-banner"          ? "selected" : "")>category-banner</option>
+                                                    <option value="Bottom-Banner"            @(Model.Identifier == "Bottom-Banner"            ? "selected" : "")>Bottom-Banner</option>
+                                                </select>
                                             </div>
-                                        }
-                                        else
-                                        {
-                                            <div class="col-md-6 col-sm-6">
-                                                <div class="form-group">
-                                                    <label>Identifier</label>
-                                                    <input type="text" name="Identifier" required class="form-control" value="@Model.Identifier">
-                                                </div>
-                                            </div>
-                                        }
+                                        </div>
                                         @if (string.IsNullOrEmpty(Convert.ToString(ViewBag.FeatureCategoryKey)))
                                         {
                                             <div class="col-lg-4 col-md-6 col-sm-12">

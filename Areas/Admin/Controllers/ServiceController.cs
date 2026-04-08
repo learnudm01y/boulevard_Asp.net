@@ -736,7 +736,7 @@ namespace Boulevard.Areas.Admin.Controllers
                             var dataTable = ds.Tables[0];
                             // Normalize to lowercase once so all comparisons below are case-insensitive
                             model.fCatagoryKey = (model.fCatagoryKey ?? "").ToLower();
-                            if (model.fCatagoryKey == "B3E3E680-C8EF-4AB2-A4AC-D75BB48A3647".ToLower() || model.fCatagoryKey == "25D8C418-2D26-4159-9D7F-970E3B933B42".ToLower() || model.fCatagoryKey == "BBC98E2D-941B-44C6-8122-0E12A2645B87".ToLower())
+                            if (model.fCatagoryKey == "B3E3E680-C8EF-4AB2-A4AC-D75BB48A3647".ToLower() || model.fCatagoryKey == "25D8C418-2D26-4159-9D7F-970E3B933B42".ToLower() || model.fCatagoryKey == "BBC98E2D-941B-44C6-8122-0E12A2645B87".ToLower() || model.fCatagoryKey == "4D5E6F7A-8B9C-0D1E-F234-5678901ABCDE".ToLower())
                             {
                                 #region Check Excel Column
                                 TempService tempService = new TempService();
@@ -767,7 +767,7 @@ namespace Boulevard.Areas.Admin.Controllers
                                 tempService.Latitute = dataTable.Rows[0]["Latitute"].ToString();
                                 tempService.Longitute = dataTable.Rows[0]["Longitute"].ToString();
                                 tempService.CheckInTime = dataTable.Rows[0]["Service Open"].ToString();
-                                tempService.CheckInTime = dataTable.Rows[0]["Service Close"].ToString();
+                                tempService.CheckOutTime = dataTable.Rows[0]["Service Close"].ToString();
                                 //tempService.FaqTitle = dataTable.Rows[0]["FAQ Title"].ToString();
                                 //tempService.FaqTitleAr = dataTable.Rows[0]["FAQ Title Arabic"].ToString();
                                 //tempService.FaqDescription = dataTable.Rows[0]["FAQ Description"].ToString();
@@ -837,7 +837,7 @@ namespace Boulevard.Areas.Admin.Controllers
                                         data.Latitute = objDataRow["Latitute"].ToString();
                                         data.Longitute = objDataRow["Longitute"].ToString();
                                         data.CheckInTime = objDataRow["Service Open"].ToString();
-                                        data.CheckInTime = objDataRow["Service Close"].ToString();
+                                        data.CheckOutTime = objDataRow["Service Close"].ToString();
                                         //data.FaqTitle = objDataRow["FAQ Title"].ToString();
                                         //data.FaqTitleAr = objDataRow["FAQ Title Arabic"].ToString();
                                         //data.FaqDescription = objDataRow["FAQ Description"].ToString();
