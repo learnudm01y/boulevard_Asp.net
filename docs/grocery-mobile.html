@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
   <meta charset="UTF-8"/>
@@ -74,6 +74,12 @@
     .prod-add-btn{margin-top:auto;background:#1d4ed8;border:none;border-radius:8px;color:#fff;font-size:12px;font-weight:600;padding:7px 0;width:100%;cursor:pointer;transition:background .15s}
     .prod-add-btn:hover{background:#2563eb}
 
+    /* ── ICV / Origin footer ── */
+    .prod-meta-footer{display:flex;align-items:center;gap:5px;flex-wrap:wrap;margin-top:6px;padding-top:6px;border-top:1px solid #2a2d3e}
+    .prod-meta-badge{display:inline-flex;align-items:center;gap:3px;border-radius:6px;padding:3px 7px;font-size:10px;font-weight:700;line-height:1.3;white-space:nowrap}
+    .badge-icv{background:#0e2d1f;color:#4ade80;border:1px solid #166534}
+    .badge-origin{background:#1e1a3e;color:#c4b5fd;border:1px solid #5b21b6}
+
     /* ── Skeleton ── */
     .skeleton{background:linear-gradient(90deg,#1f2235 25%,#2a2d3e 50%,#1f2235 75%);background-size:200% 100%;animation:shimmer 1.4s infinite;border-radius:8px}
     @keyframes shimmer{0%{background-position:-200% 0}100%{background-position:200% 0}}
@@ -126,8 +132,8 @@
 
 <!-- CONFIG PANEL -->
 <div class="config-panel" id="config-panel">
-  <label>Base URL (e.g. http://localhost:5000)</label>
-  <input type="text" id="base-url-input" placeholder="http://localhost:5000"/>
+  <label>Base URL (e.g. https://boulevard.r-y-x.net)</label>
+  <input type="text" id="base-url-input" placeholder="https://boulevard.r-y-x.net"/>
   <button onclick="applyConfig()">Apply</button>
 </div>
 
@@ -165,7 +171,7 @@ var GROCERY_FC_KEY = '88d5d23e-470f-409a-bb6b-def7ab1346fa'; // Dessert & Flower
 var H_PAGE_SIZE = 8;
 var PAGE_SIZE   = 20;
 
-var BASE_URL = localStorage.getItem('blvd_base_url') || 'http://localhost:5000';
+var BASE_URL = localStorage.getItem('blvd_base_url') || 'https://boulevard.r-y-x.net';
 var lang     = localStorage.getItem('blvd_lang')     || 'ar';
 
 var groceryFcId     = 0;
@@ -236,9 +242,14 @@ function toggleLang() {
 }
 
 // ════════════ API Helper ════════════
-function apiFetch(path) {
+function apiFetch(path, retries) {
+  retries = (retries === undefined) ? 3 : retries;
   var url = BASE_URL + path;
-  return fetch(url).then(function(res) {
+  var ctrl = new AbortController();
+  var timer = setTimeout(function(){ ctrl.abort(); }, 30000); // 30s timeout
+  return fetch(url, { signal: ctrl.signal })
+  .then(function(res) {
+    clearTimeout(timer);
     if (!res.ok) throw new Error('HTTP ' + res.status + ' — ' + url);
     return res.json();
   }).then(function(json) {
@@ -246,6 +257,17 @@ function apiFetch(path) {
     if (json && json.data  !== undefined) return json.data;
     if (Array.isArray(json)) return json;
     throw new Error(json.message || 'API error');
+  }).catch(function(err) {
+    clearTimeout(timer);
+    // ERR_CONNECTION_REFUSED or AbortError → retry with backoff (server warming up)
+    var isNetErr = err.name === 'AbortError' || err.message.indexOf('Failed to fetch') !== -1 || err.message.indexOf('NetworkError') !== -1;
+    if (isNetErr && retries > 0) {
+      var delay = (4 - retries) * 3000; // 3s, 6s, 9s
+      return new Promise(function(resolve, reject) {
+        setTimeout(function() { apiFetch(path, retries - 1).then(resolve).catch(reject); }, delay);
+      });
+    }
+    throw err;
   });
 }
 
@@ -427,6 +449,10 @@ function buildProdCard(p) {
   if (di && (di.discountType||di.DiscountType) === 'Percentage')
     discPct = '-' + (di.discountAmount||di.DiscountAmount) + '%';
 
+  // ICV + Origin
+  var icv    = p.icvBoulevardScore || p.IcvBoulevardScore || '';
+  var origin = p.origin            || p.Origin            || '';
+
   // Normalize URL: fix double-slash produced by server bug (e.g. http://host//path)
   var imgSrc = img
     ? img.replace(/([^:])\/\/+/g, '$1/')
@@ -451,6 +477,12 @@ function buildProdCard(p) {
         (hasD ? '<span class="prod-price-original">' + price.toFixed(2) + ' AED</span>' : '') +
       '</div>' +
       '<button class="prod-add-btn">' + t('+ Add to Cart','+ أضف للسلة') + '</button>' +
+      (icv || origin
+        ? '<div class="prod-meta-footer">' +
+            (icv    ? '<span class="prod-meta-badge badge-icv">ICV ' + escHtml(icv) + '</span>' : '') +
+            (origin ? '<span class="prod-meta-badge badge-origin">' + escHtml(origin) + '</span>' : '') +
+          '</div>'
+        : '') +
     '</div>' +
   '</div>';
 }

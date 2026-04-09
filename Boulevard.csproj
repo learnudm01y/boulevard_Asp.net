@@ -255,6 +255,7 @@
     <Compile Include="Areas\Admin\Controllers\BrandController.cs" />
     <Compile Include="Areas\Admin\Controllers\DeliveryManagementController.cs" />
     <Compile Include="Areas\Admin\Controllers\SocialImpactTrackerController.cs" />
+    <Compile Include="Areas\Admin\Controllers\ServiceFormConfigController.cs" />
     <Compile Include="Areas\Admin\Controllers\CategoryController.cs" />
     <Compile Include="Areas\Admin\Controllers\CityController.cs" />
     <Compile Include="Areas\Admin\Controllers\CountryController.cs" />
@@ -302,6 +303,7 @@
     <Compile Include="Controllers\FakeController.cs" />
     <Compile Include="Controllers\FeatureCategoryController.cs" />
     <Compile Include="Controllers\SocialImpactController.cs" />
+    <Compile Include="Controllers\ServiceFormController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\MemberController.cs" />
     <Compile Include="Controllers\MembershipController.cs" />
@@ -863,6 +865,10 @@
     <Compile Include="Models\TempProduct.cs" />
     <Compile Include="Models\PropertyInformation.cs" />
     <Compile Include="Models\ServiceOffers.cs" />
+    <Compile Include="Models\ServiceFormSection.cs" />
+    <Compile Include="Models\ServiceFormField.cs" />
+    <Compile Include="Models\ServiceFormFieldOption.cs" />
+    <Compile Include="Models\ServiceFormAttachmentRule.cs" />
     <Compile Include="Models\BaseEntity.cs" />
     <Compile Include="Models\Brand.cs" />
     <Compile Include="Models\BrandOffer.cs" />
@@ -7359,6 +7365,8 @@
     <Content Include="Areas\Admin\Views\Brand\Index.cshtml" />
     <Content Include="Areas\Admin\Views\DeliveryManagement\Index.cshtml" />
     <Content Include="Areas\Admin\Views\SocialImpactTracker\Index.cshtml" />
+    <Content Include="Areas\Admin\Views\ServiceFormConfig\Index.cshtml" />
+    <Content Include="Areas\Admin\Views\ServiceFormConfig\Config.cshtml" />
     <Content Include="Areas\Admin\Views\City\CreateAndUpdate.cshtml" />
     <Content Include="Areas\Admin\Views\City\Index.cshtml" />
     <Content Include="Areas\Admin\Views\Country\CreateAndUpdate.cshtml" />

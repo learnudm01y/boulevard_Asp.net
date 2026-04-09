@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
@@ -133,7 +133,7 @@
 </header>
 
 <div class="base-url-box">
-  Base URL: <span>https://your-domain.com</span>
+  Base URL: <span>https://boulevard.r-y-x.net</span>
   &nbsp;&nbsp;|&nbsp;&nbsp;
   All responses return: <span>{ "result": [...], "code": 200, "message": "success", "isSuccess": true }</span>
 </div>
@@ -1125,7 +1125,7 @@
       "nameAr": "بقالة",
       "featureType": "Product",
       "isActive": true,
-      "image": "https://your-domain.com/Upload/grocery.png",
+      "image": "https://boulevard.r-y-x.net/Upload/grocery.png",
       "commissionRate": 3.00,
       "commissionLabel": "3%"
     },
@@ -1136,7 +1136,7 @@
       "nameAr": "مطعم",
       "featureType": "Product",
       "isActive": true,
-      "image": "https://your-domain.com/Upload/restaurant.png",
+      "image": "https://boulevard.r-y-x.net/Upload/restaurant.png",
       "commissionRate": 15.00,
       "commissionLabel": "15%"
     }
@@ -1190,7 +1190,7 @@
     "nameAr": "بقالة",
     "featureType": "Product",
     "isActive": true,
-    "image": "https://your-domain.com/Upload/grocery.png",
+    "image": "https://boulevard.r-y-x.net/Upload/grocery.png",
     "commissionRate": 3.00,
     "commissionLabel": "3%"
   }
@@ -1236,7 +1236,7 @@
     "productName": "Fresh Whole Milk 1L",
     "productPrice": 3.50,
     "discountPrice": 0,
-    "image": "https://your-domain.com/Upload/milk.jpg",
+    "image": "https://boulevard.r-y-x.net/Upload/milk.jpg",
     "barcode": "MLK-WHL-1L",
     "stockQuantity": 200,
     "attributeName": "1 Liter",
@@ -1396,6 +1396,251 @@
     </tbody>
   </table>
   <p style="margin-top:10px;">Rates above are seeded via <strong>social_impact_migration.sql</strong>. They can be updated at any time from the admin panel at <code>GET /admin/social-impact-tracker</code> → inline edit → calls <code>POST /admin/social-impact-tracker/update-commission</code> via AJAX.</p>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     SERVICE FORM CONFIGURATION API (Dynamic Field Mapping)
+════════════════════════════════════════════════════════════════ -->
+<div class="section-title" style="margin-top:48px;">
+  <span class="badge" style="background:#2563eb;">⚙️ SFC</span>
+  <h2>Service Form Configuration — Dynamic Field Mapping API</h2>
+</div>
+
+<div style="background:#eff6ff;border-left:4px solid #3b82f6;margin:0 40px 24px;padding:12px 16px;font-size:13px;color:#1e40af;border-radius:4px;">
+  <strong>Purpose:</strong> These endpoints expose the dynamic form schema configured by the admin
+  for any service type (e.g. a specific Typing center). The Flutter developer can consume the JSON response to render
+  the entire data-entry screen — sections, fields, options, attachment rules and validation —
+  without any hardcoded form logic.
+  <br/><br/>
+  <strong>Flow:</strong> Call <code>/api/v1/service-form/list</code> to discover configured service types →
+  use the <code>serviceTypeKey</code> from that response to call <code>/api/v1/service-form/schema/{serviceTypeKey}</code>.
+  <br/><br/>
+  <strong>Admin Panel:</strong> <code>GET /admin/service-form-config</code> — accessible via
+  <em>Typing → Typing Form Config</em> in the sidebar. Forms are configured per service type (individual providers).
+</div>
+
+<div class="grid" id="service-form-grid">
+
+  <!-- ── GET /api/v1/service-form/schema/{serviceTypeKey} ── -->
+  <div class="card">
+    <div class="card-head">
+      <span class="method get">GET</span>
+      <span class="endpoint">/api/v1/service-form/schema/{serviceTypeKey}</span>
+    </div>
+    <div class="card-body">
+      <p class="desc">
+        Returns the <strong>full form schema</strong> for the given service type — sections, fields, options,
+        attachment rules, validation metadata — everything Flutter needs to render the screen dynamically.
+        Use the <code>serviceTypeKey</code> from the <code>/api/v1/service-form/list</code> endpoint or from
+        the <code>SearchingServiceType</code> / <code>GetServices</code> endpoints.
+      </p>
+
+      <p class="label">URL Parameters</p>
+      <table>
+        <tr><th>Parameter</th><th>Type</th><th>Required</th><th>Description</th></tr>
+        <tr><td class="param-name">serviceTypeKey</td><td class="param-type">guid</td><td class="param-req">Required</td><td>ServiceTypeKey (GUID) of the specific service type. Obtain from <code>/api/v1/service-form/list</code> → <code>serviceTypeKey</code>.</td></tr>
+      </table>
+
+      <p class="label">Query Parameters</p>
+      <table>
+        <tr><th>Parameter</th><th>Type</th><th>Required</th><th>Description</th></tr>
+        <tr><td class="param-name">lang</td><td class="param-type">string</td><td class="param-opt">Optional</td><td><code>"en"</code> (default) or <code>"ar"</code>. When <code>"ar"</code>, Arabic labels/titles/help text take precedence.</td></tr>
+      </table>
+
+      <p class="label">Example Request</p>
+      <pre>GET https://boulevard.r-y-x.net/api/v1/service-form/schema/4762bd42-2df1-4a36-a665-a64151211d18?lang=en</pre>
+
+      <p class="label">Sample Response</p>
+      <pre>{
+  "isSuccess": true,
+  "code": 200,
+  "message": "success",
+  "result": {
+    "serviceTypeTitle": "Brilliant talents",
+    "serviceTypeTitleAr": "Brilliant talents",
+    "serviceTypeKey": "4762bd42-2df1-4a36-a665-a64151211d18",
+    "serviceTypeId": 1329,
+    "parentServiceName": "Golden Visa Nomination",
+    "sections": [
+      {
+        "sectionId": 1,
+        "title": "Personal Information",
+        "titleAr": "المعلومات الشخصية",
+        "sortOrder": 1,
+        "fields": [
+          {
+            "fieldId": 1,
+            "fieldKey": "full_name",
+            "label": "Full Name",
+            "labelAr": "الاسم الكامل",
+            "placeholder": "Enter your full name",
+            "fieldType": "text",
+            "dataType": "string",
+            "isRequired": true,
+            "sortOrder": 1,
+            "defaultValue": null,
+            "helpText": null,
+            "validation": {
+              "regex": null,
+              "minLength": null,
+              "maxLength": null,
+              "minValue": null,
+              "maxValue": null
+            }
+          },
+          {
+            "fieldId": 4,
+            "fieldKey": "nationality",
+            "label": "Nationality",
+            "labelAr": "الجنسية",
+            "placeholder": null,
+            "fieldType": "dropdown",
+            "dataType": "string",
+            "isRequired": true,
+            "sortOrder": 4,
+            "defaultValue": null,
+            "helpText": null,
+            "validation": { "regex": null, "minLength": null, "maxLength": null, "minValue": null, "maxValue": null },
+            <strong>"options"</strong>: [
+              { "value": "uae",      "label": "UAE National", "labelAr": "مواطن إماراتي", "isDefault": false },
+              { "value": "gcc",      "label": "GCC National", "labelAr": "مواطن خليجي",   "isDefault": false },
+              { "value": "resident", "label": "Resident",     "labelAr": "مقيم",           "isDefault": false },
+              { "value": "visitor",  "label": "Visitor",      "labelAr": "زائر",           "isDefault": false }
+            ]
+          }
+        ]
+      },
+      {
+        "sectionId": 3,
+        "title": "Required Documents",
+        "titleAr": "المستندات المطلوبة",
+        "sortOrder": 3,
+        "fields": [
+          {
+            "fieldId": 9,
+            "fieldKey": "id_copy",
+            "label": "ID / Passport Copy",
+            "labelAr": "صورة الهوية / جواز السفر",
+            "placeholder": null,
+            "fieldType": "file",
+            "dataType": "file",
+            "isRequired": true,
+            "sortOrder": 1,
+            "defaultValue": null,
+            "helpText": "Upload a clear copy of your Emirates ID or passport",
+            "validation": { "regex": null, "minLength": null, "maxLength": null, "minValue": null, "maxValue": null },
+            <strong>"attachment"</strong>: {
+              "allowedExtensions": [".pdf", ".jpg", ".jpeg", ".png"],
+              "maxFileSizeMB": 10,
+              "allowMultiple": false,
+              "isRequired": true,
+              "maxFileCount": 1,
+              "displayLabel": "Upload ID / Passport"
+            }
+          }
+        ]
+      }
+      <span style="color:#999;">// … more sections …</span>
+    ]
+  }
+}</pre>
+
+      <p class="label">Response Structure</p>
+      <table>
+        <tr><th>Field</th><th>Type</th><th>Description</th></tr>
+        <tr><td class="param-name">serviceTypeTitle</td><td class="param-type">string</td><td>Localized service type name (follows <code>lang</code> param)</td></tr>
+        <tr><td class="param-name">serviceTypeKey</td><td class="param-type">guid</td><td>ServiceTypeKey — the GUID of this specific service type</td></tr>
+        <tr><td class="param-name">serviceTypeId</td><td class="param-type">int</td><td>Internal integer ID of the service type</td></tr>
+        <tr><td class="param-name">parentServiceName</td><td class="param-type">string</td><td>Name of the parent service this type belongs to</td></tr>
+        <tr><td class="param-name">sections[]</td><td class="param-type">array</td><td>Ordered list of form sections</td></tr>
+        <tr><td class="param-name">sections[].fields[]</td><td class="param-type">array</td><td>Ordered list of fields inside each section</td></tr>
+      </table>
+
+      <p class="label">Field Object Properties</p>
+      <table>
+        <tr><th>Field</th><th>Type</th><th>Description</th></tr>
+        <tr><td class="param-name">fieldKey</td><td class="param-type">string</td><td>Internal key (e.g. <code>"full_name"</code>) — use as form field name</td></tr>
+        <tr><td class="param-name">label</td><td class="param-type">string</td><td>Localized display label</td></tr>
+        <tr><td class="param-name">fieldType</td><td class="param-type">string</td><td>UI control type: <code>text</code>, <code>email</code>, <code>phone</code>, <code>url</code>, <code>number</code>, <code>decimal</code>, <code>multiline</code>, <code>dropdown</code>, <code>radio</code>, <code>checkbox</code>, <code>date</code>, <code>time</code>, <code>file</code>, <code>hidden</code></td></tr>
+        <tr><td class="param-name">dataType</td><td class="param-type">string</td><td>Expected data type: <code>string</code>, <code>int</code>, <code>decimal</code>, <code>bool</code>, <code>date</code>, <code>time</code>, <code>datetime</code>, <code>file</code></td></tr>
+        <tr><td class="param-name">isRequired</td><td class="param-type">bool</td><td>Whether the field must be filled before submission</td></tr>
+        <tr><td class="param-name">validation</td><td class="param-type">object</td><td>Validation constraints: <code>regex</code>, <code>minLength</code>, <code>maxLength</code>, <code>minValue</code>, <code>maxValue</code></td></tr>
+        <tr><td class="param-name">options[]</td><td class="param-type">array|null</td><td>Present only for <code>dropdown</code>, <code>radio</code>, <code>checkbox</code> — each has <code>value</code>, <code>label</code>, <code>isDefault</code></td></tr>
+        <tr><td class="param-name">attachment</td><td class="param-type">object|null</td><td>Present only for <code>file</code> type — defines upload rules (extensions, size, count)</td></tr>
+      </table>
+
+      <p class="label">Attachment Object Properties</p>
+      <table>
+        <tr><th>Field</th><th>Type</th><th>Description</th></tr>
+        <tr><td class="param-name">allowedExtensions</td><td class="param-type">string[]</td><td>Array of allowed file extensions (e.g. <code>[".pdf",".jpg"]</code>)</td></tr>
+        <tr><td class="param-name">maxFileSizeMB</td><td class="param-type">int</td><td>Maximum file size in megabytes</td></tr>
+        <tr><td class="param-name">allowMultiple</td><td class="param-type">bool</td><td>Whether multiple files can be uploaded</td></tr>
+        <tr><td class="param-name">isRequired</td><td class="param-type">bool</td><td>Whether at least one file must be uploaded</td></tr>
+        <tr><td class="param-name">maxFileCount</td><td class="param-type">int</td><td>Maximum number of files allowed</td></tr>
+        <tr><td class="param-name">displayLabel</td><td class="param-type">string</td><td>Localized label for the upload button/area</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <!-- ── GET /api/v1/service-form/list ── -->
+  <div class="card">
+    <div class="card-head">
+      <span class="method get">GET</span>
+      <span class="endpoint">/api/v1/service-form/list</span>
+    </div>
+    <div class="card-body">
+      <p class="desc">Returns a lightweight list of all service types that have form configurations. Use this to discover which service types support dynamic form rendering. Pass the <code>serviceTypeKey</code> to <code>/api/v1/service-form/schema/{serviceTypeKey}</code>.</p>
+
+      <p class="label">Query Parameters</p>
+      <table>
+        <tr><th>Parameter</th><th>Type</th><th>Required</th><th>Description</th></tr>
+        <tr><td class="param-name">—</td><td class="param-type">—</td><td class="param-opt">None</td><td>No parameters required</td></tr>
+      </table>
+
+      <p class="label">Example Request</p>
+      <pre>GET https://boulevard.r-y-x.net/api/v1/service-form/list</pre>
+
+      <p class="label">Sample Response</p>
+      <pre>{
+  "isSuccess": true,
+  "code": 200,
+  "message": "success",
+  "result": [
+    {
+      "serviceTypeKey": "4762bd42-2df1-4a36-a665-a64151211d18",
+      "serviceTypeId": 1329,
+      "name": "Brilliant talents",
+      "nameAr": "Brilliant talents",
+      "parentServiceName": "Golden Visa Nomination",
+      "sectionCount": 1
+    }
+  ]
+}</pre>
+
+      <p class="label">Response Fields</p>
+      <table>
+        <tr><th>Field</th><th>Type</th><th>Description</th></tr>
+        <tr><td class="param-name">serviceTypeKey</td><td class="param-type">guid</td><td>Pass this to <code>/api/v1/service-form/schema/{serviceTypeKey}</code></td></tr>
+        <tr><td class="param-name">serviceTypeId</td><td class="param-type">int</td><td>Internal integer ID of the service type</td></tr>
+        <tr><td class="param-name">name</td><td class="param-type">string</td><td>Service type name (English)</td></tr>
+        <tr><td class="param-name">nameAr</td><td class="param-type">string</td><td>Service type name (Arabic)</td></tr>
+        <tr><td class="param-name">parentServiceName</td><td class="param-type">string</td><td>Name of the parent service this type belongs to</td></tr>
+        <tr><td class="param-name">sectionCount</td><td class="param-type">int</td><td>Number of active sections configured for this service type</td></tr>
+      </table>
+    </div>
+  </div>
+
+</div><!-- /service-form-grid -->
+
+<div style="margin:32px 40px;padding:16px 20px;background:#eff6ff;border-left:4px solid #3b82f6;border-radius:4px;font-size:13px;color:#1e3a5f;">
+  <strong>Database Tables:</strong>
+  <ul style="margin:8px 0 0 16px;line-height:1.8;">
+    <li><code>ServiceFormSections</code> — section groups per ServiceType (title, order, active flag) — FK: <code>ServiceTypeId</code></li>
+    <li><code>ServiceFormFields</code> — fields inside a section (key, label, type, data type, validation, etc.)</li>
+    <li><code>ServiceFormFieldOptions</code> — choices for dropdown / radio / checkbox fields</li>
+    <li><code>ServiceFormAttachmentRules</code> — file upload constraints per file-type field</li>
+  </ul>
+  <p style="margin-top:10px;">Admin management at <code>GET /admin/service-form-config</code> (sidebar: <em>Typing → Typing Form Config</em>).</p>
 </div>
 
 <footer>Boulevard API Docs &nbsp;·&nbsp; Restaurant &amp; Retail &amp; Laundry &amp; Photography &nbsp;·&nbsp; All rights reserved</footer>

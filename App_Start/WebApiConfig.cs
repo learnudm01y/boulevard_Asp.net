@@ -44,6 +44,22 @@ namespace Boulevard.App_Start
 
             #endregion
 
+            #region Service Form Configuration
+
+            config.Routes.MapHttpRoute(
+               "ServiceForm_GetSchema",
+               "api/v1/service-form/schema/{serviceTypeKey}",
+               new { controller = "ServiceForm", action = "GetSchema" }
+            );
+
+            config.Routes.MapHttpRoute(
+               "ServiceForm_GetConfiguredServices",
+               "api/v1/service-form/list",
+               new { controller = "ServiceForm", action = "GetConfiguredServices", id = RouteParameter.Optional }
+            );
+
+            #endregion
+
             #region Member
 
             config.Routes.MapHttpRoute(

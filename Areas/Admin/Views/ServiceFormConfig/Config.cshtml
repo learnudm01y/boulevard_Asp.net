@@ -1,0 +1,1086 @@
+@{
+    ViewBag.Title = "Form Config — " + ViewBag.ServiceName;
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+
+    var sections = ViewBag.Sections as List<Boulevard.Models.ServiceFormSection> ?? new List<Boulevard.Models.ServiceFormSection>();
+    int serviceTypeId    = (int)ViewBag.ServiceTypeId;
+    string serviceName   = ViewBag.ServiceName as string ?? "";
+    string serviceNameAr = ViewBag.ServiceNameAr as string ?? "";
+}
+
+<style>
+    /* ── layout ── */
+    .cfg-header { display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:12px; margin-bottom:24px; }
+    .cfg-title   { margin:0; font-weight:700; font-size:20px; }
+    .cfg-actions { display:flex; gap:8px; }
+
+    /* ── section cards ── */
+    .section-card { border:1px solid #e2e8f0; border-radius:8px; margin-bottom:18px; background:#fff; }
+    .section-head { display:flex; align-items:center; justify-content:space-between; padding:14px 18px; background:#f8fafc; border-bottom:1px solid #e2e8f0; border-radius:8px 8px 0 0; cursor:move; }
+    .section-head h5 { margin:0; font-weight:600; }
+    .badge-active   { background:#48bb78; color:#fff; font-size:11px; padding:3px 8px; border-radius:4px; margin-left:8px; }
+    .badge-inactive { background:#cbd5e0; color:#4a5568; font-size:11px; padding:3px 8px; border-radius:4px; margin-left:8px; }
+    .section-body { padding:14px 18px; }
+
+    /* ── field table ── */
+    .field-table { width:100%; border-collapse:collapse; font-size:13px; }
+    .field-table th { background:#edf2f7; padding:8px 10px; font-weight:600; text-transform:uppercase; font-size:11px; color:#718096; border-bottom:2px solid #e2e8f0; }
+    .field-table td { padding:8px 10px; border-bottom:1px solid #f0f0f0; vertical-align:middle; }
+    .field-table tr:hover td { background:#f7fafc; }
+    .field-type-badge { display:inline-block; padding:2px 8px; border-radius:4px; font-size:11px; font-weight:600; }
+    .ft-text      { background:#ebf8ff; color:#2b6cb0; }
+    .ft-number    { background:#fefcbf; color:#975a16; }
+    .ft-dropdown  { background:#e9d8fd; color:#553c9a; }
+    .ft-radio     { background:#fed7e2; color:#97266d; }
+    .ft-checkbox  { background:#c6f6d5; color:#276749; }
+    .ft-file      { background:#feebc8; color:#c05621; }
+    .ft-date      { background:#bee3f8; color:#2a4365; }
+    .ft-multiline { background:#e2e8f0; color:#4a5568; }
+    .ft-default   { background:#f0f0f0; color:#555; }
+    .drag-handle  { cursor:move; color:#a0aec0; }
+    .empty-state  { text-align:center; padding:32px; color:#a0aec0; font-size:14px; }
+    .modal-field-form .form-group { margin-bottom:12px; }
+    .modal-field-form label:not(.tgl-wrap) { font-weight:600; font-size:13px; margin-bottom:4px; display:block; }
+
+    /* ── toggle switch ── */
+    .tgl-wrap { display:inline-flex !important; align-items:center; gap:10px; cursor:pointer; margin-top:6px; user-select:none; font-weight:normal; }
+    .tgl-wrap input[type=checkbox] { display:none; }
+    .tgl-track { width:46px; height:26px; background:#d1d5db; border-radius:13px; position:relative; transition:background .25s; flex-shrink:0; }
+    .tgl-thumb { position:absolute; width:20px; height:20px; border-radius:50%; background:#fff; top:3px; left:3px; transition:transform .25s; box-shadow:0 1px 4px rgba(0,0,0,.3); }
+    .tgl-wrap input:checked + .tgl-track { background:#28a745; }
+    .tgl-wrap input:checked + .tgl-track .tgl-thumb { transform:translateX(20px); }
+    .tgl-text { font-size:14px; color:#374151; font-weight:500; }
+    .options-list { list-style:none; padding:0; margin:0 0 8px; }
+    .options-list li { display:flex; gap:8px; align-items:center; margin-bottom:6px; }
+    .attachment-panel { background:#fffaf0; border:1px solid #fbd38d; border-radius:6px; padding:12px; margin-top:8px; }
+    .attachment-panel h6 { margin:0 0 8px; font-size:13px; color:#c05621; }
+
+    /* ── preview button ── */
+    .btn-preview {
+        background: #fff;
+        color: #1a1a2e;
+        border: 2px solid #1a1a2e;
+        border-radius: 6px;
+        padding: 8px 18px;
+        font-weight: 700;
+        font-size: 14px;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        transition: background 0.2s, color 0.2s;
+    }
+    .btn-preview:hover { background: #1a1a2e; color: #fff; }
+
+    /* ── phone preview overlay ── */
+    #phonePreviewOverlay {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(0,0,0,0.6);
+        z-index: 9999;
+        align-items: center;
+        justify-content: center;
+    }
+    #phonePreviewOverlay.active { display: flex; }
+    .phone-frame {
+        position: relative;
+        width: 360px;
+        background: #1a1a2e;
+        border-radius: 40px;
+        padding: 16px 12px;
+        box-shadow: 0 20px 60px rgba(0,0,0,0.6);
+        max-height: 90vh;
+    }
+    .phone-notch {
+        width: 120px;
+        height: 18px;
+        background: #000;
+        border-radius: 12px;
+        margin: 0 auto 10px;
+    }
+    .phone-screen {
+        background: #ffffff;
+        border-radius: 26px;
+        overflow-y: auto;
+        max-height: calc(90vh - 80px);
+        padding: 0 0 20px;
+    }
+    .phone-screen::-webkit-scrollbar { width: 4px; }
+    .phone-screen::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 2px; }
+
+    /* ── phone content styles ── */
+    .p-step-bar {
+        background: #f3f4f6;
+        padding: 10px 16px 8px;
+        border-bottom: 1px solid #e5e7eb;
+    }
+    .p-step-dots {
+        display: flex;
+        gap: 6px;
+        justify-content: center;
+        margin-bottom: 6px;
+    }
+    .p-step-dot {
+        width: 28px;
+        height: 4px;
+        border-radius: 2px;
+        background: #d1d5db;
+    }
+    .p-step-dot.active { background: #1a1a2e; }
+    .p-step-label {
+        text-align: center;
+        font-size: 9px;
+        color: #6b7280;
+    }
+    .p-service-title {
+        padding: 14px 16px 6px;
+        font-size: 13px;
+        font-weight: 700;
+        color: #111827;
+        border-bottom: 1px solid #f3f4f6;
+    }
+    .p-progress {
+        padding: 6px 16px;
+        font-size: 10px;
+        color: #6b7280;
+        background: #f9fafb;
+        border-bottom: 1px solid #f3f4f6;
+    }
+    .p-section-title {
+        padding: 10px 16px 4px;
+        font-size: 11px;
+        font-weight: 700;
+        color: #374151;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    .p-field {
+        padding: 6px 16px;
+    }
+    .p-label {
+        font-size: 11px;
+        font-weight: 600;
+        color: #374151;
+        margin-bottom: 4px;
+        display: flex;
+        gap: 3px;
+        align-items: center;
+    }
+    .p-label .req { color: #ef4444; }
+    .p-input {
+        width: 100%;
+        border: 1.5px solid #111827;
+        border-radius: 6px;
+        padding: 8px 10px;
+        font-size: 11px;
+        color: #6b7280;
+        background: #fff;
+        box-sizing: border-box;
+    }
+    .p-textarea {
+        width: 100%;
+        border: 1.5px solid #111827;
+        border-radius: 6px;
+        padding: 8px 10px;
+        font-size: 11px;
+        color: #6b7280;
+        background: #fff;
+        height: 60px;
+        box-sizing: border-box;
+        resize: none;
+    }
+    .p-select {
+        width: 100%;
+        border: 1.5px solid #111827;
+        border-radius: 6px;
+        padding: 8px 10px;
+        font-size: 11px;
+        color: #6b7280;
+        background: #fff;
+        box-sizing: border-box;
+        appearance: none;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23374151' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 8px center;
+    }
+    .p-radio-group, .p-checkbox-group { display: flex; flex-direction: column; gap: 4px; }
+    .p-radio-item, .p-checkbox-item {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 11px;
+        color: #374151;
+        padding: 5px 8px;
+        border: 1.5px solid #111827;
+        border-radius: 6px;
+    }
+    .p-file-row {
+        display: flex;
+        gap: 6px;
+        align-items: center;
+    }
+    .p-file-btn {
+        flex: 1;
+        border: 1.5px solid #111827;
+        border-radius: 6px;
+        padding: 6px 8px;
+        font-size: 10px;
+        color: #374151;
+        background: #fff;
+        text-align: center;
+    }
+    .p-date-input {
+        width: 100%;
+        border: 1.5px solid #111827;
+        border-radius: 6px;
+        padding: 8px 10px;
+        font-size: 11px;
+        color: #6b7280;
+        background: #fff;
+        box-sizing: border-box;
+    }
+    .p-help {
+        font-size: 10px;
+        color: #9ca3af;
+        margin-top: 2px;
+    }
+    .p-submit-area {
+        padding: 16px;
+        border-top: 1px solid #f3f4f6;
+        display: flex;
+        gap: 8px;
+        margin-top: 6px;
+    }
+    .p-btn-draft {
+        flex: 1;
+        padding: 10px;
+        border: 2px solid #1a1a2e;
+        border-radius: 8px;
+        background: #fff;
+        color: #1a1a2e;
+        font-size: 11px;
+        font-weight: 700;
+        text-align: center;
+    }
+    .p-btn-submit {
+        flex: 1;
+        padding: 10px;
+        border: none;
+        border-radius: 8px;
+        background: #1a1a2e;
+        color: #fff;
+        font-size: 11px;
+        font-weight: 700;
+        text-align: center;
+    }
+    .close-preview {
+        position: absolute;
+        top: -12px;
+        right: 10px;
+        background: #fff;
+        border: none;
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        font-size: 18px;
+        line-height: 32px;
+        text-align: center;
+        cursor: pointer;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+        color: #1a1a2e;
+        font-weight: 700;
+    }
+</style>
+
+<div class="page-wrapper">
+    <div class="container-fluid">
+        <div class="row page-titles">
+            <div class="col-12 align-self-center">
+                <ol class="breadcrumb mb-0 p-0 bg-transparent">
+                    <li class="breadcrumb-item"><a href="/admin">Home</a></li>
+                    <li class="breadcrumb-item"><a href="@Url.RouteUrl("Admin_ServiceFormConfig")">Typing Form Config</a></li>
+                    <li class="breadcrumb-item active">@serviceName</li>
+                </ol>
+            </div>
+        </div>
+
+            <div class="cfg-header">
+                <h4 class="cfg-title">
+                    <i data-feather="sliders" style="width:20px;height:20px;margin-right:6px;vertical-align:middle;"></i>
+                    @serviceName
+                    @if (!string.IsNullOrEmpty(serviceNameAr))
+                    {
+                        <small style="font-size:14px;color:#718096;margin-left:8px;font-weight:400;">@serviceNameAr</small>
+                    }
+                </h4>
+                <div class="cfg-actions">
+                    <button class="btn-preview" onclick="openPreview()">
+                        <i data-feather="smartphone" style="width:16px;height:16px;"></i>
+                        Preview Form
+                    </button>
+                    <button class="btn btn-dark btn-sm" onclick="showAddSectionModal()">
+                        <i data-feather="plus" style="width:14px;height:14px;margin-right:4px;vertical-align:middle;"></i>
+                        Add Section
+                    </button>
+                </div>
+            </div>
+
+            <!-- sections list -->
+            <div id="sectionsList">
+                @if (!sections.Any())
+                {
+                    <div class="empty-state" id="emptyState">
+                        <i data-feather="layout" style="width:40px;height:40px;margin-bottom:12px;color:#cbd5e0;"></i>
+                        <p>No sections yet. Click <strong>Add Section</strong> to get started.</p>
+                    </div>
+                }
+
+                @foreach (var sec in sections)
+                {
+                    string secTitleJs = sec.Title.Replace("'", "\\'");
+                    string secTitleArJs = (sec.TitleAr ?? "").Replace("'", "\\'");
+                    <div class="section-card" data-section-id="@sec.SectionId">
+                        <div class="section-head">
+                            <div style="display:flex;align-items:center;gap:8px;">
+                                <span class="drag-handle"><i data-feather="menu" style="width:16px;height:16px;"></i></span>
+                                <h5>@sec.Title</h5>
+                                @if (!string.IsNullOrEmpty(sec.TitleAr))
+                                {
+                                    <small style="color:#718096;font-weight:400;">@sec.TitleAr</small>
+                                }
+                                <span class="@(sec.IsActive ? "badge-active" : "badge-inactive")">
+                                    @(sec.IsActive ? "Active" : "Inactive")
+                                </span>
+                            </div>
+                            <div style="display:flex;gap:6px;">
+                                <button class="btn btn-sm btn-outline-secondary" onclick="showEditSectionModal(@sec.SectionId,'@secTitleJs','@secTitleArJs',@(sec.IsActive ? "true" : "false"))">
+                                    <i data-feather="edit-2" style="width:14px;height:14px;"></i>
+                                </button>
+                                <button class="btn btn-sm btn-outline-success" onclick="showAddFieldModal(@sec.SectionId)">
+                                    <i data-feather="plus" style="width:14px;height:14px;"></i> Add Field
+                                </button>
+                                <button class="btn btn-sm btn-outline-danger" onclick="deleteSection(@sec.SectionId)">
+                                    <i data-feather="trash-2" style="width:14px;height:14px;"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="section-body">
+                            @if (sec.Fields == null || !sec.Fields.Any())
+                            {
+                                <div class="empty-state">No fields yet — click <strong>Add Field</strong> above.</div>
+                            }
+                            else
+                            {
+                                <div id="fieldsList_@sec.SectionId">
+                                    <table class="field-table">
+                                        <thead>
+                                            <tr>
+                                                <th style="width:30px;"></th>
+                                                <th>Key</th>
+                                                <th>Label</th>
+                                                <th>Type</th>
+                                                <th>Required</th>
+                                                <th>Visible</th>
+                                                <th style="width:90px;">Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="fieldsBody_@sec.SectionId">
+                                            @foreach (var fld in sec.Fields)
+                                            {
+                                                string ftClass = "ft-" + fld.FieldType;
+                                                <tr data-field-id="@fld.FieldId">
+                                                    <td><span class="drag-handle"><i data-feather="menu" style="width:14px;height:14px;"></i></span></td>
+                                                    <td><code style="font-size:12px;">@fld.FieldKey</code></td>
+                                                    <td>
+                                                        <div>@fld.Label</div>
+                                                        @if (!string.IsNullOrEmpty(fld.LabelAr))
+                                                        {
+                                                            <small style="color:#718096;direction:rtl;display:block;">@fld.LabelAr</small>
+                                                        }
+                                                    </td>
+                                                    <td><span class="field-type-badge @ftClass">@fld.FieldType</span></td>
+                                                    <td><span class="badge @(fld.IsRequired ? "badge-danger" : "badge-secondary")" style="font-size:11px;">@(fld.IsRequired ? "Yes" : "No")</span></td>
+                                                    <td><span class="badge @(fld.IsVisible ? "badge-success" : "badge-secondary")" style="font-size:11px;">@(fld.IsVisible ? "Yes" : "No")</span></td>
+                                                    <td>
+                                                        <button class="btn btn-xs btn-outline-primary" onclick="editField(@fld.FieldId)"><i data-feather="edit-2" style="width:12px;height:12px;"></i></button>
+                                                        <button class="btn btn-xs btn-outline-danger" onclick="deleteField(@fld.FieldId,this)"><i data-feather="trash-2" style="width:12px;height:12px;"></i></button>
+                                                    </td>
+                                                </tr>
+                                            }
+                                        </tbody>
+                                    </table>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                }
+            </div>
+
+        </div>
+    </section>
+</div>
+
+<!-- ══════════════════════════════════════════
+     PHONE PREVIEW OVERLAY
+══════════════════════════════════════════ -->
+<div id="phonePreviewOverlay">
+    <div class="phone-frame">
+        <button class="close-preview" onclick="closePreview()">✕</button>
+        <div class="phone-notch"></div>
+        <div class="phone-screen" id="phoneScreenContent">
+            <!-- filled dynamically by buildPreview() -->
+        </div>
+    </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     ADD / EDIT SECTION MODAL
+══════════════════════════════════════════ -->
+<div class="modal fade" id="sectionModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="sectionModalTitle">Add Section</h5>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="editSectionId" value="0" />
+                <div class="form-group">
+                    <label>Title (English) <span class="text-danger">*</span></label>
+                    <input type="text" id="sectionTitle" class="form-control" placeholder="e.g. Personal Information" />
+                </div>
+                <div class="form-group">
+                    <label>Title (Arabic)</label>
+                    <input type="text" id="sectionTitleAr" class="form-control" placeholder="مثال: المعلومات الشخصية" dir="rtl" />
+                </div>
+                <div class="form-group" id="activeGroup" style="display:none;">
+                    <label class="tgl-wrap">
+                        <input type="checkbox" id="sectionIsActive" checked />
+                        <span class="tgl-track"><span class="tgl-thumb"></span></span>
+                        <span class="tgl-text">Active</span>
+                    </label>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-dark" onclick="saveSection()">Save Section</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     ADD / EDIT FIELD MODAL
+══════════════════════════════════════════ -->
+<div class="modal fade" id="fieldModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="fieldModalTitle">Add Field</h5>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+            <div class="modal-body modal-field-form">
+                <input type="hidden" id="editFieldId" value="0" />
+                <input type="hidden" id="editFieldSectionId" value="0" />
+                <input type="hidden" id="fFieldKey" value="" />
+
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label>Field Type <span class="text-danger">*</span></label>
+                            <select id="fFieldType" class="form-control" onchange="onFieldTypeChange()">
+                                <option value="text">text</option>
+                                <option value="email">email</option>
+                                <option value="phone">phone</option>
+                                <option value="url">url</option>
+                                <option value="number">number</option>
+                                <option value="decimal">decimal</option>
+                                <option value="multiline">multiline</option>
+                                <option value="dropdown">dropdown</option>
+                                <option value="radio">radio</option>
+                                <option value="checkbox">checkbox</option>
+                                <option value="date">date</option>
+                                <option value="time">time</option>
+                                <option value="file">file</option>
+                                <option value="hidden">hidden</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label>Label (English) <span class="text-danger">*</span></label>
+                            <input type="text" id="fLabel" class="form-control" />
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label>Label (Arabic)</label>
+                            <input type="text" id="fLabelAr" class="form-control" dir="rtl" />
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label>Placeholder (English)</label>
+                            <input type="text" id="fPlaceholder" class="form-control" />
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label>Placeholder (Arabic)</label>
+                            <input type="text" id="fPlaceholderAr" class="form-control" dir="rtl" />
+                        </div>
+                    </div>
+                </div>
+                <input type="hidden" id="fDataType" value="string" />
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label>Required?</label>
+                            <label class="tgl-wrap">
+                                <input type="checkbox" id="fIsRequired" />
+                                <span class="tgl-track"><span class="tgl-thumb"></span></span>
+                                <span class="tgl-text">Yes</span>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label>Visible?</label>
+                            <label class="tgl-wrap">
+                                <input type="checkbox" id="fIsVisible" checked />
+                                <span class="tgl-track"><span class="tgl-thumb"></span></span>
+                                <span class="tgl-text">Yes</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label>Help Text (English)</label>
+                            <input type="text" id="fHelpText" class="form-control" />
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label>Help Text (Arabic)</label>
+                            <input type="text" id="fHelpTextAr" class="form-control" dir="rtl" />
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label>Default Value</label>
+                            <input type="text" id="fDefaultValue" class="form-control" />
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label>Validation Regex</label>
+                            <input type="text" id="fValidationRegex" class="form-control" placeholder="Optional" />
+                        </div>
+                    </div>
+                </div>
+                <input type="hidden" id="fMinLength" value="" />
+                <input type="hidden" id="fMaxLength" value="" />
+                <input type="hidden" id="fMinValue" value="" />
+                <input type="hidden" id="fMaxValue" value="" />
+
+                <!-- OPTIONS panel (dropdown / radio / checkbox) -->
+                <div id="optionsPanel" style="display:none;">
+                    <hr/>
+                    <h6 style="font-weight:700;">Options</h6>
+                    <ul class="options-list" id="optionsList"></ul>
+                    <button type="button" class="btn btn-sm btn-outline-secondary" onclick="addOptionRow()">+ Add Option</button>
+                </div>
+
+                <!-- ATTACHMENT RULE panel (file) -->
+                <div id="attachmentPanel" style="display:none;">
+                    <hr/>
+                    <div class="attachment-panel">
+                        <h6>Attachment Rule</h6>
+                        <input type="hidden" id="aRuleId" value="0" />
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label>Allowed Extensions</label>
+                                    <input type="text" id="aExtensions" class="form-control" placeholder=".pdf,.jpg,.png" />
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <label>Max Size (MB)</label>
+                                    <input type="number" id="aMaxSize" class="form-control" value="10" />
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <label>Max Files</label>
+                                    <input type="number" id="aMaxCount" class="form-control" value="1" />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label>Button Label (EN)</label>
+                                    <input type="text" id="aDisplayLabel" class="form-control" placeholder="Upload Document" />
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label>Button Label (AR)</label>
+                                    <input type="text" id="aDisplayLabelAr" class="form-control" dir="rtl" />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-4">
+                                <label class="tgl-wrap">
+                                    <input type="checkbox" id="aAllowMultiple" />
+                                    <span class="tgl-track"><span class="tgl-thumb"></span></span>
+                                    <span class="tgl-text">Allow Multiple</span>
+                                </label>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="tgl-wrap">
+                                    <input type="checkbox" id="aIsRequired" checked />
+                                    <span class="tgl-track"><span class="tgl-thumb"></span></span>
+                                    <span class="tgl-text">Required</span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-dark" onclick="saveField()">Save Field</button>
+            </div>
+        </div>
+</div>
+
+@section Scripts {
+<script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+<script>
+    // ── route URLs ──────────────────────────────────────────────
+var serviceTypeId = @serviceTypeId;
+    var urlAddSec    = '@Url.RouteUrl("Admin_ServiceFormConfig_AddSection")';
+    var urlEditSec   = '@Url.RouteUrl("Admin_ServiceFormConfig_UpdateSection")';
+    var urlDelSec    = '@Url.RouteUrl("Admin_ServiceFormConfig_DeleteSection")';
+    var urlReordSec  = '@Url.RouteUrl("Admin_ServiceFormConfig_ReorderSections")';
+    var urlSaveField = '@Url.RouteUrl("Admin_ServiceFormConfig_SaveField")';
+    var urlDelField  = '@Url.RouteUrl("Admin_ServiceFormConfig_DeleteField")';
+    var urlReordFld  = '@Url.RouteUrl("Admin_ServiceFormConfig_ReorderFields")';
+    var urlGetField  = '@Url.RouteUrl("Admin_ServiceFormConfig_GetField")';
+    var urlSaveOpt   = '@Url.RouteUrl("Admin_ServiceFormConfig_SaveOption")';
+    var urlDelOpt    = '@Url.RouteUrl("Admin_ServiceFormConfig_DeleteOption")';
+    var urlSaveAtt   = '@Url.RouteUrl("Admin_ServiceFormConfig_SaveAttachmentRule")';
+    var urlDelAtt    = '@Url.RouteUrl("Admin_ServiceFormConfig_DeleteAttachmentRule")';
+
+    // ── field type → data type auto-mapping ───────────────────
+    var dataTypeMap = {
+        text:'string', email:'string', phone:'string', url:'string',
+        number:'int', decimal:'decimal', multiline:'string',
+        dropdown:'string', radio:'string', checkbox:'bool',
+        date:'date', time:'time', file:'file', hidden:'string'
+    };
+
+    // ── field type → smart defaults ───────────────────────────
+    var fieldDefaults = {
+        text:      { minLength: 0, maxLength: 2000 },
+        email:     { minLength: 0, maxLength: 500  },
+        phone:     { minLength: 0, maxLength: 50   },
+        url:       { minLength: 0, maxLength: 2000 },
+        number:    { minValue: '0', maxValue: '999999999' },
+        decimal:   { minValue: '0', maxValue: '999999999' },
+        multiline: { minLength: 0, maxLength: 5000 },
+        dropdown:  { minLength: 0, maxLength: 2000 },
+        radio:     { minLength: 0, maxLength: 2000 },
+        checkbox:  {},
+        date:      {},
+        time:      {},
+        file:      {},
+        hidden:    { minLength: 0, maxLength: 2000 }
+    };
+
+
+
+    // ── Section modals ─────────────────────────────────────────
+    function showAddSectionModal() {
+        document.getElementById('editSectionId').value = '0';
+        document.getElementById('sectionTitle').value = '';
+        document.getElementById('sectionTitleAr').value = '';
+        document.getElementById('activeGroup').style.display = 'none';
+        document.getElementById('sectionModalTitle').textContent = 'Add Section';
+        $('#sectionModal').modal('show');
+    }
+
+    function showEditSectionModal(id, title, titleAr, isActive) {
+        document.getElementById('editSectionId').value = id;
+        document.getElementById('sectionTitle').value = title;
+        document.getElementById('sectionTitleAr').value = titleAr;
+        document.getElementById('sectionIsActive').checked = isActive;
+        document.getElementById('activeGroup').style.display = 'block';
+        document.getElementById('sectionModalTitle').textContent = 'Edit Section';
+        $('#sectionModal').modal('show');
+    }
+
+    function saveSection() {
+        var id = parseInt(document.getElementById('editSectionId').value);
+        var title = document.getElementById('sectionTitle').value.trim();
+        var titleAr = document.getElementById('sectionTitleAr').value.trim();
+        if (!title) { Swal.fire('Validation', 'Title is required.', 'warning'); return; }
+
+        if (id === 0) {
+            $.post(urlAddSec, { serviceTypeId: serviceTypeId, title: title, titleAr: titleAr }, function (d) {
+                if (d.success) { location.reload(); } else { Swal.fire('Error', d.message, 'error'); }
+            });
+        } else {
+            var isActive = document.getElementById('sectionIsActive').checked;
+            $.post(urlEditSec, { sectionId: id, title: title, titleAr: titleAr, isActive: isActive }, function (d) {
+                if (d.success) { location.reload(); } else { Swal.fire('Error', d.message, 'error'); }
+            });
+        }
+    }
+
+    function deleteSection(id) {
+        Swal.fire({ title:'Delete section?', text:'All fields in this section will also be removed.', icon:'warning',
+            showCancelButton:true, confirmButtonColor:'#1a1a2e', confirmButtonText:'Yes, delete' })
+        .then(function(r){ if(r.isConfirmed){ $.post(urlDelSec,{sectionId:id},function(d){ if(d.success){location.reload();}else{Swal.fire('Error',d.message,'error');} });} });
+    }
+
+    // ── Field modal ────────────────────────────────────────────
+    function showAddFieldModal(sectionId) {
+        resetFieldModal();
+        document.getElementById('editFieldSectionId').value = sectionId;
+        document.getElementById('fieldModalTitle').textContent = 'Add Field';
+        $('#fieldModal').modal('show');
+    }
+
+    function editField(fieldId) {
+        $.get(urlGetField, { fieldId: fieldId }, function (d) {
+            if (!d.success) return;
+            var f = d.field;
+            resetFieldModal();
+            document.getElementById('editFieldId').value = f.fieldId;
+            document.getElementById('editFieldSectionId').value = f.sectionId;
+            document.getElementById('fFieldKey').value = f.fieldKey || '';
+            document.getElementById('fFieldType').value = f.fieldType || 'text';
+            document.getElementById('fDataType').value = f.dataType || 'string';
+            document.getElementById('fLabel').value = f.label || '';
+            document.getElementById('fLabelAr').value = f.labelAr || '';
+            document.getElementById('fPlaceholder').value = f.placeholder || '';
+            document.getElementById('fPlaceholderAr').value = f.placeholderAr || '';
+            document.getElementById('fIsRequired').checked = f.isRequired;
+            document.getElementById('fIsVisible').checked = f.isVisible;
+            document.getElementById('fHelpText').value = f.helpText || '';
+            document.getElementById('fHelpTextAr').value = f.helpTextAr || '';
+            document.getElementById('fDefaultValue').value = f.defaultValue || '';
+            document.getElementById('fValidationRegex').value = f.validationRegex || '';
+            document.getElementById('fMinLength').value = f.minLength || '';
+            document.getElementById('fMaxLength').value = f.maxLength || '';
+            document.getElementById('fMinValue').value = f.minValue || '';
+            document.getElementById('fMaxValue').value = f.maxValue || '';
+            onFieldTypeChange();
+            // options
+            if (d.options && d.options.length > 0) {
+                var list = document.getElementById('optionsList');
+                list.innerHTML = '';
+                d.options.forEach(function(o) { addOptionRow(o); });
+            }
+            // attachment rule
+            if (d.attachmentRule) {
+                var ar = d.attachmentRule;
+                document.getElementById('aRuleId').value = ar.attachmentRuleId;
+                document.getElementById('aExtensions').value = ar.allowedExtensions || '';
+                document.getElementById('aMaxSize').value = ar.maxFileSizeMB || 10;
+                document.getElementById('aMaxCount').value = ar.maxFileCount || 1;
+                document.getElementById('aDisplayLabel').value = ar.displayLabel || '';
+                document.getElementById('aDisplayLabelAr').value = ar.displayLabelAr || '';
+                document.getElementById('aAllowMultiple').checked = ar.allowMultiple;
+                document.getElementById('aIsRequired').checked = ar.isRequired;
+            }
+            document.getElementById('fieldModalTitle').textContent = 'Edit Field';
+            $('#fieldModal').modal('show');
+        });
+    }
+
+    function resetFieldModal() {
+        document.getElementById('editFieldId').value = '0';
+        document.getElementById('editFieldSectionId').value = '0';
+        ['fFieldKey','fLabel','fLabelAr','fPlaceholder','fPlaceholderAr','fHelpText','fHelpTextAr','fDefaultValue','fValidationRegex','fMinLength','fMaxLength','fMinValue','fMaxValue'].forEach(function(id){ document.getElementById(id).value=''; });
+        document.getElementById('fFieldType').value = 'text';
+        document.getElementById('fDataType').value = 'string';
+        document.getElementById('fIsRequired').checked = false;
+        document.getElementById('fIsVisible').checked = true;
+        document.getElementById('optionsList').innerHTML = '';
+        document.getElementById('aRuleId').value = '0';
+        ['aExtensions','aDisplayLabel','aDisplayLabelAr'].forEach(function(id){ document.getElementById(id).value=''; });
+        document.getElementById('aMaxSize').value = '10';
+        document.getElementById('aMaxCount').value = '1';
+        document.getElementById('aAllowMultiple').checked = false;
+        document.getElementById('aIsRequired').checked = true;
+        onFieldTypeChange();
+    }
+
+    function applyFieldDefaults(ft) {
+        var d = fieldDefaults[ft] || {};
+        document.getElementById('fMinLength').value = d.minLength !== undefined ? d.minLength : '';
+        document.getElementById('fMaxLength').value = d.maxLength !== undefined ? d.maxLength : '';
+        document.getElementById('fMinValue').value  = d.minValue  !== undefined ? d.minValue  : '';
+        document.getElementById('fMaxValue').value  = d.maxValue  !== undefined ? d.maxValue  : '';
+    }
+
+    function onFieldTypeChange() {
+        var ft = document.getElementById('fFieldType').value;
+        document.getElementById('fDataType').value = dataTypeMap[ft] || 'string';
+        // always apply defaults (hidden fields — user never sees them)
+        applyFieldDefaults(ft);
+        var hasOpts = ['dropdown','radio','checkbox'].indexOf(ft) !== -1;
+        var isFile  = ft === 'file';
+        document.getElementById('optionsPanel').style.display   = hasOpts ? 'block' : 'none';
+        document.getElementById('attachmentPanel').style.display = isFile  ? 'block' : 'none';
+    }
+
+    function labelToValue(str) {
+        return str.toLowerCase()
+            .replace(/[^a-z0-9\s]/g, '')
+            .trim()
+            .replace(/\s+/g, '_')
+            .replace(/_+/g, '_') || ('opt_' + Date.now());
+    }
+
+    function addOptionRow(opt) {
+        var list = document.getElementById('optionsList');
+        var li = document.createElement('li');
+        var oid = (opt && opt.optionId) ? opt.optionId : 0;
+        var isDef = (opt && opt.isDefault) ? 'checked' : '';
+        var labelVal   = opt ? escHtml(opt.optionLabel)   : '';
+        var labelArVal = opt ? escHtml(opt.optionLabelAr) : '';
+        var valueVal   = opt ? escHtml(opt.optionValue)   : '';
+        li.setAttribute('data-option-id', oid);
+        li.style.cssText = 'display:flex;align-items:center;gap:8px;margin-bottom:8px;';
+        li.innerHTML =
+              '<input type="hidden" class="optId" value="'+oid+'" />'
+            + '<input type="hidden" class="optValue" value="'+valueVal+'" />'
+            + '<input type="text" class="form-control form-control-sm optLabel" placeholder="Option label (EN)" style="flex:1;min-width:0;" value="'+labelVal+'" />'
+            + '<input type="text" class="form-control form-control-sm optLabelAr" placeholder="الخيار بالعربي" style="flex:1;min-width:0;" dir="rtl" value="'+labelArVal+'" />'
+            + '<label class="tgl-wrap mb-0" style="white-space:nowrap;">'
+            +   '<input type="checkbox" class="optDefault" '+isDef+' />'
+            +   '<span class="tgl-track"><span class="tgl-thumb"></span></span>'
+            +   '<span class="tgl-text" style="font-size:12px;">Default</span>'
+            + '</label>'
+            + '<button type="button" class="btn btn-sm btn-outline-danger px-2" onclick="removeOptionRow(this)" style="flex-shrink:0;">✕</button>';
+
+        // auto-generate value from Label EN as user types (only when value was empty / not from server)
+        var optLabelInput = li.querySelector('.optLabel');
+        var optValueInput = li.querySelector('.optValue');
+        optLabelInput.addEventListener('input', function() {
+            if (oid === 0) { // only auto-generate for new (unsaved) options
+                optValueInput.value = labelToValue(this.value);
+            }
+        });
+
+        list.appendChild(li);
+    }
+
+    function removeOptionRow(btn) { btn.closest('li').remove(); }
+
+    function escHtml(v) { return (v||'').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+    async function saveField() {
+        var fieldId  = parseInt(document.getElementById('editFieldId').value);
+        var sectionId = parseInt(document.getElementById('editFieldSectionId').value);
+        var label    = document.getElementById('fLabel').value.trim();
+        if (!label) { Swal.fire('Validation','Label (English) is required.','warning'); return; }
+        // ensure key is set (auto-generated from label if still empty)
+        if (!document.getElementById('fFieldKey').value.trim()) {
+            document.getElementById('fFieldKey').value = label.toLowerCase().replace(/[^a-z0-9\s]/g,'').trim().replace(/\s+/g,'_').replace(/_+/g,'_') || 'field_' + Date.now();
+        }
+        var fieldKey = document.getElementById('fFieldKey').value.trim();
+
+        var fieldData = {
+            fieldId: fieldId, sectionId: sectionId,
+            fieldKey: fieldKey, label: label,
+            labelAr: document.getElementById('fLabelAr').value,
+            placeholder: document.getElementById('fPlaceholder').value,
+            placeholderAr: document.getElementById('fPlaceholderAr').value,
+            fieldType: document.getElementById('fFieldType').value,
+            dataType: document.getElementById('fDataType').value,
+            isRequired: document.getElementById('fIsRequired').checked,
+            isVisible: document.getElementById('fIsVisible').checked,
+            helpText: document.getElementById('fHelpText').value,
+            helpTextAr: document.getElementById('fHelpTextAr').value,
+            defaultValue: document.getElementById('fDefaultValue').value,
+            validationRegex: document.getElementById('fValidationRegex').value,
+            minLength: document.getElementById('fMinLength').value || null,
+            maxLength: document.getElementById('fMaxLength').value || null,
+            minValue: document.getElementById('fMinValue').value,
+            maxValue: document.getElementById('fMaxValue').value
+        };
+
+        var resp = await $.post(urlSaveField, fieldData);
+        if (!resp.success) { Swal.fire('Error', resp.message, 'error'); return; }
+        var savedFieldId = resp.fieldId;
+
+        var ft = document.getElementById('fFieldType').value;
+        // save options
+        if (['dropdown','radio','checkbox'].indexOf(ft) !== -1) {
+            var lis = document.querySelectorAll('#optionsList li');
+            for (var i = 0; i < lis.length; i++) {
+                var li = lis[i];
+                var optData = {
+                    optionId: parseInt(li.querySelector('.optId').value),
+                    fieldId: savedFieldId,
+                    optionLabel: li.querySelector('.optLabel').value,
+                    optionLabelAr: li.querySelector('.optLabelAr').value,
+                    optionValue: li.querySelector('.optValue').value,
+                    isDefault: li.querySelector('.optDefault').checked
+                };
+                await $.post(urlSaveOpt, optData);
+            }
+        }
+        // save attachment rule
+        if (ft === 'file') {
+            var ruleId = parseInt(document.getElementById('aRuleId').value);
+            var ruleData = {
+                attachmentRuleId: ruleId, fieldId: savedFieldId,
+                allowedExtensions: document.getElementById('aExtensions').value,
+                maxFileSizeMB: parseInt(document.getElementById('aMaxSize').value) || 10,
+                allowMultiple: document.getElementById('aAllowMultiple').checked,
+                isRequired: document.getElementById('aIsRequired').checked,
+                maxFileCount: parseInt(document.getElementById('aMaxCount').value) || 1,
+                displayLabel: document.getElementById('aDisplayLabel').value,
+                displayLabelAr: document.getElementById('aDisplayLabelAr').value
+            };
+            await $.post(urlSaveAtt, ruleData);
+        }
+
+        $('#fieldModal').modal('hide');
+        location.reload();
+    }
+
+    function deleteField(fieldId, btn) {
+        Swal.fire({title:'Delete field?', icon:'warning', showCancelButton:true, confirmButtonColor:'#dc3545', confirmButtonText:'Delete'})
+        .then(function(r){ if(r.isConfirmed){ $.post(urlDelField,{fieldId:fieldId},function(d){ if(d.success){ $(btn).closest('tr').remove(); }else{ Swal.fire('Error',d.message,'error'); } }); } });
+    }
+
+    // ── Sortable sections ──────────────────────────────────────
+    var secList = document.getElementById('sectionsList');
+    if (secList) {
+        Sortable.create(secList, {
+            handle: '.section-head .drag-handle',
+            animation: 150,
+            onEnd: function () {
+                var ids = Array.from(secList.querySelectorAll('.section-card')).map(function(el){ return parseInt(el.dataset.sectionId); });
+                $.post(urlReordSec, { sectionIds: ids });
+            }
+        });
+    }
+
+    // ── Phone Preview ──────────────────────────────────────────
+    function openPreview() {
+        buildPreview();
+        document.getElementById('phonePreviewOverlay').classList.add('active');
+    }
+    function closePreview() {
+        document.getElementById('phonePreviewOverlay').classList.remove('active');
+    }
+
+    function buildPreview() {
+        var sections = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(
+            sections.Select(sec => new {
+                title = sec.Title,
+                fields = sec.Fields == null ? new object[0] : sec.Fields.Select(f => new {
+                    label = f.Label,
+                    fieldType = f.FieldType,
+                    isRequired = f.IsRequired,
+                    placeholder = f.Placeholder,
+                    helpText = f.HelpText,
+                    options = f.Options == null ? new object[0] : f.Options.Where(o => !o.IsDelete).Select(o => new { label = o.OptionLabel }).ToArray()
+                }).ToArray()
+            }).ToArray()
+        ));
+
+        var html = '';
+        // step bar
+        html += '<div class="p-step-bar">';
+        html += '<div class="p-step-dots">'
+             + '<div class="p-step-dot active"></div>'
+             + '<div class="p-step-dot"></div>'
+             + '<div class="p-step-dot"></div>'
+             + '</div>';
+        html += '<div class="p-step-label">Step 1 of 3 &nbsp;·&nbsp; Files &amp; Attachment → Quotation → Payment</div>';
+        html += '</div>';
+        // service title
+        html += '<div class="p-service-title">@serviceName</div>';
+        html += '<div class="p-progress">5 / 5 Steps Remaining &nbsp;—&nbsp; 0% Completed</div>';
+
+        sections.forEach(function(sec) {
+            html += '<div class="p-section-title">' + sec.title + '</div>';
+            sec.fields.forEach(function(f) {
+                html += '<div class="p-field">';
+                html += '<div class="p-label">' + f.label + (f.isRequired ? '<span class="req">*</span>' : '') + '</div>';
+                var ph = f.placeholder || '';
+
+                if (f.fieldType === 'text' || f.fieldType === 'email' || f.fieldType === 'phone' || f.fieldType === 'url' || f.fieldType === 'number' || f.fieldType === 'decimal') {
+                    html += '<div class="p-input">' + (ph || '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;') + '</div>';
+                } else if (f.fieldType === 'multiline') {
+                    html += '<div class="p-textarea"></div>';
+                } else if (f.fieldType === 'dropdown') {
+                    html += '<div class="p-select">' + (f.options.length > 0 ? f.options[0].label : 'Select...') + '</div>';
+                } else if (f.fieldType === 'radio') {
+                    html += '<div class="p-radio-group">';
+                    (f.options.length > 0 ? f.options : [{label:'Option 1'}]).forEach(function(o){
+                        html += '<div class="p-radio-item"><span style="width:14px;height:14px;border:2px solid #1a1a2e;border-radius:50%;display:inline-block;"></span>' + o.label + '</div>';
+                    });
+                    html += '</div>';
+                } else if (f.fieldType === 'checkbox') {
+                    html += '<div class="p-checkbox-group">';
+                    (f.options.length > 0 ? f.options : [{label:'Option 1'}]).forEach(function(o){
+                        html += '<div class="p-checkbox-item"><span style="width:14px;height:14px;border:2px solid #1a1a2e;border-radius:3px;display:inline-block;"></span>' + o.label + '</div>';
+                    });
+                    html += '</div>';
+                } else if (f.fieldType === 'file') {
+                    html += '<div class="p-file-row"><div class="p-file-btn">Select from Library</div><div class="p-file-btn">Attach</div></div>';
+                } else if (f.fieldType === 'date' || f.fieldType === 'time') {
+                    html += '<div class="p-date-input">' + (f.fieldType === 'date' ? 'DD / MM / YYYY' : 'HH : MM') + '</div>';
+                } else {
+                    html += '<div class="p-input">&nbsp;</div>';
+                }
+                if (f.helpText) {
+                    html += '<div class="p-help">' + f.helpText + '</div>';
+                }
+                html += '</div>'; // p-field
+            });
+        });
+
+        html += '<div class="p-submit-area"><div class="p-btn-draft">Save as Draft</div><div class="p-btn-submit">Submit</div></div>';
+
+        document.getElementById('phoneScreenContent').innerHTML = html;
+    }
+
+    // close overlay on background click
+    document.getElementById('phonePreviewOverlay').addEventListener('click', function(e) {
+        if (e.target === this) closePreview();
+    });
+
+    // ── Auto-generate Field Key from Label (add mode only) ────
+    $('#fLabel').on('input', function() {
+        if (document.getElementById('editFieldId').value !== '0') return;
+        var key = $(this).val().toLowerCase()
+            .replace(/[^a-z0-9\s]/g, '')
+            .trim()
+            .replace(/\s+/g, '_')
+            .replace(/_+/g, '_');
+        document.getElementById('fFieldKey').value = key;
+    });
+
+    if (typeof feather !== 'undefined') feather.replace();
+</script>
+}

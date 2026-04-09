@@ -1094,6 +1094,52 @@ namespace Boulevard.BaseRepository
         }
         #endregion
 
+        #region ServiceFormConfiguration
+        private GenericRepository<ServiceFormSection> _serviceFormSectionRepository;
+        public IGenericRepository<ServiceFormSection> ServiceFormSectionRepository
+        {
+            get
+            {
+                if (_serviceFormSectionRepository == null)
+                    this._serviceFormSectionRepository = new GenericRepository<ServiceFormSection>(_dbContext);
+                return _serviceFormSectionRepository;
+            }
+        }
+
+        private GenericRepository<ServiceFormField> _serviceFormFieldRepository;
+        public IGenericRepository<ServiceFormField> ServiceFormFieldRepository
+        {
+            get
+            {
+                if (_serviceFormFieldRepository == null)
+                    this._serviceFormFieldRepository = new GenericRepository<ServiceFormField>(_dbContext);
+                return _serviceFormFieldRepository;
+            }
+        }
+
+        private GenericRepository<ServiceFormFieldOption> _serviceFormFieldOptionRepository;
+        public IGenericRepository<ServiceFormFieldOption> ServiceFormFieldOptionRepository
+        {
+            get
+            {
+                if (_serviceFormFieldOptionRepository == null)
+                    this._serviceFormFieldOptionRepository = new GenericRepository<ServiceFormFieldOption>(_dbContext);
+                return _serviceFormFieldOptionRepository;
+            }
+        }
+
+        private GenericRepository<ServiceFormAttachmentRule> _serviceFormAttachmentRuleRepository;
+        public IGenericRepository<ServiceFormAttachmentRule> ServiceFormAttachmentRuleRepository
+        {
+            get
+            {
+                if (_serviceFormAttachmentRuleRepository == null)
+                    this._serviceFormAttachmentRuleRepository = new GenericRepository<ServiceFormAttachmentRule>(_dbContext);
+                return _serviceFormAttachmentRuleRepository;
+            }
+        }
+        #endregion
+
         private bool disposed = false;
         protected virtual void Dispose(bool disposing)
         {

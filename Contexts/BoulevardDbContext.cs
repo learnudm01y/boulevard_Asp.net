@@ -133,5 +133,11 @@ namespace Boulevard.Contexts
 
         public DbSet<ProjectPlan> ProjectPlan { get; set; }
 
+        // Service Form Configuration (dynamic field mapping)
+        public DbSet<ServiceFormSection> ServiceFormSections { get; set; }
+        public DbSet<ServiceFormField> ServiceFormFields { get; set; }
+        public DbSet<ServiceFormFieldOption> ServiceFormFieldOptions { get; set; }
+        public DbSet<ServiceFormAttachmentRule> ServiceFormAttachmentRules { get; set; }
+
     }
 }

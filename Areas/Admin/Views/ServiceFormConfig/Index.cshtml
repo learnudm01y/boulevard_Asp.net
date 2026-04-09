@@ -1,0 +1,265 @@
+﻿@{
+    ViewBag.Title = "Typing Services — Form Configuration";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+
+    var serviceTypes  = ViewBag.ServiceTypes as List<Boulevard.Models.ServiceType> ?? new List<Boulevard.Models.ServiceType>();
+    var sectionCounts = ViewBag.SectionCounts as Dictionary<int, int> ?? new Dictionary<int, int>();
+    var search        = ViewBag.Search as string ?? "";
+    var categoryName  = ViewBag.TypingCategoryName as string ?? "Typing Services";
+    int page          = ViewBag.Page != null ? (int)ViewBag.Page : 1;
+    int totalPages    = ViewBag.TotalPages != null ? (int)ViewBag.TotalPages : 1;
+    int totalCount    = ViewBag.TotalCount != null ? (int)ViewBag.TotalCount : serviceTypes.Count;
+
+    int winStart = Math.Max(1, page - 2);
+    int winEnd   = Math.Min(totalPages, winStart + 4);
+    if (winEnd - winStart < 4) { winStart = Math.Max(1, winEnd - 4); }
+    int showFrom = totalCount == 0 ? 0 : (page - 1) * 20 + 1;
+    int showTo   = Math.Min(page * 20, totalCount);
+
+    // ── build all dynamic HTML in C# — zero nested Razor @if/@for needed ──
+
+    var bodyHtml = new System.Text.StringBuilder();
+
+    if (!serviceTypes.Any())
+    {
+        bodyHtml.Append("<div class=\"empty-state\"><i data-feather=\"inbox\"></i><p>No service types found");
+        bodyHtml.Append(string.IsNullOrEmpty(search) ? "." : " matching your search.");
+        bodyHtml.Append("</p></div>");
+    }
+    else
+    {
+        bodyHtml.Append("<div class=\"services-grid\">");
+        foreach (var st in serviceTypes)
+        {
+            int stCount   = sectionCounts.ContainsKey(st.ServiceTypeId) ? sectionCounts[st.ServiceTypeId] : 0;
+            string cfgUrl = Url.RouteUrl("Admin_ServiceFormConfig_Config", new { serviceTypeId = st.ServiceTypeId });
+
+            string arHtml = string.IsNullOrEmpty(st.ServiceTypeNameAr) ? ""
+                : "<p class=\"service-name-ar\">" + System.Web.HttpUtility.HtmlEncode(st.ServiceTypeNameAr) + "</p>";
+            string parentHtml = (st.Service == null || string.IsNullOrEmpty(st.Service.Name)) ? ""
+                : "<p style=\"font-size:12px;color:#a0aec0;margin:0 0 10px;\">" + System.Web.HttpUtility.HtmlEncode(st.Service.Name) + "</p>";
+
+            string badgeCls  = stCount > 0 ? "badge-configured" : "badge-empty";
+            string featherIco = stCount > 0 ? "check-circle" : "alert-circle";
+            string badgeTxt  = stCount > 0 ? stCount + " section(s) configured" : "Not configured";
+
+            bodyHtml.AppendFormat(
+                "<div class=\"service-card\"><div class=\"service-card-body\">" +
+                "<p class=\"service-name\">{0}</p>{1}{2}" +
+                "<div class=\"service-meta\"><span class=\"badge-sections {3}\">" +
+                "<i data-feather=\"{4}\" style=\"width:12px;height:12px;\"></i> {5}" +
+                "</span></div>" +
+                "<a href=\"{6}\" class=\"btn-configure\">Configure Form Fields</a>" +
+                "</div></div>",
+                System.Web.HttpUtility.HtmlEncode(st.ServiceTypeName ?? ""),
+                arHtml, parentHtml,
+                badgeCls, featherIco, System.Web.HttpUtility.HtmlEncode(badgeTxt),
+                System.Web.HttpUtility.HtmlAttributeEncode(cfgUrl ?? "#"));
+        }
+        bodyHtml.Append("</div>");
+
+        // pagination
+        if (totalPages > 1)
+        {
+            bodyHtml.Append("<nav class=\"mt-4\"><ul class=\"pagination justify-content-center flex-wrap\">");
+            bodyHtml.AppendFormat("<li class=\"page-item{0}\"><a class=\"page-link\" href=\"{1}\">&#8249;</a></li>",
+                page <= 1 ? " disabled" : "",
+                Url.RouteUrl("Admin_ServiceFormConfig", new { search = search, page = page - 1 }));
+            if (winStart > 1)
+            {
+                bodyHtml.AppendFormat("<li class=\"page-item\"><a class=\"page-link\" href=\"{0}\">1</a></li>",
+                    Url.RouteUrl("Admin_ServiceFormConfig", new { search = search, page = 1 }));
+            }
+            if (winStart > 2)
+            {
+                bodyHtml.Append("<li class=\"page-item disabled\"><span class=\"page-link\">&#8230;</span></li>");
+            }
+            for (int pg = winStart; pg <= winEnd; pg++)
+            {
+                bodyHtml.AppendFormat("<li class=\"page-item{0}\"><a class=\"page-link\" href=\"{1}\">{2}</a></li>",
+                    pg == page ? " active" : "",
+                    Url.RouteUrl("Admin_ServiceFormConfig", new { search = search, page = pg }), pg);
+            }
+            if (winEnd < totalPages - 1)
+            {
+                bodyHtml.Append("<li class=\"page-item disabled\"><span class=\"page-link\">&#8230;</span></li>");
+            }
+            if (winEnd < totalPages)
+            {
+                bodyHtml.AppendFormat("<li class=\"page-item\"><a class=\"page-link\" href=\"{0}\">{1}</a></li>",
+                    Url.RouteUrl("Admin_ServiceFormConfig", new { search = search, page = totalPages }), totalPages);
+            }
+            bodyHtml.AppendFormat("<li class=\"page-item{0}\"><a class=\"page-link\" href=\"{1}\">&#8250;</a></li>",
+                page >= totalPages ? " disabled" : "",
+                Url.RouteUrl("Admin_ServiceFormConfig", new { search = search, page = page + 1 }));
+            bodyHtml.Append("</ul></nav>");
+        }
+    }
+
+    string resultsInfo = string.IsNullOrEmpty(search)
+        ? string.Format("Showing {0}&ndash;{1} of {2} items in {3}", showFrom, showTo, totalCount, System.Web.HttpUtility.HtmlEncode(categoryName))
+        : string.Format("Showing results for &ldquo;<strong>{0}</strong>&rdquo; &mdash; {1} item(s) found. <a href=\"{2}\">Clear</a>",
+            System.Web.HttpUtility.HtmlEncode(search),
+            totalCount,
+            Url.RouteUrl("Admin_ServiceFormConfig"));
+}
+
+<style>
+    .page-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 12px;
+        margin-bottom: 24px;
+    }
+    .page-header h4 {
+        margin: 0;
+        font-weight: 700;
+        font-size: 20px;
+    }
+    .search-bar {
+        display: flex;
+        gap: 8px;
+        width: 100%;
+        max-width: 420px;
+    }
+    .search-bar input {
+        flex: 1;
+        padding: 8px 14px;
+        border: 1px solid #d1d5db;
+        border-radius: 6px;
+        font-size: 14px;
+    }
+    .search-bar button {
+        padding: 8px 18px;
+        background: #1a1a2e;
+        color: #fff;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 14px;
+    }
+    .services-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 20px;
+    }
+    .service-card {
+        background: #fff;
+        border: 1px solid #e2e8f0;
+        border-radius: 12px;
+        overflow: hidden;
+        transition: box-shadow 0.2s, transform 0.2s;
+    }
+    .service-card:hover {
+        box-shadow: 0 6px 24px rgba(0,0,0,.12);
+        transform: translateY(-2px);
+    }
+    .service-card-body {
+        padding: 20px;
+    }
+    .service-name {
+        font-weight: 700;
+        font-size: 15px;
+        color: #1a1a2e;
+        margin: 0 0 4px;
+    }
+    .service-name-ar {
+        font-size: 13px;
+        color: #718096;
+        margin: 0 0 14px;
+        direction: rtl;
+    }
+    .service-meta {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 16px;
+    }
+    .badge-sections {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        padding: 4px 10px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 600;
+    }
+    .badge-configured {
+        background: #c6f6d5;
+        color: #276749;
+    }
+    .badge-empty {
+        background: #fee2e2;
+        color: #9b1c1c;
+    }
+    .btn-configure {
+        display: block;
+        width: 100%;
+        padding: 10px;
+        background: #1a1a2e;
+        color: #fff;
+        border: none;
+        border-radius: 6px;
+        font-size: 14px;
+        font-weight: 600;
+        text-align: center;
+        text-decoration: none;
+        cursor: pointer;
+        transition: background 0.2s;
+    }
+    .btn-configure:hover {
+        background: #2d2d4e;
+        color: #fff;
+        text-decoration: none;
+    }
+    .empty-state {
+        text-align: center;
+        padding: 60px 20px;
+        color: #718096;
+    }
+    .empty-state i {
+        font-size: 48px;
+        margin-bottom: 16px;
+        display: block;
+    }
+    .results-info {
+        font-size: 13px;
+        color: #718096;
+        margin-bottom: 20px;
+    }
+</style>
+
+<div class="page-wrapper">
+    <div class="container-fluid">
+        <div class="row page-titles">
+            <div class="col-12 align-self-center">
+                <ol class="breadcrumb mb-0 p-0 bg-transparent">
+                    <li class="breadcrumb-item"><a href="/admin">Home</a></li>
+                    <li class="breadcrumb-item active">@categoryName — Form Config</li>
+                </ol>
+            </div>
+        </div>
+
+            <div class="page-header">
+                <h4><i data-feather="settings" style="width:22px;height:22px;margin-right:6px;vertical-align:middle;"></i>@categoryName — Form Configuration</h4>
+                <form method="get" action="@Url.RouteUrl("Admin_ServiceFormConfig")" class="search-bar">
+                    <input type="text" name="search" value="@search" placeholder="Search services..." autocomplete="off" />
+                    <button type="submit"><i data-feather="search" style="width:14px;height:14px;margin-right:4px;vertical-align:middle;"></i>Search</button>
+                </form>
+            </div>
+
+            <p class="results-info">@Html.Raw(resultsInfo)</p>
+
+            @Html.Raw(bodyHtml.ToString())
+
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        if (typeof feather !== 'undefined') feather.replace();
+    </script>
+}
+

@@ -1445,6 +1445,81 @@ new { controller = "OrderRequestProduct", action = "GetPagedOrdersCount", id = U
 
       #endregion
 
+      #region Service Form Configuration
+
+      context.MapRoute(
+        "Admin_ServiceFormConfig",
+        "admin/service-form-config",
+        new { controller = "ServiceFormConfig", action = "Index", id = UrlParameter.Optional }
+      );
+      context.MapRoute(
+        "Admin_ServiceFormConfig_AddSection",
+        "admin/service-form-config/add-section",
+        new { controller = "ServiceFormConfig", action = "AddSection", id = UrlParameter.Optional }
+      );
+      context.MapRoute(
+        "Admin_ServiceFormConfig_UpdateSection",
+        "admin/service-form-config/update-section",
+        new { controller = "ServiceFormConfig", action = "UpdateSection", id = UrlParameter.Optional }
+      );
+      context.MapRoute(
+        "Admin_ServiceFormConfig_DeleteSection",
+        "admin/service-form-config/delete-section",
+        new { controller = "ServiceFormConfig", action = "DeleteSection", id = UrlParameter.Optional }
+      );
+      context.MapRoute(
+        "Admin_ServiceFormConfig_ReorderSections",
+        "admin/service-form-config/reorder-sections",
+        new { controller = "ServiceFormConfig", action = "ReorderSections", id = UrlParameter.Optional }
+      );
+      context.MapRoute(
+        "Admin_ServiceFormConfig_SaveField",
+        "admin/service-form-config/save-field",
+        new { controller = "ServiceFormConfig", action = "SaveField", id = UrlParameter.Optional }
+      );
+      context.MapRoute(
+        "Admin_ServiceFormConfig_DeleteField",
+        "admin/service-form-config/delete-field",
+        new { controller = "ServiceFormConfig", action = "DeleteField", id = UrlParameter.Optional }
+      );
+      context.MapRoute(
+        "Admin_ServiceFormConfig_ReorderFields",
+        "admin/service-form-config/reorder-fields",
+        new { controller = "ServiceFormConfig", action = "ReorderFields", id = UrlParameter.Optional }
+      );
+      context.MapRoute(
+        "Admin_ServiceFormConfig_GetField",
+        "admin/service-form-config/get-field",
+        new { controller = "ServiceFormConfig", action = "GetField", id = UrlParameter.Optional }
+      );
+      context.MapRoute(
+        "Admin_ServiceFormConfig_SaveOption",
+        "admin/service-form-config/save-option",
+        new { controller = "ServiceFormConfig", action = "SaveOption", id = UrlParameter.Optional }
+      );
+      context.MapRoute(
+        "Admin_ServiceFormConfig_DeleteOption",
+        "admin/service-form-config/delete-option",
+        new { controller = "ServiceFormConfig", action = "DeleteOption", id = UrlParameter.Optional }
+      );
+      context.MapRoute(
+        "Admin_ServiceFormConfig_SaveAttachmentRule",
+        "admin/service-form-config/save-attachment-rule",
+        new { controller = "ServiceFormConfig", action = "SaveAttachmentRule", id = UrlParameter.Optional }
+      );
+      context.MapRoute(
+        "Admin_ServiceFormConfig_DeleteAttachmentRule",
+        "admin/service-form-config/delete-attachment-rule",
+        new { controller = "ServiceFormConfig", action = "DeleteAttachmentRule", id = UrlParameter.Optional }
+      );
+      context.MapRoute(
+        "Admin_ServiceFormConfig_Config",
+        "admin/service-form-config/config/{serviceTypeId}",
+        new { controller = "ServiceFormConfig", action = "Config", serviceTypeId = UrlParameter.Optional }
+      );
+
+      #endregion
+
       #region Delivery Management
 
       context.MapRoute(

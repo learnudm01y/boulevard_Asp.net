@@ -128,6 +128,12 @@ namespace Boulevard.BaseRepository
 
         IGenericRepository<ProjectPlan> ProjectPlanRepository { get; }
 
+        // Service Form Configuration
+        IGenericRepository<ServiceFormSection> ServiceFormSectionRepository { get; }
+        IGenericRepository<ServiceFormField> ServiceFormFieldRepository { get; }
+        IGenericRepository<ServiceFormFieldOption> ServiceFormFieldOptionRepository { get; }
+        IGenericRepository<ServiceFormAttachmentRule> ServiceFormAttachmentRuleRepository { get; }
+
 
     }
 }
